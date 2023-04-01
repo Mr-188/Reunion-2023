@@ -130,7 +130,7 @@ namespace DTAConfig.OptionPanels
             lblClientVolumeValue = new XNALabel(WindowManager);
             lblClientVolumeValue.Name = "lblClientVolumeValue";
             lblClientVolumeValue.FontIndex = 1;
-            lblClientVolumeValue.Text = "10";
+            lblClientVolumeValue.Text = "0";
             lblClientVolumeValue.ClientRectangle = new Rectangle(
                 lblScoreVolumeValue.X,
                 lblClientVolume.Y, 0, 0);

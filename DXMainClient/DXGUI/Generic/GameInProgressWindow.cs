@@ -8,6 +8,7 @@ using System.IO;
 using Localization;
 using Color = Microsoft.Xna.Framework.Color;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
+using System.Diagnostics;
 #if ARES
 using System.Linq;
 using System.Collections.Generic;
@@ -42,6 +43,8 @@ namespace DTAClient.DXGUI
 
         public override void Initialize()
         {
+
+          
             if (initialized)
                 throw new InvalidOperationException("GameInProgressWindow cannot be initialized twice!");
 
@@ -58,6 +61,8 @@ namespace DTAClient.DXGUI
             window.BackgroundTexture = AssetLoader.LoadTexture("gameinprogresswindowbg.png");
             window.ClientRectangle = new Rectangle(0, 0, 200, 100);
 
+
+            //开始游戏
             XNALabel explanation = new XNALabel(WindowManager);
             explanation.Text = "A game is in progress.".L10N("UI:Main:GameInProgress");
 
@@ -88,6 +93,8 @@ namespace DTAClient.DXGUI
                     debugLogLastWriteTime = debugLogFileInfo.LastWriteTime;
             }
             catch { }
+
+
 #endif
         }
 
@@ -125,6 +132,8 @@ namespace DTAClient.DXGUI
             if (UserINISettings.Instance.MinimizeWindowsOnGameStart)
                 WindowManager.MinimizeWindow();
 #endif
+            
+
         }
 
         private void SharedUILogic_GameProcessExited()

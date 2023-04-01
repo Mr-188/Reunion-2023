@@ -38,7 +38,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
                     s => HideMapList()),
                 new ChatBoxCommand("SHOWMAPS", "Show map list (game host only)".L10N("UI:Main:ChatboxCommandShowMapsHelp"), true,
                     s => ShowMapList()),
-                new ChatBoxCommand("FRAMESENDRATE", "Change order lag / FrameSendRate (default 7) (game host only)".L10N("UI:Main:ChatboxCommandFrameSendRateHelp"), true,
+                new ChatBoxCommand("FRAMESENDRATE", "Change order lag / FrameSendRate (default 1) (game host only)".L10N("UI:Main:ChatboxCommandFrameSendRateHelp"), true,
                     s => SetFrameSendRate(s)),
                 new ChatBoxCommand("MAXAHEAD", "Change MaxAhead (default 0) (game host only)".L10N("UI:Main:ChatboxCommandMaxAheadHelp"), true,
                     s => SetMaxAhead(s)),
@@ -90,7 +90,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
 
         protected TopBar TopBar;
 
-        protected int FrameSendRate { get; set; } = 7;
+        protected int FrameSendRate { get; set; } = 1;
 
         /// <summary>
         /// Controls the MaxAhead parameter. The default value of 0 means that 
@@ -228,6 +228,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             for (int pId = 0; pId < Players.Count; pId++)
                 Players[pId].IsInGame = true;
 
+        
             base.StartGame();
         }
 
@@ -495,6 +496,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
         /// <param name="mapName">Name of the map given as a parameter, without file extension.</param>
         private void LoadCustomMap(string mapName)
         {
+           // Logger.Log("111111");
             Map map = MapLoader.LoadCustomMap($"Maps/Custom/{mapName}", out string resultMessage);
             if (map != null)
             {
@@ -641,7 +643,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             tbChatInput.Name = "tbChatInput_Player";
             MapPreviewBox.Name = "MapPreviewBox";
             lblMapName.Name = "lblMapName";
-            lblMapAuthor.Name = "lblMapAuthor";
+         //   lblMapAuthor.Name = "lblMapAuthor";
             lblGameMode.Name = "lblGameMode";
             lblMapSize.Name = "lblMapSize";
 
@@ -650,16 +652,18 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             ReadINIForControl(tbChatInput);
             ReadINIForControl(lbGameModeMapList);
             ReadINIForControl(lblMapName);
-            ReadINIForControl(lblMapAuthor);
+     //       ReadINIForControl(lblMapAuthor);
             ReadINIForControl(lblGameMode);
             ReadINIForControl(lblMapSize);
             ReadINIForControl(btnMapSortAlphabetically);
 
             ddGameModeMapFilter.Disable();
             lblGameModeSelect.Disable();
+            lblModeText.Disable();
             lbGameModeMapList.Disable();
             tbMapSearch.Disable();
             btnPickRandomMap.Disable();
+            btnAginLoadMaps.Disable();
             btnMapSortAlphabetically.Disable();
         }
 
@@ -669,7 +673,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             tbChatInput.Name = "tbChatInput_Host";
             MapPreviewBox.Name = "MapPreviewBox";
             lblMapName.Name = "lblMapName";
-            lblMapAuthor.Name = "lblMapAuthor";
+      //      lblMapAuthor.Name = "lblMapAuthor";
             lblGameMode.Name = "lblGameMode";
             lblMapSize.Name = "lblMapSize";
 
@@ -685,7 +689,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             ReadINIForControl(tbChatInput);
             ReadINIForControl(lbGameModeMapList);
             ReadINIForControl(lblMapName);
-            ReadINIForControl(lblMapAuthor);
+        //    ReadINIForControl(lblMapAuthor);
             ReadINIForControl(lblGameMode);
             ReadINIForControl(lblMapSize);
             ReadINIForControl(btnMapSortAlphabetically);

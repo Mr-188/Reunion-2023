@@ -71,6 +71,9 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
         private string enabledSpawnIniValue = "True";
         private string disabledSpawnIniValue = "False";
 
+        public List<string> ControlName;
+
+        public List<string> ControlIndex;
 
         public override void Initialize()
         {
@@ -85,6 +88,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
                 // oh no, we have a circular class reference here!
                 if (parent is GameLobbyBase gameLobby)
                 {
+                    if (gameLobby.CheckBoxes.Find(chk => chk.Name == this.Name)==null)
                     gameLobby.CheckBoxes.Add(this);
                     break;
                 }
@@ -134,6 +138,13 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
                 case "MapScoringMode":
                     MapScoringMode = (CheckBoxMapScoringMode)Enum.Parse(typeof(CheckBoxMapScoringMode), value);
                     return;
+                case "ControlName":
+                    ControlName = value.Split(',').ToList();
+                    return;
+                case "ControlIndex":
+                    ControlIndex = value.Split(',').ToList();
+                    return;
+
             }
 
             base.ParseAttributeFromINI(iniFile, key, value);
@@ -197,6 +208,8 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
 
             base.OnLeftClick();
             UserChecked = Checked;
+
+            
         }
     }
 }

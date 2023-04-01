@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using ClientCore;
 using ClientCore.CnCNet5;
@@ -11,8 +13,14 @@ using DTAClient.DXGUI.Multiplayer.GameLobby;
 using DTAClient.Online;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Media;
 using Rampastring.Tools;
 using Rampastring.XNAUI;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Media;
+using Microsoft.Xna.Framework.Content;
+using SendGrid.Helpers.Mail;
 
 namespace DTAClient.DXGUI.Generic
 {
@@ -28,6 +36,8 @@ namespace DTAClient.DXGUI.Generic
             this.cncnetManager = cncnetManager;
             this.serviceProvider = serviceProvider;
             this.mapLoader = mapLoader;
+            content = new ContentManager(serviceProvider, "Content");
+
         }
 
         private static readonly object locker = new object();
@@ -42,14 +52,32 @@ namespace DTAClient.DXGUI.Generic
         private Task mapLoadTask;
         private readonly CnCNetManager cncnetManager;
         private readonly IServiceProvider serviceProvider;
+       
+        
 
+        ContentManager content;
         public override void Initialize()
         {
-            ClientRectangle = new Rectangle(0, 0, 800, 600);
+            ClientRectangle = new Rectangle(0, 0, 1280, 768);
             Name = "LoadingScreen";
+           
 
-            BackgroundTexture = AssetLoader.LoadTexture("loadingscreen.png");
+            string[] Wallpaper = Directory.GetFiles("Resources/" + ClientConfiguration.Instance.GetThemePath(UserINISettings.Instance.ClientTheme) + "Wallpaper");
+               
+                if (UserINISettings.Instance.Random_wallpaper)
+                {
+                    Random ran = new Random();
+                    int i = ran.Next(0, Wallpaper.Length);
 
+                    BackgroundTexture = AssetLoader.LoadTexture(Wallpaper[i]);
+                    
+                }
+                else
+                {
+                    BackgroundTexture = AssetLoader.LoadTexture(Wallpaper[0]);
+                }
+            
+      
             base.Initialize();
 
             CenterOnParent();

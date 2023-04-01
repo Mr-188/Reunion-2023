@@ -50,34 +50,36 @@ namespace DTAClient.Domain.Multiplayer.CnCNet
         {
             try
             {
-                WebClient client = new WebClient();
+                //WebClient client = new WebClient();
 
-                Stream data = client.OpenRead("http://api.cncnet.org/status");
-                
-                string info = string.Empty;
+                //Stream data = client.OpenRead("http://api.cncnet.org/status");
 
-                using (StreamReader reader = new StreamReader(data))
-                {
-                    info = reader.ReadToEnd();
-                }
+                //string info = string.Empty;
 
-                info = info.Replace("{", String.Empty);
-                info = info.Replace("}", String.Empty);
-                info = info.Replace("\"", String.Empty);
-                string[] values = info.Split(new char[] { ',' });
+                //using (StreamReader reader = new StreamReader(data))
+                //{
+                //    info = reader.ReadToEnd();
+                //}
 
-                int numGames = -1;
+                //info = info.Replace("{", String.Empty);
+                //info = info.Replace("}", String.Empty);
+                //info = info.Replace("\"", String.Empty);
+                //string[] values = info.Split(new char[] { ',' });
 
-                foreach (string value in values)
-                {
-                    if (value.Contains(cncnetLiveStatusIdentifier))
-                    {
-                        numGames = Convert.ToInt32(value.Substring(cncnetLiveStatusIdentifier.Length + 1));
-                        return numGames;
-                    }
-                }
+                //int numGames = -1;
 
-                return numGames;
+                //foreach (string value in values)
+                //{
+                //    if (value.Contains(cncnetLiveStatusIdentifier))
+                //    {
+                //        numGames = Convert.ToInt32(value.Substring(cncnetLiveStatusIdentifier.Length + 1));
+                //        return numGames;
+                //    }
+                //}
+
+                //return numGames;
+                //不统计人数
+                return -1;
             }
             catch
             {

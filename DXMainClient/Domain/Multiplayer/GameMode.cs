@@ -1,4 +1,5 @@
 ﻿using ClientCore;
+using Localization;
 using Rampastring.Tools;
 using System;
 using System.Collections.Generic;
@@ -61,6 +62,8 @@ namespace DTAClient.Domain.Multiplayer
 
         private string mapCodeININame;
 
+        public string modeText;
+
         private string forcedOptionsSection;
 
         public List<Map> Maps = new List<Map>();
@@ -85,6 +88,7 @@ namespace DTAClient.Domain.Multiplayer
             MinPlayersOverride = forcedOptionsIni.GetIntValue(Name, "MinPlayersOverride", -1);
             forcedOptionsSection = forcedOptionsIni.GetStringValue(Name, "ForcedOptions", string.Empty);
             mapCodeININame = forcedOptionsIni.GetStringValue(Name, "MapCodeININame", Name + ".ini");
+            modeText = forcedOptionsIni.GetStringValue(Name, "Text", UIName);
 
             string[] disallowedSides = forcedOptionsIni
                 .GetStringValue(Name, "DisallowedPlayerSides", string.Empty)

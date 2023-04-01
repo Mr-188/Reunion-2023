@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using ClientUpdater;
 
+
 namespace DTAConfig.OptionPanels
 {
     class ComponentsPanel : XNAOptionsPanel
@@ -27,6 +28,8 @@ namespace DTAConfig.OptionPanels
         {
             base.Initialize();
 
+            //Logger.Log(tools.GetDirectUrl("https://mr-liu.lanzoum.com/iqHTj0prhdoh"));
+
             Name = "ComponentsPanel";
 
             int componentIndex = 0;
@@ -41,7 +44,7 @@ namespace DTAConfig.OptionPanels
                 if (SafePath.GetFile(ProgramConstants.GamePath, c.LocalPath).Exists)
                 {
                     buttonText = "Uninstall".L10N("UI:DTAConfig:ButtonUninstall");
-
+                    
                     if (c.LocalIdentifier != c.RemoteIdentifier)
                         buttonText = "Update".L10N("UI:DTAConfig:ButtonUpdate");
                 }

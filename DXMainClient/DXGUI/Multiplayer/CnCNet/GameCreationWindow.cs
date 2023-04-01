@@ -36,6 +36,7 @@ namespace DTAClient.DXGUI.Multiplayer.CnCNet
 
         private XNALabel lblTunnelServer;
         private TunnelListBox lbTunnelList;
+        private XNACheckBox chkAuto;
 
         private XNAClientButton btnCreateGame;
         private XNAClientButton btnCancel;
@@ -101,6 +102,13 @@ namespace DTAClient.DXGUI.Multiplayer.CnCNet
             btnDisplayAdvancedOptions.Text = "Advanced Options".L10N("UI:Main:AdvancedOptions");
             btnDisplayAdvancedOptions.LeftClick += BtnDisplayAdvancedOptions_LeftClick;
 
+            chkAuto = new XNACheckBox(WindowManager);
+            chkAuto.Name = nameof(chkAuto);
+            chkAuto.ClientRectangle = new Rectangle(tbGameName.X, lblPassword.Bottom + UIDesignConstants.CONTROL_VERTICAL_MARGIN * 3, 0, 0);
+            chkAuto.Text = "Auto select servers".L10N("UI:Main:Auto");
+            chkAuto.CheckedChanged += (s,e)=> Auto();
+            chkAuto.Checked = true;
+
             lblTunnelServer = new XNALabel(WindowManager);
             lblTunnelServer.Name = nameof(lblTunnelServer);
             lblTunnelServer.ClientRectangle = new Rectangle(UIDesignConstants.EMPTY_SPACE_SIDES +
@@ -147,6 +155,7 @@ namespace DTAClient.DXGUI.Multiplayer.CnCNet
             AddChild(btnDisplayAdvancedOptions);
             AddChild(lblTunnelServer);
             AddChild(lbTunnelList);
+            AddChild(chkAuto);
             AddChild(btnCreateGame);
             if (!ClientConfiguration.Instance.DisableMultiplayerGameLoading)
                 AddChild(btnLoadMPGame);
@@ -162,6 +171,15 @@ namespace DTAClient.DXGUI.Multiplayer.CnCNet
 
             if (UserINISettings.Instance.AlwaysDisplayTunnelList)
                 BtnDisplayAdvancedOptions_LeftClick(this, EventArgs.Empty);
+        }
+
+        private void Auto()
+        {
+            if (chkAuto.Checked)
+            {
+                lbTunnelList.SelectedIndex = GetMinms();  //获取最适合的服务器
+            }
+         
         }
 
         private void LbTunnelList_ListRefreshed(object sender, EventArgs e)
@@ -229,9 +247,39 @@ namespace DTAClient.DXGUI.Multiplayer.CnCNet
                 return;
             }
 
+            if (chkAuto.Checked)
+                lbTunnelList.SelectedIndex = GetMinms();  //获取最适合的服务器
+
             GameCreated?.Invoke(this, new GameCreationEventArgs(gameName,
                 int.Parse(ddMaxPlayers.SelectedItem.Text), tbPassword.Text,
                 tunnelHandler.Tunnels[lbTunnelList.SelectedIndex]));
+        }
+
+        private int GetMinms()
+        {
+            int pingMin = 100000; //最低延迟  
+                                  //  int people;  //平均人数
+            int index = 0; //最适合索引
+
+            for (int i = 0; i < lbTunnelList.ItemCount; i++)
+            {
+                try
+                {
+                    int ping = Convert.ToInt32(lbTunnelList.GetItem(2, i).Text.Replace(" ms", "").ToString());
+                    int people = Convert.ToInt32(lbTunnelList.GetItem(3, i).Text.Split('/')[0].Replace(" ", "").ToString());
+                    if (ping < pingMin && people != 0)
+                    {
+                        pingMin = ping;
+                        index = i;
+                    }
+
+                }
+                catch
+                {
+                    continue;
+                }
+            }
+            return index;
         }
 
         private void BtnDisplayAdvancedOptions_LeftClick(object sender, EventArgs e)
@@ -257,6 +305,7 @@ namespace DTAClient.DXGUI.Multiplayer.CnCNet
             SetAttributesFromIni();
 
             CenterOnParent();
+            Auto();
         }
 
         public void Refresh()

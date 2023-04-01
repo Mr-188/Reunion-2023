@@ -21,6 +21,8 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using ClientUpdater;
+using System.Drawing.Design;
+using System.Text;
 
 namespace DTAClient.DXGUI.Generic
 {
@@ -139,6 +141,7 @@ namespace DTAClient.DXGUI.Generic
         /// </summary>
         public override void Initialize()
         {
+            
             topBar.SetSecondarySwitch(cncnetLobby);
             GameProcessLogic.GameProcessExited += SharedUILogic_GameProcessExited;
 
@@ -154,6 +157,7 @@ namespace DTAClient.DXGUI.Generic
             btnNewCampaign.HoverTexture = AssetLoader.LoadTexture("MainMenu/campaign_c.png");
             btnNewCampaign.HoverSoundEffect = new EnhancedSoundEffect("MainMenu/button.wav");
             btnNewCampaign.LeftClick += BtnNewCampaign_LeftClick;
+            btnNewCampaign.Text = "Campaign".L10N("UI:Main:Campaign");
 
             btnLoadGame = new XNAClientButton(WindowManager);
             btnLoadGame.Name = nameof(btnLoadGame);
@@ -161,6 +165,7 @@ namespace DTAClient.DXGUI.Generic
             btnLoadGame.HoverTexture = AssetLoader.LoadTexture("MainMenu/loadmission_c.png");
             btnLoadGame.HoverSoundEffect = new EnhancedSoundEffect("MainMenu/button.wav");
             btnLoadGame.LeftClick += BtnLoadGame_LeftClick;
+            btnLoadGame.Text = "Load Game".L10N("UI:Main:LoadGame");
 
             btnSkirmish = new XNAClientButton(WindowManager);
             btnSkirmish.Name = nameof(btnSkirmish);
@@ -168,6 +173,7 @@ namespace DTAClient.DXGUI.Generic
             btnSkirmish.HoverTexture = AssetLoader.LoadTexture("MainMenu/skirmish_c.png");
             btnSkirmish.HoverSoundEffect = new EnhancedSoundEffect("MainMenu/button.wav");
             btnSkirmish.LeftClick += BtnSkirmish_LeftClick;
+            btnSkirmish.Text = "Skirmish".L10N("UI:Main:SkirmishLobby");
 
             btnCnCNet = new XNAClientButton(WindowManager);
             btnCnCNet.Name = nameof(btnCnCNet);
@@ -175,12 +181,14 @@ namespace DTAClient.DXGUI.Generic
             btnCnCNet.HoverTexture = AssetLoader.LoadTexture("MainMenu/cncnet_c.png");
             btnCnCNet.HoverSoundEffect = new EnhancedSoundEffect("MainMenu/button.wav");
             btnCnCNet.LeftClick += BtnCnCNet_LeftClick;
+            btnCnCNet.Text = "CnCNet".L10N("UI:Main:CnCNetLobby");
 
             btnLan = new XNAClientButton(WindowManager);
             btnLan.Name = nameof(btnLan);
             btnLan.IdleTexture = AssetLoader.LoadTexture("MainMenu/lan.png");
             btnLan.HoverTexture = AssetLoader.LoadTexture("MainMenu/lan_c.png");
             btnLan.HoverSoundEffect = new EnhancedSoundEffect("MainMenu/button.wav");
+            btnLan.Text = "LAN".L10N("UI:Main:LANGameLobby");
             btnLan.LeftClick += BtnLan_LeftClick;
 
             btnOptions = new XNAClientButton(WindowManager);
@@ -189,6 +197,7 @@ namespace DTAClient.DXGUI.Generic
             btnOptions.HoverTexture = AssetLoader.LoadTexture("MainMenu/options_c.png");
             btnOptions.HoverSoundEffect = new EnhancedSoundEffect("MainMenu/button.wav");
             btnOptions.LeftClick += BtnOptions_LeftClick;
+            btnOptions.Text =  "Options".L10N("UI:Main:Options");
 
             btnMapEditor = new XNAClientButton(WindowManager);
             btnMapEditor.Name = nameof(btnMapEditor);
@@ -196,6 +205,7 @@ namespace DTAClient.DXGUI.Generic
             btnMapEditor.HoverTexture = AssetLoader.LoadTexture("MainMenu/mapeditor_c.png");
             btnMapEditor.HoverSoundEffect = new EnhancedSoundEffect("MainMenu/button.wav");
             btnMapEditor.LeftClick += BtnMapEditor_LeftClick;
+            btnMapEditor.Text = "Map Editor".L10N("UI:Main:MapEditor");
 
             btnStatistics = new XNAClientButton(WindowManager);
             btnStatistics.Name = nameof(btnStatistics);
@@ -203,6 +213,7 @@ namespace DTAClient.DXGUI.Generic
             btnStatistics.HoverTexture = AssetLoader.LoadTexture("MainMenu/statistics_c.png");
             btnStatistics.HoverSoundEffect = new EnhancedSoundEffect("MainMenu/button.wav");
             btnStatistics.LeftClick += BtnStatistics_LeftClick;
+            btnStatistics.Text = "Statistics".L10N("UI:Main:Statistics");
 
             btnCredits = new XNAClientButton(WindowManager);
             btnCredits.Name = nameof(btnCredits);
@@ -210,6 +221,7 @@ namespace DTAClient.DXGUI.Generic
             btnCredits.HoverTexture = AssetLoader.LoadTexture("MainMenu/credits_c.png");
             btnCredits.HoverSoundEffect = new EnhancedSoundEffect("MainMenu/button.wav");
             btnCredits.LeftClick += BtnCredits_LeftClick;
+            btnCredits.Text = "View Credits".L10N("UI:MainMenu:Credits");
 
             btnExtras = new XNAClientButton(WindowManager);
             btnExtras.Name = nameof(btnExtras);
@@ -224,6 +236,7 @@ namespace DTAClient.DXGUI.Generic
             btnExit.HoverTexture = AssetLoader.LoadTexture("MainMenu/exitgame_c.png");
             btnExit.HoverSoundEffect = new EnhancedSoundEffect("MainMenu/button.wav");
             btnExit.LeftClick += BtnExit_LeftClick;
+            btnExit.Text = "Exit".L10N("UI:Main:Exit");
 
             XNALabel lblCnCNetStatus = new XNALabel(WindowManager);
             lblCnCNetStatus.Name = nameof(lblCnCNetStatus);
@@ -237,6 +250,7 @@ namespace DTAClient.DXGUI.Generic
             lblVersion = new XNALinkLabel(WindowManager);
             lblVersion.Name = nameof(lblVersion);
             lblVersion.LeftClick += LblVersion_LeftClick;
+            
 
             lblUpdateStatus = new XNALinkLabel(WindowManager);
             lblUpdateStatus.Name = nameof(lblUpdateStatus);
@@ -256,11 +270,11 @@ namespace DTAClient.DXGUI.Generic
             AddChild(btnExit);
             AddChild(lblCnCNetStatus);
             AddChild(lblCnCNetPlayerCount);
-
+        
             if (!ClientConfiguration.Instance.ModMode)
             {
                 // ModMode disables version tracking and the updater if it's enabled
-
+                
                 AddChild(lblVersion);
                 AddChild(lblUpdateStatus);
 
@@ -268,8 +282,22 @@ namespace DTAClient.DXGUI.Generic
                 Updater.OnCustomComponentsOutdated += Updater_OnCustomComponentsOutdated;
             }
 
-            base.Initialize(); // Read control attributes from INI
+            string FA2Path = ProgramConstants.GamePath + ClientConfiguration.Instance.MapEditorExePath;
+            if (!File.Exists(FA2Path))
+            {
+                Logger.Log("没有找到地编");
+                btnMapEditor.Enabled = false;
+            }
+            else
+            {
+                IniFile ini = new IniFile(ProgramConstants.GamePath + "FinalAlert2SP/FinalAlert.ini", Encoding.GetEncoding("GBK"));
+                ini.SetStringValue("TS", "Exe", (Encoding.GetEncoding("GBK").GetString(Encoding.Default.GetBytes(ProgramConstants.GamePath)) + "gamemd.exe").Replace('/', '\\')); //地编路径必须是\，这里写两个是因为有一个是转义符
+                ini.WriteIniFile();
+            }
 
+            
+            base.Initialize(); // Read control attributes from INI
+            
             innerPanel = new MainMenuDarkeningPanel(WindowManager, discordHandler);
             innerPanel.ClientRectangle = new Rectangle(0, 0,
                 Width,
@@ -280,6 +308,7 @@ namespace DTAClient.DXGUI.Generic
             innerPanel.Hide();
 
             lblVersion.Text = Updater.GameVersion;
+           
 
             innerPanel.UpdateQueryWindow.UpdateDeclined += UpdateQueryWindow_UpdateDeclined;
             innerPanel.UpdateQueryWindow.UpdateAccepted += UpdateQueryWindow_UpdateAccepted;
@@ -316,6 +345,8 @@ namespace DTAClient.DXGUI.Generic
             Updater.Restart += Updater_Restart;
 
             SetButtonHotkeys(true);
+
+            
         }
 
         private void SetButtonHotkeys(bool enableHotkeys)
@@ -412,6 +443,11 @@ namespace DTAClient.DXGUI.Generic
                 discordHandler.Disconnect();
         }
 
+        private void CheckMap()
+        {
+
+        }
+
         /// <summary>
         /// Checks files which are required for the mod to function
         /// but not distributed with the mod (usually base game files
@@ -477,7 +513,7 @@ namespace DTAClient.DXGUI.Generic
                 firstRunMessageBox = XNAMessageBox.ShowYesNoDialog(WindowManager, "Initial Installation".L10N("UI:Main:InitialInstallationTitle"),
                     string.Format(("You have just installed {0}." + Environment.NewLine +
                     "It's highly recommended that you configure your settings before playing." +
-                    Environment.NewLine + "Do you want to configure them now?").L10N("UI:Main:InitialInstallationText"), ClientConfiguration.Instance.LocalGame));
+                    Environment.NewLine + "Do you want to configure them now?").L10N("UI:Main:InitialInstallationText"), ClientConfiguration.Instance.LocalGame).Replace("@", Environment.NewLine));
                 firstRunMessageBox.YesClickedAction = FirstRunMessageBox_YesClicked;
                 firstRunMessageBox.NoClickedAction = FirstRunMessageBox_NoClicked;
             }
@@ -594,7 +630,7 @@ namespace DTAClient.DXGUI.Generic
                     lblUpdateStatus.Text = "Click to check for updates.".L10N("UI:Main:ClickToCheckUpdate");
                 }
             }
-
+            CheckMap();
             CheckRequiredFiles();
             CheckForbiddenFiles();
             CheckIfFirstRun();
@@ -829,13 +865,27 @@ namespace DTAClient.DXGUI.Generic
             => optionsWindow.Open();
 
         private void BtnNewCampaign_LeftClick(object sender, EventArgs e)
-            => innerPanel.Show(innerPanel.CampaignSelector);
+        {
+            innerPanel.Show(innerPanel.CampaignSelector);
+            optionsWindow.tabControl.MakeSelectable(4);
+        }
 
-        private void BtnLoadGame_LeftClick(object sender, EventArgs e)
+            private void BtnLoadGame_LeftClick(object sender, EventArgs e)
             => innerPanel.Show(innerPanel.GameLoadingWindow);
 
         private void BtnLan_LeftClick(object sender, EventArgs e)
         {
+            foreach (string[] skin in UserINISettings.Instance.GetAIISkin())
+            {
+                if (skin[3] != "0")
+                {
+                    XNAMessageBox messageBox = new XNAMessageBox(WindowManager, "警告", "联机时禁止使用皮肤，请将皮肤还原成默认", XNAMessageBoxButtons.OK);
+                    messageBox.Show();
+                    return;
+                }
+            }
+
+            optionsWindow.tabControl.MakeUnselectable(4);
             lanLobby.Open();
 
             if (UserINISettings.Instance.StopMusicOnMenu)
@@ -852,7 +902,7 @@ namespace DTAClient.DXGUI.Generic
         private void BtnSkirmish_LeftClick(object sender, EventArgs e)
         {
             skirmishLobby.Open();
-
+            optionsWindow.tabControl.MakeSelectable(4);
             if (UserINISettings.Instance.StopMusicOnMenu)
                 MusicOff();
         }
@@ -1061,14 +1111,17 @@ namespace DTAClient.DXGUI.Generic
         private void LaunchMapEditor()
         {
             OSVersion osVersion = ClientConfiguration.Instance.GetOperatingSystemVersion();
-            using var mapEditorProcess = new Process();
+            Process mapEditorProcess = new Process();
 
-            if (osVersion != OSVersion.UNIX)
-                mapEditorProcess.StartInfo.FileName = SafePath.CombineFilePath(ProgramConstants.GamePath, ClientConfiguration.Instance.MapEditorExePath);
-            else
-                mapEditorProcess.StartInfo.FileName = SafePath.CombineFilePath(ProgramConstants.GamePath, ClientConfiguration.Instance.UnixMapEditorExePath);
+            string strCmdText = string.Format("/c cd /d {0} && FinalAlert2SP.exe", ProgramConstants.GamePath + "FinalAlert2SP");
 
+            mapEditorProcess.StartInfo.FileName = "cmd.exe";
+            mapEditorProcess.StartInfo.Arguments = strCmdText;
+            mapEditorProcess.StartInfo.UseShellExecute = false;   //是否使用操作系统shell启动 
+            mapEditorProcess.StartInfo.CreateNoWindow = true;   //是否在新窗口中启动该进程的值 (不显示程序窗口)
             mapEditorProcess.Start();
+            mapEditorProcess.WaitForExit();  //等待程序执行完退出进程
+            mapEditorProcess.Close();
         }
 
         public string GetSwitchName() => "Main Menu".L10N("UI:Main:MainMenu");

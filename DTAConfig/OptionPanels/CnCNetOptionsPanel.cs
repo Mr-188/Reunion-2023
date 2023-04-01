@@ -77,7 +77,7 @@ namespace DTAConfig.OptionPanels
             chkPlaySoundOnGameHosted.ClientRectangle = new Rectangle(
                 chkPingUnofficialTunnels.X,
                 chkWriteInstallPathToRegistry.Bottom + 12, 0, 0);
-            chkPlaySoundOnGameHosted.Text = "Play sound when a game is hosted".L10N("UI:DTAConfig:PlaySoundGameHosted");
+            chkPlaySoundOnGameHosted.Text = "Play sound when hosted".L10N("UI:DTAConfig:PlaySoundGameHosted");
 
             AddChild(chkPlaySoundOnGameHosted);
 

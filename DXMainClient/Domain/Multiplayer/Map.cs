@@ -13,6 +13,7 @@ using Color = Microsoft.Xna.Framework.Color;
 using Point = Microsoft.Xna.Framework.Point;
 using Utilities = Rampastring.Tools.Utilities;
 using static System.Collections.Specialized.BitVector32;
+using Localization;
 
 namespace DTAClient.Domain.Multiplayer
 {
@@ -214,6 +215,9 @@ namespace DTAClient.Domain.Multiplayer
         [JsonInclude]
         public List<string> waypoints = new List<string>();
 
+        [JsonInclude]
+        public string attached="";
+
         /// <summary>
         /// The pixel coordinates of the map's player starting locations.
         /// </summary>
@@ -274,8 +278,21 @@ namespace DTAClient.Domain.Multiplayer
                 Author = section.GetStringValue("Author", "Unknown author");
                 GameModes = section.GetStringValue("GameModes", "Default").Split(',');
 
+                attached = section.GetStringValue("attached", string.Empty);
+
                 MinPlayers = section.GetIntValue("MinPlayers", 0);
                 MaxPlayers = section.GetIntValue("MaxPlayers", 0);
+
+                //这里最大人数0极有可能是因为没写MaxPlayers,实际上可以通过路径点0-7来判断人数.
+                if (MaxPlayers == 0)
+                {
+                    for (int j = 0; j < 8; j++)
+                        if (iniFile.GetStringValue("Waypoints", j.ToString(), string.Empty) == string.Empty)
+                            MaxPlayers = MaxPlayers + 1;
+                        else
+                            break;
+                }
+
                 EnforceMaxPlayers = section.GetBooleanValue("EnforceMaxPlayers", false);
                 PreviewPath = SafePath.CombineFilePath(SafePath.GetFile(BaseFilePath).DirectoryName, FormattableString.Invariant($"{section.GetStringValue("PreviewImage", Path.GetFileNameWithoutExtension(BaseFilePath))}.png"));
                 Briefing = section.GetStringValue("Briefing", string.Empty).Replace("@", Environment.NewLine);
@@ -476,6 +493,7 @@ namespace DTAClient.Domain.Multiplayer
             if (customMapIni != null)
                 return customMapIni;
 
+
             customMapIni = new IniFile { FileName = customMapFilePath };
             customMapIni.AddSection("Basic");
             customMapIni.AddSection("Map");
@@ -496,8 +514,12 @@ namespace DTAClient.Domain.Multiplayer
         /// </summary>
         public bool SetInfoFromCustomMap()
         {
+          
+
             if (!File.Exists(customMapFilePath))
                 return false;
+
+            
 
             try
             {
@@ -511,8 +533,10 @@ namespace DTAClient.Domain.Multiplayer
                 string gameModesString = basicSection.GetStringValue("GameModes", string.Empty);
                 if (string.IsNullOrEmpty(gameModesString))
                 {
-                    gameModesString = basicSection.GetStringValue("GameMode", "Default");
+                    gameModesString = basicSection.GetStringValue("GameMode", "Standard");
                 }
+
+               
 
                 GameModes = gameModesString.Split(',');
 
@@ -524,8 +548,10 @@ namespace DTAClient.Domain.Multiplayer
 
                 for (int i = 0; i < GameModes.Length; i++)
                 {
-                    string gameMode = GameModes[i].Trim();
+                    string gameMode = GameModes[i].Trim().L10N("UI:GameMode:" + GameModes[i].Trim());
                     GameModes[i] = gameMode.Substring(0, 1).ToUpperInvariant() + gameMode.Substring(1);
+
+                    Logger.Log(GameModes[i]);
                 }
 
                 MinPlayers = 0;
@@ -591,6 +617,7 @@ namespace DTAClient.Domain.Multiplayer
 
                 for (int i = 0; i < MAX_PLAYERS; i++)
                 {
+                    
                     string waypoint = GetCustomMapIniFile().GetStringValue("Waypoints", i.ToString(CultureInfo.InvariantCulture), string.Empty);
 
                     if (string.IsNullOrEmpty(waypoint))

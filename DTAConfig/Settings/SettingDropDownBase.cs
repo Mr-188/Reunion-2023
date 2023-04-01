@@ -1,4 +1,5 @@
 ﻿using ClientGUI;
+using Localization;
 using Rampastring.Tools;
 using Rampastring.XNAUI;
 using Rampastring.XNAUI.XNAControls;
@@ -39,11 +40,12 @@ namespace DTAConfig.Settings
         protected string defaultSection = "CustomSettings";
         protected string defaultKeySuffix = "_SelectedIndex";
         protected int originalState;
-
+        private string OptionName;
         public override void ParseAttributeFromINI(IniFile iniFile, string key, string value)
         {
             switch (key)
             {
+               
                 case "Items":
                     string[] items = value.Split(',');
                     for (int i = 0; i < items.Length; i++)

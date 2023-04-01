@@ -7,6 +7,8 @@ using ClientCore;
 using System.IO;
 using Rampastring.Tools;
 using Localization;
+using DTAConfig;
+using DTAClient.DXGUI.Generic;
 
 namespace DTAClient.DXGUI.Multiplayer
 {
@@ -34,7 +36,9 @@ namespace DTAClient.DXGUI.Multiplayer
             Name = "LANGameCreationWindow";
             BackgroundTexture = AssetLoader.LoadTexture("gamecreationoptionsbg.png");
             ClientRectangle = new Rectangle(0, 0, 447, 77);
+            
 
+            //optionsWindow.tabControl.MakeUnselectable(4);
             lblDescription = new XNALabel(WindowManager);
             lblDescription.Name = "lblDescription";
             lblDescription.FontIndex = 1;

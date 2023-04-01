@@ -56,6 +56,7 @@ namespace DTAClient.Domain.Multiplayer
 
         public void AddCheckBoxValue(string checkBoxName, bool value)
         {
+          
             checkBoxValues.Add(checkBoxName, value);
         }
 

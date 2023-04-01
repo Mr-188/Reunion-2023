@@ -29,6 +29,8 @@ namespace ClientCore.Statistics
 
         public override void ReadStatistics(string gamePath)
         {
+            
+
             FileInfo scoreFileInfo = SafePath.GetFile(gamePath, SCORE_FILE_PATH);
 
             if (!scoreFileInfo.Exists)
@@ -57,6 +59,7 @@ namespace ClientCore.Statistics
 
                 SaveDatabase();
             }
+            
         }
 
         /// <summary>
@@ -66,6 +69,8 @@ namespace ClientCore.Statistics
         /// <returns>A bool that determines whether the database should be re-saved.</returns>
         private bool ReadFile(string filePath)
         {
+            
+
             bool returnValue = false;
 
             try
@@ -74,6 +79,8 @@ namespace ClientCore.Statistics
 
                 if (databaseVersion == null)
                     return false; // No score database exists
+
+             //   databaseVersion = "1.06";
 
                 switch (databaseVersion)
                 {
@@ -121,6 +128,7 @@ namespace ClientCore.Statistics
             {
                 using (FileStream fs = File.OpenRead(filePath))
                 {
+                   
                     fs.Position = 4; // Skip version
                     byte[] readBuffer = new byte[128];
                     fs.Read(readBuffer, 0, 4); // First 4 bytes following the version mean the amount of games
@@ -253,6 +261,7 @@ namespace ClientCore.Statistics
                         if (ms.Players.Find(p => p.IsLocalPlayer && !p.IsAI) == null)
                             continue;
 
+                        
                         Statistics.Add(ms);
                     }
                 }
@@ -297,11 +306,7 @@ namespace ClientCore.Statistics
                 return;
             }
 
-            if (ms.LengthInSeconds < 60)
-            {
-                Logger.Log("Skipping adding match to statistics because the game was cancelled.");
-                return;
-            }
+        
 
             if (addMatch)
             {
@@ -322,7 +327,7 @@ namespace ClientCore.Statistics
             {
                 fs.Position = 4; // First 4 bytes after the version mean the amount of games
                 fs.WriteInt(Statistics.Count);
-
+                Logger.Log("11");
                 fs.Position = fs.Length;
                 ms.Write(fs);
             }
@@ -555,18 +560,22 @@ namespace ClientCore.Statistics
             // Filter out unfitting games
             foreach (MatchStatistics ms in Statistics)
             {
+
+
                 if (ms.SawCompletion &&
                     ms.IsValidForStar &&
                     ms.MapName == mapName &&
                     ms.Players.Count == requiredPlayerCount &&
                     ms.Players.Count(p => !p.IsAI) == 1)
                     matches.Add(ms);
+
             }
 
             int rank = -1;
 
             foreach (MatchStatistics ms in matches)
             {
+
                 // TODO This code turned out pretty ugly, should design it better
 
                 PlayerStatistics localPlayer = ms.Players.Find(p => p.IsLocalPlayer);
@@ -577,6 +586,7 @@ namespace ClientCore.Statistics
                 int[] teamMemberCounts = new int[5];
                 int lowestEnemyAILevel = 2;
                 int highestAllyAILevel = 0;
+
 
                 for (int i = 0; i < ms.Players.Count; i++)
                 {
@@ -601,11 +611,14 @@ namespace ClientCore.Statistics
                     }
                 }
 
+                //Logger.Log(lowestEnemyAILevel.ToString());
+                //Logger.Log(highestAllyAILevel.ToString() );
                 if (lowestEnemyAILevel < highestAllyAILevel)
                 {
                     // Check that the player's AI allies weren't stronger 
                     continue;
                 }
+
 
                 if (localPlayer.Team > 0)
                 {
@@ -651,14 +664,17 @@ namespace ClientCore.Statistics
                         continue;
                 }
 
+
                 if (rank < lowestEnemyAILevel)
                 {
+
                     rank = lowestEnemyAILevel;
 
                     if (rank == 2)
                         return rank; // Best possible rank
                 }
             }
+
 
             return rank;
         }

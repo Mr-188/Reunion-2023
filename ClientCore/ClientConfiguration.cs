@@ -174,6 +174,10 @@ namespace ClientCore
 
         public int ThemeCount => clientDefinitionsIni.GetSectionKeys("Themes").Count;
 
+        public int VoiceCount => clientDefinitionsIni.GetSectionKeys("Voice").Count;
+
+        public int LanguageCount => clientDefinitionsIni.GetSectionKeys("Language")==null?0:clientDefinitionsIni.GetSectionKeys("Language").Count;
+
         public string LocalGame => clientDefinitionsIni.GetStringValue(SETTINGS, "LocalGame", "DTA");
 
         public bool SidebarHack => clientDefinitionsIni.GetBooleanValue(SETTINGS, "SidebarHack", false);
@@ -184,9 +188,9 @@ namespace ClientCore
 
         public int MaximumRenderWidth => clientDefinitionsIni.GetIntValue(SETTINGS, "MaximumRenderWidth", 1280);
 
-        public int MaximumRenderHeight => clientDefinitionsIni.GetIntValue(SETTINGS, "MaximumRenderHeight", 800);
+        public int MaximumRenderHeight => clientDefinitionsIni.GetIntValue(SETTINGS, "MaximumRenderHeight", 768);
 
-        public string[] RecommendedResolutions => clientDefinitionsIni.GetStringValue(SETTINGS, "RecommendedResolutions", "1280x720,2560x1440,3840x2160").Split(',');
+        public string[] RecommendedResolutions => clientDefinitionsIni.GetStringValue(SETTINGS, "RecommendedResolutions", "1280x768,2560x1440,3840x2160").Split(',');
 
         public string WindowTitle => clientDefinitionsIni.GetStringValue(SETTINGS, "WindowTitle", string.Empty);
 
@@ -232,6 +236,10 @@ namespace ClientCore
 
         public string StatisticsLogFileName => clientDefinitionsIni.GetStringValue(SETTINGS, "StatisticsLogFileName", "DTA.LOG");
 
+        public string[] GetLanguageInfoFromIndex(int languageIndex) => clientDefinitionsIni.GetStringValue("Language", languageIndex.ToString(), ",").Split(',');
+
+        public string[] GetVoiceInfoFromIndex(int voiceIndex) => clientDefinitionsIni.GetStringValue("Voice", voiceIndex.ToString(), ",").Split(',');
+
         public string[] GetThemeInfoFromIndex(int themeIndex) => clientDefinitionsIni.GetStringValue("Themes", themeIndex.ToString(), ",").Split(',');
 
         /// <summary>
@@ -247,6 +255,32 @@ namespace ClientCore
             {
                 string[] parts = key.Value.Split(',');
                 if (parts[0] == themeName)
+                    return parts[1];
+            }
+
+            return null;
+        }
+
+        public string GetVoicePath(string voiceName)
+        {
+            var voiceSection = clientDefinitionsIni.GetSection("Voice");
+            foreach (var key in voiceSection.Keys)
+            {
+                string[] parts = key.Value.Split(',');
+                if (parts[0] == voiceName)
+                    return parts[1];
+            }
+
+            return null;
+        }
+
+        public string GetLanguagePath(string languageName)
+        {
+            var languageSection = clientDefinitionsIni.GetSection("Language");
+            foreach (var key in languageSection.Keys)
+            {
+                string[] parts = key.Value.Split(',');
+                if (parts[0] == languageName)
                     return parts[1];
             }
 

@@ -89,7 +89,7 @@ namespace DTAClient.DXGUI.Multiplayer.CnCNet
 
         private XNAClientToggleButton btnGameFilterOptions;
 
-        private DarkeningPanel gameCreationPanel;
+        private DarkeningPanel gameCreationPanel; 
 
         private Channel currentChatChannel;
 

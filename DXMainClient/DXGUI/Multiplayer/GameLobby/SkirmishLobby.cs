@@ -48,7 +48,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             MapPreviewBox.StartingLocationApplied += MapPreviewBox_StartingLocationApplied;
 
             WindowManager.CenterControlOnScreen(this);
-
+            btnRandomMap.Enable();
             LoadSettings();
 
             CheckDisallowedSides();
@@ -107,6 +107,10 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             int totalPlayerCount = Players.Count(p => p.SideId < ddPlayerSides[0].Items.Count - 1)
                 + AIPlayers.Count;
 
+            if (GameMode == null){
+                return "Please choose a map!".L10N("UI:Main:GameModeNull");
+            }
+
             if (GameMode.MultiplayerOnly)
             {
                 return String.Format("{0} can only be played on CnCNet and LAN.".L10N("UI:Main:GameModeMultiplayerOnly"),
@@ -157,6 +161,16 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
                 return "Co-op missions cannot be spectated. You'll have to show a bit more effort to cheat here.".L10N("UI:Main:CoOpMissionSpectatorPrompt");
             }
 
+            //¼ì²é¹ú¼Ò
+            foreach(PlayerInfo pInfo in Players)
+            {
+
+                if (pInfo.SideId >= ddPlayerSides[0].Items.Count)
+                {
+                    return "Please select country".L10N("UI:Main:PleSelCountry");
+                }
+            }
+
             var teamMappingsError = GetTeamMappingsError();
             if (!string.IsNullOrEmpty(teamMappingsError))
                 return teamMappingsError;
@@ -170,6 +184,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
 
             if (error == null)
             {
+
                 SaveSettings();
                 StartGame();
                 return;

@@ -4,6 +4,10 @@ using Rampastring.XNAUI;
 using Rampastring.XNAUI.XNAControls;
 using ClientGUI;
 using DTAClient.Domain.Multiplayer;
+using Microsoft.Xna.Framework.Graphics;
+using Localization;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace DTAClient.DXGUI.Multiplayer.GameLobby
 {
@@ -26,6 +30,18 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
 
         private int defaultIndex;
 
+        public string[] Sides;
+        public string[] RandomSelectors;
+        string[] RandomSides;
+        string[] RandomSidesIndex;
+    
+        public string[] Mod;
+        public string[] DisallowedSideIndiex;
+        public string[] DisallowedSide;
+
+        public List<string> ControlName;
+
+        public List<string> ControlIndex;
         public override void Initialize()
         {
             // Find the game lobby that this control belongs to and register ourselves as a game option.
@@ -51,18 +67,54 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
 
         public override void ParseAttributeFromINI(IniFile iniFile, string key, string value)
         {
+           
             switch (key)
             {
                 case "Items":
-                    string[] items = value.Split(',');
+
                     string[] itemlabels = iniFile.GetStringValue(Name, "ItemLabels", "").Split(',');
+                    string[] items = value.Split(',');
+                    if (itemlabels.Length == 0)
+                    {
+                        items = value.L10N("UI:Main:" + OptionName).Split(',');
+                    }
+                    else
+                    {
+                        itemlabels = iniFile.GetStringValue(Name, "ItemLabels", "").Split(',');
+                    }
+
+
+                    Mod = iniFile.GetStringValue(Name, "Mod", "").Split(',');
+
+                    if (iniFile.GetStringValue(Name, "DisallowedSideIndex", "") != "")
+                    {
+                        DisallowedSideIndiex = iniFile.GetStringValue(Name, "DisallowedSideIndex", "").Split(',');
+                    }
+
+                    if (iniFile.GetStringValue(Name, "Sides", "") != "")
+                    {
+                        
+                        Sides = iniFile.GetStringValue(Name, "Sides", "").Split('|');
+                    }
+                
+
+
+                    if (iniFile.GetStringValue(Name, "RandomSides", "") != "")
+                    {
+                        RandomSelectors = iniFile.GetStringValue(Name, "RandomSides", "").Split('|');
+                        RandomSidesIndex = iniFile.GetStringValue(Name, "RandomSidesIndex", "").Split('|');
+                    }
                     for (int i = 0; i < items.Length; i++)
                     {
                         XNADropDownItem item = new XNADropDownItem();
                         if (itemlabels.Length > i && !String.IsNullOrEmpty(itemlabels[i]))
                         {
-                            item.Text = itemlabels[i];
-                            item.Tag = items[i];
+                            item.Text = itemlabels[i].L10N("UI:GameOption:"+ itemlabels[i]);
+
+                            if (items.Length==Mod.Length)
+                                item.Tag = new string[2] { items[i], Mod[i] };
+                            else
+                                item.Tag = new string[2] { items[i], "" };
                         }
                         else item.Text = items[i];
                         AddItem(item);
@@ -89,6 +141,12 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
                     return;
                 case "OptionName":
                     OptionName = value;
+                    return;
+                case "ControlName":
+                    ControlName = value.Split(',').ToList();
+                    return;
+                case "ControlIndex":
+                    ControlIndex = value.Split(',').ToList();
                     return;
             }
 
@@ -122,7 +180,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
                 case DropDownDataWriteMode.STRING:
                     if (Items[SelectedIndex].Tag != null)
                     {
-                        spawnIni.SetStringValue("Settings", spawnIniOption, Items[SelectedIndex].Tag.ToString());
+                        spawnIni.SetStringValue("Settings", spawnIniOption, ((string[])Items[SelectedIndex].Tag)[0]);
                     }
                     else
                     {
@@ -132,22 +190,21 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             }
 
         }
+            /// <summary>
+            /// Applies the drop down's associated code to the map INI file.
+            /// </summary>
+            /// <param name="mapIni">The map INI file.</param>
+            /// <param name="gameMode">Currently selected gamemode, if set.</param>
+            public void ApplyMapCode(IniFile mapIni, GameMode gameMode)
+            {
+                if (dataWriteMode != DropDownDataWriteMode.MAPCODE || SelectedIndex < 0 || SelectedIndex >= Items.Count) return;
 
-        /// <summary>
-        /// Applies the drop down's associated code to the map INI file.
-        /// </summary>
-        /// <param name="mapIni">The map INI file.</param>
-        /// <param name="gameMode">Currently selected gamemode, if set.</param>
-        public void ApplyMapCode(IniFile mapIni, GameMode gameMode)
-        {
-            if (dataWriteMode != DropDownDataWriteMode.MAPCODE || SelectedIndex < 0 || SelectedIndex >= Items.Count) return;
+                string customIniPath;
+                if (Items[SelectedIndex].Tag != null) customIniPath = ((string[])Items[SelectedIndex].Tag)[0];
+                else customIniPath = Items[SelectedIndex].Text;
 
-            string customIniPath;
-            if (Items[SelectedIndex].Tag != null) customIniPath = Items[SelectedIndex].Tag.ToString();
-            else customIniPath = Items[SelectedIndex].Text;
-
-            MapCodeHelper.ApplyMapCode(mapIni, customIniPath, gameMode);
-        }
+                MapCodeHelper.ApplyMapCode(mapIni, customIniPath, gameMode);
+            }
 
         public override void OnLeftClick()
         {
@@ -157,5 +214,62 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             base.OnLeftClick();
             UserSelectedIndex = SelectedIndex;
         }
+    
+
+    public void ApplyDisallowedSideIndex(bool[] disallowedArray)
+    {
+
+        if (DisallowedSideIndiex == null || DisallowedSideIndiex.Length == 0 || SelectedIndex >= DisallowedSideIndiex.Length)
+            return;
+        int[] sideNotAllowed;
+        DisallowedSide = DisallowedSideIndiex[SelectedIndex].Split('-');
+
+        if (DisallowedSide.Length != 0)
+        {
+
+            sideNotAllowed = Array.ConvertAll(DisallowedSide, int.Parse);
+            for (int j = 0; j < DisallowedSide.Length; j++)
+                disallowedArray[sideNotAllowed[j]] = true;
+        }
     }
+    public string[] SetSides()
+    {
+        if (Sides != null && Sides.Length > SelectedIndex && Sides[SelectedIndex] != "")
+        {
+            return Sides[SelectedIndex].Split(',');
+        }
+        else
+            return null;
+    }
+
+    public string[,] SetRandomSelectors()
+    {
+        if (RandomSelectors != null && RandomSelectors.Length > SelectedIndex)
+        {
+
+            RandomSides = RandomSelectors[SelectedIndex].Split(',');
+
+        }
+        if (RandomSides != null && RandomSelectors.Length > SelectedIndex)
+        {
+
+            string[,] list = new string[RandomSides.Length, 2];
+            for (int i = 0; i < RandomSides.Length; i++)
+            {
+                list[i, 0] = RandomSides[i];
+
+                if (RandomSidesIndex != null && RandomSidesIndex.Length > SelectedIndex)
+                    list[i, 1] = RandomSidesIndex[SelectedIndex].Split('&')[i];
+                else
+                    list[i, 1] = "";
+
+            }
+            return list;
+        }
+        else return null;
+    }
+
+   
+}
+
 }

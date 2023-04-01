@@ -75,6 +75,8 @@ namespace DTAClient.DXGUI.Multiplayer
 
         public override void Initialize()
         {
+
+           
             Name = "GameLoadingLobby";
             ClientRectangle = new Rectangle(0, 0, 590, 510);
             BackgroundTexture = AssetLoader.LoadTexture("loadmpsavebg.png");

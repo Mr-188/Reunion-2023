@@ -4,6 +4,9 @@ using System;
 using System.Collections.Generic;
 using ClientCore.Enums;
 
+using System.Linq;
+
+
 namespace ClientCore
 {
     public class UserINISettings
@@ -16,7 +19,9 @@ namespace ClientCore
         public const string AUDIO = "Audio";
         public const string COMPATIBILITY = "Compatibility";
         public const string GAME_FILTERS = "GameFilters";
-
+        public const string GAMEMOD = "GameMod";
+        private const string PHOBOS = "Phobos";
+        private const string SKIN = "Skin";
         private const bool DEFAULT_SHOW_FRIENDS_ONLY_GAMES = false;
         private const bool DEFAULT_HIDE_LOCKED_GAMES = false;
         private const bool DEFAULT_HIDE_PASSWORDED_GAMES = false;
@@ -58,13 +63,19 @@ namespace ClientCore
             IngameScreenWidth = new IntSetting(iniFile, VIDEO, "ScreenWidth", 1024);
             IngameScreenHeight = new IntSetting(iniFile, VIDEO, "ScreenHeight", 768);
             ClientTheme = new StringSetting(iniFile, MULTIPLAYER, "Theme", string.Empty);
+            Language = new StringSetting(iniFile, MULTIPLAYER, "Language", string.Empty);
+            Voice = new StringSetting(iniFile, MULTIPLAYER, "Voice", string.Empty);
+            
             DetailLevel = new IntSetting(iniFile, OPTIONS, "DetailLevel", 2);
+            Game = new StringSetting(iniFile, OPTIONS, "Game", "SkirmishLobby");
+
             Renderer = new StringSetting(iniFile, COMPATIBILITY, "Renderer", string.Empty);
             WindowedMode = new BoolSetting(iniFile, VIDEO, WINDOWED_MODE_KEY, false);
             BorderlessWindowedMode = new BoolSetting(iniFile, VIDEO, "NoWindowFrame", false);
             BorderlessWindowedClient = new BoolSetting(iniFile, VIDEO, "BorderlessWindowedClient", true);
             ClientFPS = new IntSetting(iniFile, VIDEO, "ClientFPS", 60);
             DisplayToggleableExtraTextures = new BoolSetting(iniFile, VIDEO, "DisplayToggleableExtraTextures", true);
+            CampaignDefaultGameSpeed = new IntSetting(iniFile, PHOBOS, "CampaignDefaultGameSpeed",4);
 
             ScoreVolume = new DoubleSetting(iniFile, AUDIO, "ScoreVolume", 0.7);
             SoundVolume = new DoubleSetting(iniFile, AUDIO, "SoundVolume", 0.7);
@@ -102,6 +113,10 @@ namespace ClientCore
             CheckForUpdates = new BoolSetting(iniFile, OPTIONS, "CheckforUpdates", true);
 
             PrivacyPolicyAccepted = new BoolSetting(iniFile, OPTIONS, "PrivacyPolicyAccepted", false);
+
+            //随机壁纸
+            Random_wallpaper = new BoolSetting(iniFile, OPTIONS, "Random_wallpaper", false);
+
             IsFirstRun = new BoolSetting(iniFile, OPTIONS, "IsFirstRun", true);
             CustomComponentsDenied = new BoolSetting(iniFile, OPTIONS, "CustomComponentsDenied", false);
             Difficulty = new IntSetting(iniFile, OPTIONS, "Difficulty", 1);
@@ -120,6 +135,13 @@ namespace ClientCore
             MaxPlayerCount = new IntRangeSetting(iniFile, GAME_FILTERS, "MaxPlayerCount", DEFAULT_MAX_PLAYER_COUNT, 2, 8);
 
             FavoriteMaps = new StringListSetting(iniFile, OPTIONS, "FavoriteMaps", new List<string>());
+
+           //皮肤
+           Skin = new StringListSetting(iniFile, SKIN, "Skin", new List<string>());
+
+            GameModSelect = new IntSetting(iniFile, GAMEMOD, "Select", 0);
+            GameModName = new StringSetting(iniFile, GAMEMOD, "items", string.Empty);
+            GameModPath = new StringSetting(iniFile, GAMEMOD, "Mod", string.Empty);
         }
 
         public IniFile SettingsIni { get; private set; }
@@ -133,6 +155,10 @@ namespace ClientCore
         public IntSetting IngameScreenWidth { get; private set; }
         public IntSetting IngameScreenHeight { get; private set; }
         public StringSetting ClientTheme { get; private set; }
+
+        public StringSetting Language { get; private set; }
+
+        public StringSetting Voice { get; private set; }
         public IntSetting DetailLevel { get; private set; }
         public StringSetting Renderer { get; private set; }
         public BoolSetting WindowedMode { get; private set; }
@@ -160,6 +186,7 @@ namespace ClientCore
         /********/
         /* GAME */
         /********/
+        public StringSetting Game { get; private set; }
 
         public IntSetting ScrollRate { get; private set; }
         public IntSetting DragDistance { get; private set; }
@@ -220,6 +247,11 @@ namespace ClientCore
 
         public BoolSetting PrivacyPolicyAccepted { get; private set; }
         public BoolSetting IsFirstRun { get; private set; }
+
+        //随机壁纸
+        public BoolSetting Random_wallpaper { get; private set; }
+
+        public StringListSetting Skin { get; private set; }
         public BoolSetting CustomComponentsDenied { get; private set; }
 
         public IntSetting Difficulty { get; private set; }
@@ -238,6 +270,17 @@ namespace ClientCore
 
         public StringListSetting FavoriteMaps { get; private set; }
 
+        public IntSetting CampaignDefaultGameSpeed { get; private set; }
+
+
+        //外部Mod
+
+        public IntSetting GameModSelect { get; private set; }
+
+        public StringSetting GameModName { get; private set; }
+
+        public StringSetting GameModPath { get; private set; }
+        
         public void SetValue(string section, string key, string value)
                => SettingsIni.SetStringValue(section, key, value);
 
@@ -259,6 +302,84 @@ namespace ClientCore
         public bool IsGameFollowed(string gameName)
         {
             return SettingsIni.GetBooleanValue("Channels", gameName, false);
+        }
+
+        public string[] GetTypes()
+        {
+            List<string> SkinList = Skin.Value;
+
+            List<string> Types = new List<string>();
+            for (int i = 0; i < SkinList.Count; i++)
+            {
+                foreach (string type in new StringSetting(SettingsIni, SkinList[i], "Type", "").Value.Split(','))
+                    Types.Add(type);
+            }
+            return Types.ToArray().GroupBy(p => p).Select(p => p.Key).ToArray();
+        }
+
+        public int GetSkinBy(string name, string m)
+        {
+
+            return new IntSetting(SettingsIni, name, m, 0).Value;
+        }
+
+        public List<string> GetSkinName(string Types)
+        {
+            List<string> SkinList = Skin.Value;
+
+            List<string> SkinName = new List<string>();
+
+            for (int i = 0; i < SkinList.Count; i++)
+            {
+
+                string s = new StringSetting(SettingsIni, SkinList[i], "Type", "").Value;
+                if (Types == "All" || s.IndexOf(Types) != -1)
+                    SkinName.Add(new StringSetting(SettingsIni, SkinList[i], "Text", "").Value);
+            }
+
+            return SkinName;
+        }
+
+
+        public List<string[]> GetAIISkin()
+        {
+            List<string> SkinList = Skin.Value;
+
+            List<string[]> AllSkin = new List<string[]>();
+
+            for (int i = 0; i < SkinList.Count; i++)
+            {
+                string[] skin = new string[11];
+                skin[0] = new StringSetting(SettingsIni, SkinList[i], "Text", "").Value.ToString();
+                skin[1] = new StringSetting(SettingsIni, SkinList[i], "Folder", "").Value.ToString();
+                skin[2] = new StringSetting(SettingsIni, SkinList[i], "Options", "").Value.ToString();
+                skin[3] = new StringSetting(SettingsIni, SkinList[i], "Select", "").Value.ToString();
+                skin[4] = new StringSetting(SettingsIni, SkinList[i], "Image", "").Value.ToString();
+                skin[5] = SkinList[i];
+                skin[6] = new StringSetting(SettingsIni, SkinList[i], "Delete", "").Value.ToString();
+                skin[7] = new StringSetting(SettingsIni, SkinList[i], "RulesIni", "").Value.ToString();
+                skin[8] = new StringSetting(SettingsIni, SkinList[i], "ArtIni", "").Value.ToString();
+                skin[9] = new StringSetting(SettingsIni, SkinList[i], "AllText", "").Value.ToString();
+                skin[10] = new StringSetting(SettingsIni, SkinList[i], "Index", "").Value.ToString();
+                AllSkin.Add(skin);
+            }
+            return AllSkin;
+        }
+
+        public List<string> GetSkinIni(string types)
+        {
+            List<string> SkinList = Skin.Value;
+            List<string> rules = new List<string>();
+            for (int i = 0; i < SkinList.Count; i++)
+            {
+                rules.Add(new StringSetting(SettingsIni, SkinList[i], types, "").Value);
+            }
+            return rules;
+        }
+
+        public void SetSkinIndex(string name, int value)
+        {
+            SettingsIni.SetIntValue(name, "Select", value);
         }
 
         public bool ToggleFavoriteMap(string mapName, string gameModeName, bool isFavorite)

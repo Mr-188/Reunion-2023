@@ -52,7 +52,7 @@ namespace DTAClient
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.ThrowException);
             Application.ThreadException += (sender, args) => HandleException(sender, args.Exception);
 #endif
-            AppDomain.CurrentDomain.UnhandledException += (sender, args) => HandleException(sender, (Exception)args.ExceptionObject);
+            AppDomain.CurrentDomain.UnhandledException += (sender, args) =>HandleException(sender, (Exception)args.ExceptionObject);
 
             DirectoryInfo gameDirectory = SafePath.GetDirectory(ProgramConstants.GamePath);
 
@@ -96,7 +96,7 @@ namespace DTAClient
 
             UserINISettings.Initialize(ClientConfiguration.Instance.SettingsIniName);
 
-            // Try to load translations
+         //   Try to load translations
             try
             {
                 TranslationTable translation;
@@ -104,6 +104,7 @@ namespace DTAClient
 
                 if (iniFileInfo.Exists)
                 {
+               
                     translation = TranslationTable.LoadFromIniFile(iniFileInfo.FullName);
                 }
                 else

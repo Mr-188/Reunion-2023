@@ -164,6 +164,9 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             base.Initialize();
 
             btnChangeTunnel = FindChild<XNAClientButton>(nameof(btnChangeTunnel));
+
+            btnChangeTunnel.Text = "Change Tunnel".L10N("UI:Main:ChangeTunnel");
+
             btnChangeTunnel.LeftClick += BtnChangeTunnel_LeftClick;
 
             gameBroadcastTimer = new XNATimerControl(WindowManager);

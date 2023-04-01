@@ -14,6 +14,8 @@ using DTAClient.Online.EventArguments;
 using DTAConfig;
 using Localization;
 
+using Rampastring.Tools;
+
 namespace DTAClient.DXGUI.Generic
 {
     /// <summary>
@@ -87,6 +89,8 @@ namespace DTAClient.DXGUI.Generic
         {
             primarySwitches.Add(switchable);
             btnMainButton.Text = switchable.GetSwitchName() + " (F2)";
+             if(switchable.GetSwitchName()== "Game Lobby".L10N("UI:Main:GameLobby"))
+              optionsWindow.tabControl.MakeUnselectable(4);
         }
 
         public void RemovePrimarySwitchable(ISwitchable switchable)
@@ -117,6 +121,8 @@ namespace DTAClient.DXGUI.Generic
             if (optionsWindow != null)
                 optionsWindow.ToggleMainMenuOnlyOptions(primarySwitches.Count == 1 && !lanMode);
         }
+
+       
 
         public void Clean()
         {
@@ -309,6 +315,17 @@ namespace DTAClient.DXGUI.Generic
 
         private void BtnCnCNetLobby_LeftClick(object sender, EventArgs e)
         {
+            foreach (string[] skin in UserINISettings.Instance.GetAIISkin())
+            {
+                if (skin[3] != "0")
+                {
+                    XNAMessageBox messageBox = new XNAMessageBox(WindowManager, "警告", "联机时禁止使用皮肤，请将皮肤还原成默认", XNAMessageBoxButtons.OK);
+                    messageBox.Show();
+                    return;
+                }
+            }
+
+            optionsWindow.tabControl.MakeUnselectable(4);
             LastSwitchType = SwitchType.SECONDARY;
             primarySwitches[primarySwitches.Count - 1].SwitchOff();
             cncnetLobbySwitch.SwitchOn();
@@ -338,7 +355,11 @@ namespace DTAClient.DXGUI.Generic
         private void BtnOptions_LeftClick(object sender, EventArgs e)
         {
             privateMessageSwitch.SwitchOff();
+            
+            //optionsWindow.tabControl.MakeUnselectable(4);
             optionsWindow.Open();
+            optionsWindow.tabControl.SelectedTab = 0;
+            //optionsWindow.ForbigSkin();
         }
 
         private void Keyboard_OnKeyPressed(object sender, KeyPressEventArgs e)
@@ -404,7 +425,10 @@ namespace DTAClient.DXGUI.Generic
             this.lanMode = lanMode;
             SetSwitchButtonsClickable(!lanMode);
             if (lanMode)
+            
+                
                 ConnectionEvent("LAN MODE".L10N("UI:Main:StatusLanMode"));
+            
             else
                 ConnectionEvent("OFFLINE".L10N("UI:Main:StatusOffline"));
         }
@@ -413,6 +437,7 @@ namespace DTAClient.DXGUI.Generic
         {
             if (Cursor.Location.Y < APPEAR_CURSOR_THRESHOLD_Y && Cursor.Location.Y > -1 && !ProgramConstants.IsInGame)
                 BringDown();
+
 
             if (isDown)
             {

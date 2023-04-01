@@ -1,4 +1,5 @@
 ﻿using ClientCore;
+using Localization;
 using Microsoft.Xna.Framework;
 using Rampastring.Tools;
 using Rampastring.XNAUI;
@@ -7,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 
 namespace ClientGUI
 {
@@ -87,6 +89,8 @@ namespace ClientGUI
 
         public override void Initialize()
         {
+           
+
             if (_initialized)
                 throw new InvalidOperationException("INItializableWindow cannot be initialized twice.");
 
@@ -169,9 +173,21 @@ namespace ClientGUI
                 if (kvp.Key.StartsWith("$CC"))
                 {
                     var child = CreateChildControl(control, kvp.Value);
+                    
                     ReadINIForControl(child);
                     child.Initialize();
                 }
+
+                //指定父组件
+                else if (kvp.Key == "$Parent") {
+
+                   
+                    control.Parent.RemoveChild(control);
+      
+                    FindChild<XNAPanel>(kvp.Value).AddChild(control);
+
+                }
+
                 else if (kvp.Key == "$X")
                 {
                     control.X = Parser.Instance.GetExprValue(kvp.Value, control);
@@ -193,6 +209,7 @@ namespace ClientGUI
                     // TODO refactor these to be more object-oriented
                     ((XNALabel)control).TextAnchor = (LabelTextAnchorInfo)Enum.Parse(typeof(LabelTextAnchorInfo), kvp.Value);
                 }
+             
                 else if (kvp.Key == "$AnchorPoint" && control is XNALabel)
                 {
                     string[] parts = kvp.Value.Split(',');
@@ -205,10 +222,16 @@ namespace ClientGUI
                     if (kvp.Value == "Disable")
                         control.LeftClick += (s, e) => Disable();
                 }
+                else if (kvp.Key == "$Text")
+                {
+                    control.Text = section.GetStringValue(nameof(control.Text), string.Empty)
+                        .L10N($"UI:Main:{kvp.Value}");
+                }
                 else
                 {
                     control.ParseAttributeFromINI(ConfigIni, kvp.Key, kvp.Value);
                 }
+               
             }
         }
 

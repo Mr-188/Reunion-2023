@@ -10,7 +10,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Rampastring.Tools;
 using Rampastring.XNAUI;
 using System;
-using ClientGUI;
 using DTAClient.Domain.Multiplayer;
 using DTAClient.Domain.Multiplayer.CnCNet;
 using DTAClient.DXGUI.Multiplayer;
@@ -30,6 +29,7 @@ using System.IO;
 #if WINFORMS
 using System.Windows.Forms;
 using System.IO;
+using System.Text.RegularExpressions;
 #endif
 
 namespace DTAClient.DXGUI
@@ -175,9 +175,12 @@ namespace DTAClient.DXGUI
             if (string.IsNullOrEmpty(playerName))
             {
                 playerName = Environment.UserName;
-
+                
                 playerName = playerName.Substring(playerName.IndexOf("\\") + 1);
             }
+
+            //中文名
+          //  Regex.IsMatch(playerName, @"[\u4e00-\u9fa5]");
 
             playerName = Renderer.GetSafeString(NameValidator.GetValidOfflineName(playerName), 0);
 
@@ -188,8 +191,11 @@ namespace DTAClient.DXGUI
             LoadingScreen ls = serviceProvider.GetService<LoadingScreen>();
             wm.AddAndInitializeControl(ls);
             ls.ClientRectangle = new Rectangle((wm.RenderResolutionX - ls.Width) / 2,
-                (wm.RenderResolutionY - ls.Height) / 2, ls.Width, ls.Height);
+               (wm.RenderResolutionY - ls.Height) / 2, ls.Width, ls.Height);
+
         }
+
+        
 
         private IServiceProvider BuildServiceProvider(WindowManager windowManager)
         {
@@ -292,6 +298,7 @@ namespace DTAClient.DXGUI
             UISettings.ActiveSettings = settings;
         }
 
+ 
         /// <summary>
         /// Sets the client's graphics mode.
         /// TODO move to some helper class?
@@ -381,6 +388,9 @@ namespace DTAClient.DXGUI
             wm.CenterOnScreen();
             wm.SetRenderResolution(renderResolutionX, renderResolutionY);
         }
+
+
+
     }
 
     /// <summary>

@@ -20,6 +20,7 @@ namespace DTAClient.DXGUI.Generic
 
         private XNAPanel panelGameStatistics;
         private XNAPanel panelTotalStatistics;
+        private XNAPanel panelAchStatistics;
 
         private XNAClientDropDown cmbGameModeFilter;
         private XNAClientDropDown cmbGameClassFilter;
@@ -67,6 +68,38 @@ namespace DTAClient.DXGUI.Generic
 
         // *****************************
 
+        //成就
+        private Double[,] Value;
+        //久经沙场：对局数到200
+        private XNAProgressBar PrghardenedValue;
+        //杀人如麻：累计击杀10000
+        private XNAProgressBar PrgkillValue;
+        //常胜将军：累计胜局100
+        private XNAProgressBar PrgVictorValue;
+        //爱兵如子：损失<10且获胜局10
+        private XNAProgressBar PrgSoldierValue;
+        //海枯石烂:熬夜局50局
+        private XNAProgressBar PrgLongValue;
+        //闪电战:快攻局50局
+        private XNAProgressBar PrgShortValue;
+        //海贼王:海战50局
+        private XNAProgressBar PrgNavalValue;
+        //以德服人:玩德国50局
+        private XNAProgressBar PrgGermanyValue;
+        //过关斩将:单挑50局
+        private XNAProgressBar PrgOneValue;
+        //枪林弹雨：一局对战中的玩家的摧毁数、建造数均大于200
+        private XNAProgressBar PrgBulletsValue;
+        //法克尤：1Ⅴ1选法国打赢对面尤里5次
+        private XNAProgressBar PrgFkyValue;
+        //尽力局：评分最高但输20
+        private XNAProgressBar PrgMaxValue;
+        //躺赢局：评分最低但赢20
+        private XNAProgressBar PrgMinValue;
+        //马奇诺防线：使用法国且建造数目最高
+        private XNAProgressBar PrgMaginotValue;
+        private XNAProgressBar PrgBtValue;
+        //*******************************
         private StatisticsManager sm;
         private List<int> listedGameIndexes = new List<int>();
 
@@ -88,7 +121,7 @@ namespace DTAClient.DXGUI.Generic
 
             Name = "StatisticsWindow";
             BackgroundTexture = AssetLoader.LoadTexture("scoreviewerbg.png");
-            ClientRectangle = new Rectangle(0, 0, 700, 521);
+            ClientRectangle = new Rectangle(0, 0, 900, 521);
 
             tabControl = new XNAClientTabControl(WindowManager);
             tabControl.Name = "tabControl";
@@ -97,13 +130,14 @@ namespace DTAClient.DXGUI.Generic
             tabControl.FontIndex = 1;
             tabControl.AddTab("Game Statistics".L10N("UI:Main:GameStatistic"), UIDesignConstants.BUTTON_WIDTH_133);
             tabControl.AddTab("Total Statistics".L10N("UI:Main:TotalStatistic"), UIDesignConstants.BUTTON_WIDTH_133);
+            tabControl.AddTab("Achievement".L10N("UI:Main:Ach"), UIDesignConstants.BUTTON_WIDTH_133);
             tabControl.SelectedIndexChanged += TabControl_SelectedIndexChanged;
 
             XNALabel lblFilter = new XNALabel(WindowManager);
             lblFilter.Name = "lblFilter";
             lblFilter.FontIndex = 1;
             lblFilter.Text = "FILTER:".L10N("UI:Main:Filter");
-            lblFilter.ClientRectangle = new Rectangle(527, 12, 0, 0);
+            lblFilter.ClientRectangle = new Rectangle(550, 12, 0, 0);
 
             cmbGameClassFilter = new XNAClientDropDown(WindowManager);
             cmbGameClassFilter.ClientRectangle = new Rectangle(585, 11, 105, 21);
@@ -120,16 +154,16 @@ namespace DTAClient.DXGUI.Generic
             lblGameMode.Name = nameof(lblGameMode);
             lblGameMode.FontIndex = 1;
             lblGameMode.Text = "GAME MODE:".L10N("UI:Main:GameMode");
-            lblGameMode.ClientRectangle = new Rectangle(294, 12, 0, 0);
+            lblGameMode.ClientRectangle = new Rectangle(420, 12, 0, 0);
 
             cmbGameModeFilter = new XNAClientDropDown(WindowManager);
             cmbGameModeFilter.Name = nameof(cmbGameModeFilter);
-            cmbGameModeFilter.ClientRectangle = new Rectangle(381, 11, 114, 21);
+            cmbGameModeFilter.ClientRectangle = new Rectangle(500, 11, 114, 21);
             cmbGameModeFilter.SelectedIndexChanged += CmbGameModeFilter_SelectedIndexChanged;
 
             var btnReturnToMenu = new XNAClientButton(WindowManager);
             btnReturnToMenu.Name = nameof(btnReturnToMenu);
-            btnReturnToMenu.ClientRectangle = new Rectangle(270, 486, UIDesignConstants.BUTTON_WIDTH_160, UIDesignConstants.BUTTON_HEIGHT);
+            btnReturnToMenu.ClientRectangle = new Rectangle(700, 486, UIDesignConstants.BUTTON_WIDTH_160, UIDesignConstants.BUTTON_HEIGHT);
             btnReturnToMenu.Text = "Return to Main Menu".L10N("UI:Main:ReturnToMainMenu");
             btnReturnToMenu.LeftClick += BtnReturnToMenu_LeftClick;
 
@@ -170,7 +204,7 @@ namespace DTAClient.DXGUI.Generic
 
             lbGameList = new XNAMultiColumnListBox(WindowManager);
             lbGameList.Name = nameof(lbGameList);
-            lbGameList.ClientRectangle = new Rectangle(2, 25, 676, 250);
+            lbGameList.ClientRectangle = new Rectangle(2, 25, 876, 250);
             lbGameList.BackgroundTexture = AssetLoader.CreateTexture(new Color(0, 0, 0, 128), 1, 1);
             lbGameList.PanelBackgroundDrawMode = PanelBackgroundImageDrawMode.STRETCHED;
             lbGameList.AddColumn("DATE / TIME".L10N("UI:Main:GameMatchDateTimeColumnHeader"), 130);
@@ -383,7 +417,167 @@ namespace DTAClient.DXGUI.Generic
             panelTotalStatistics.AddChild(lblFavouriteSideValue);
             panelTotalStatistics.AddChild(lblAverageAILevelValue);
 
-#endregion
+            #endregion
+
+#region Achievement
+            //成就
+            panelAchStatistics = new XNAPanel(WindowManager);
+            panelAchStatistics.Name = "panelAchStatistics";
+            panelAchStatistics.BackgroundTexture = AssetLoader.LoadTexture("50.png");
+            panelAchStatistics.ClientRectangle = new Rectangle(10, 55, 720, 425);
+            Value = new Double[15, 2];
+            AddChild(panelAchStatistics);
+            panelAchStatistics.Visible = false;
+            panelAchStatistics.Enabled = false;
+
+            locationY = TOTAL_STATS_FIRST_ITEM_Y;
+
+            Value[0, 1] = 2000;
+            PrghardenedValue = new XNAProgressBar(WindowManager);
+            PrghardenedValue.Name = "PrghardenedValue";
+            PrghardenedValue.Maximum = (int)Value[0, 1];
+            PrghardenedValue.ClientRectangle = new Rectangle(TOTAL_STATS_VALUE_LOCATION_X1 - 110, locationY - 4, 220, 25);
+            //PrghardenedValue.FilledColor = new Color(249, 204, 226);
+            locationY += TOTAL_STATS_Y_INCREASE;
+
+            Value[1, 1] = 1000000;
+            PrgkillValue = new XNAProgressBar(WindowManager);
+            PrgkillValue.Name = "PrgkillValue";
+            PrgkillValue.Maximum = (int)Value[1, 1];
+            PrgkillValue.ClientRectangle = new Rectangle(TOTAL_STATS_VALUE_LOCATION_X1 - 110, locationY - 4, 220, 25);
+            PrgkillValue.RemapColor = UISettings.ActiveSettings.AltColor;
+            locationY += TOTAL_STATS_Y_INCREASE;
+
+            Value[2, 1] = 10;
+            PrgVictorValue = new XNAProgressBar(WindowManager);
+            PrgVictorValue.Name = "PrgVictorValue";
+            PrgVictorValue.Maximum = (int)Value[2, 1];
+            PrgVictorValue.ClientRectangle = new Rectangle(TOTAL_STATS_VALUE_LOCATION_X1 - 110, locationY - 4, 220, 25);
+            PrgVictorValue.RemapColor = UISettings.ActiveSettings.AltColor;
+            locationY += TOTAL_STATS_Y_INCREASE;
+
+
+            Value[3, 1] = 200;
+            PrgLongValue = new XNAProgressBar(WindowManager);
+            PrgLongValue.Name = "PrgLongValue";
+            PrgLongValue.Maximum = (int)Value[3, 1];
+            PrgLongValue.ClientRectangle = new Rectangle(TOTAL_STATS_VALUE_LOCATION_X1 - 110, locationY - 4, 220, 25);
+            PrgLongValue.RemapColor = UISettings.ActiveSettings.AltColor;
+            locationY += TOTAL_STATS_Y_INCREASE;
+
+            Value[4, 1] = 200;
+            PrgShortValue = new XNAProgressBar(WindowManager);
+            PrgShortValue.Name = "PrgShortValue";
+            PrgShortValue.Maximum = (int)Value[4, 1];
+            PrgShortValue.ClientRectangle = new Rectangle(TOTAL_STATS_VALUE_LOCATION_X1 - 110, locationY - 4, 220, 25);
+            PrgShortValue.RemapColor = UISettings.ActiveSettings.AltColor;
+            locationY += TOTAL_STATS_Y_INCREASE;
+
+
+            Value[5, 1] = 200;
+            PrgSoldierValue = new XNAProgressBar(WindowManager);
+            PrgSoldierValue.Name = "PrgSoldierValue";
+            PrgSoldierValue.Maximum = (int)Value[5, 1];
+            PrgSoldierValue.ClientRectangle = new Rectangle(TOTAL_STATS_VALUE_LOCATION_X1 - 110, locationY - 4, 220, 25);
+            PrgSoldierValue.RemapColor = UISettings.ActiveSettings.AltColor;
+            locationY += TOTAL_STATS_Y_INCREASE;
+
+            Value[6, 1] = 200;
+
+            PrgNavalValue = new XNAProgressBar(WindowManager);
+            PrgNavalValue.Name = "PrgNavalValue";
+            PrgNavalValue.Maximum = (int)Value[6, 1];
+            PrgNavalValue.ClientRectangle = new Rectangle(TOTAL_STATS_VALUE_LOCATION_X1 - 110, locationY - 4, 220, 25);
+            PrgNavalValue.RemapColor = UISettings.ActiveSettings.AltColor;
+            locationY += TOTAL_STATS_Y_INCREASE;
+
+            Value[7, 1] = 200;
+            PrgGermanyValue = new XNAProgressBar(WindowManager);
+            PrgGermanyValue.Name = "PrgGermanyValue";
+            PrgGermanyValue.Maximum = (int)Value[7, 1];
+            PrgGermanyValue.ClientRectangle = new Rectangle(TOTAL_STATS_VALUE_LOCATION_X1 - 110, locationY - 4, 220, 25);
+            PrgGermanyValue.RemapColor = UISettings.ActiveSettings.AltColor;
+            locationY += TOTAL_STATS_Y_INCREASE;
+
+
+            Value[8, 1] = 200;
+            PrgOneValue = new XNAProgressBar(WindowManager);
+            PrgOneValue.Name = " PrgOneValue";
+            PrgOneValue.Maximum = (int)Value[8, 1];
+            PrgOneValue.ClientRectangle = new Rectangle(TOTAL_STATS_VALUE_LOCATION_X1 - 110, locationY - 4, 220, 25);
+            PrgOneValue.RemapColor = UISettings.ActiveSettings.AltColor;
+            locationY += TOTAL_STATS_Y_INCREASE;
+
+            locationY = TOTAL_STATS_FIRST_ITEM_Y;
+
+            Value[9, 1] = 200;
+
+            PrgBulletsValue = new XNAProgressBar(WindowManager);
+            PrgBulletsValue.Name = "PrgBulletsValue";
+            PrgBulletsValue.Maximum = (int)Value[9, 1];
+            PrgBulletsValue.ClientRectangle = new Rectangle(TOTAL_STATS_VALUE_LOCATION_X2 - 110, locationY - 4, 220, 25);
+            PrgBulletsValue.RemapColor = UISettings.ActiveSettings.AltColor;
+            locationY += TOTAL_STATS_Y_INCREASE;
+
+            Value[10, 1] = 10;
+
+            PrgFkyValue = new XNAProgressBar(WindowManager);
+            PrgFkyValue.Name = "PrgFkyValue";
+            PrgFkyValue.Maximum = (int)Value[10, 1];
+            PrgFkyValue.ClientRectangle = new Rectangle(TOTAL_STATS_VALUE_LOCATION_X2 - 110, locationY - 4, 220, 25);
+            PrgFkyValue.RemapColor = UISettings.ActiveSettings.AltColor;
+            locationY += TOTAL_STATS_Y_INCREASE;
+
+            Value[11, 1] = 200;
+            PrgMaxValue = new XNAProgressBar(WindowManager);
+            PrgMaxValue.Name = "PrgMaxValue";
+            PrgMaxValue.Maximum = (int)Value[11, 1];
+            PrgMaxValue.ClientRectangle = new Rectangle(TOTAL_STATS_VALUE_LOCATION_X2 - 110, locationY - 4, 220, 25);
+            PrgMaxValue.RemapColor = UISettings.ActiveSettings.AltColor;
+            locationY += TOTAL_STATS_Y_INCREASE;
+
+            Value[12, 1] = 200;
+            PrgMinValue = new XNAProgressBar(WindowManager);
+            PrgMinValue.Name = "PrgMinValue";
+            PrgMinValue.Maximum = (int)Value[12, 1];
+            PrgMinValue.ClientRectangle = new Rectangle(TOTAL_STATS_VALUE_LOCATION_X2 - 110, locationY - 4, 220, 25);
+            PrgMinValue.RemapColor = UISettings.ActiveSettings.AltColor;
+            locationY += TOTAL_STATS_Y_INCREASE;
+
+            Value[13, 1] = 20;
+
+            PrgMaginotValue = new XNAProgressBar(WindowManager);
+            PrgMaginotValue.Name = "PrgMaginotValue";
+            PrgMaginotValue.Maximum = (int)Value[13, 1];
+            PrgMaginotValue.ClientRectangle = new Rectangle(TOTAL_STATS_VALUE_LOCATION_X2 - 110, locationY - 4, 220, 25);
+            PrgMaginotValue.RemapColor = UISettings.ActiveSettings.AltColor;
+            locationY += TOTAL_STATS_Y_INCREASE;
+
+
+            Value[14, 1] = 20;
+            PrgBtValue = new XNAProgressBar(WindowManager);
+            PrgBtValue.Name = "PrgBtValue";
+            PrgBtValue.Maximum = (int)Value[14, 1];
+            PrgBtValue.ClientRectangle = new Rectangle(TOTAL_STATS_VALUE_LOCATION_X2 - 110, locationY - 4, 220, 25);
+            PrgBtValue.RemapColor = UISettings.ActiveSettings.AltColor;
+            locationY += TOTAL_STATS_Y_INCREASE;
+
+            panelAchStatistics.AddChild(PrghardenedValue);
+            panelAchStatistics.AddChild(PrgkillValue);
+            panelAchStatistics.AddChild(PrgVictorValue);
+            panelAchStatistics.AddChild(PrgSoldierValue);
+            panelAchStatistics.AddChild(PrgLongValue);
+            panelAchStatistics.AddChild(PrgShortValue);
+            panelAchStatistics.AddChild(PrgNavalValue);
+            panelAchStatistics.AddChild(PrgGermanyValue);
+            panelAchStatistics.AddChild(PrgOneValue);
+            panelAchStatistics.AddChild(PrgBulletsValue);
+            panelAchStatistics.AddChild(PrgFkyValue);
+            panelAchStatistics.AddChild(PrgMaxValue);
+            panelAchStatistics.AddChild(PrgMinValue);
+            panelAchStatistics.AddChild(PrgMaginotValue);
+            panelAchStatistics.AddChild(PrgBtValue);
+ #endregion
 
             AddChild(tabControl);
             AddChild(lblFilter);
@@ -408,10 +602,48 @@ namespace DTAClient.DXGUI.Generic
             mpColors = MultiplayerColor.LoadColors();
 
             ReadStatistics();
+            
             ListGameModes();
             ListGames();
 
+            
+
             StatisticsManager.Instance.GameAdded += Instance_GameAdded;
+
+            locationY = TOTAL_STATS_FIRST_ITEM_Y;
+            AddAchBtn("btnhardened", "Battle-hardened".L10N("UI:Main:hardenedTitle"), "Ten years old players, what do not understand can ask me! : Complete 2000 matches".L10N("UI:Main:hardenedText"), new Point(TOTAL_STATS_LOCATION_X1, locationY), 0);
+            locationY += TOTAL_STATS_Y_INCREASE;
+            AddAchBtn("lblkillValue", "Kill like a stone".L10N("UI:Main:killTitle"), "I said I would kill. You asked me if my eyes were dry? Cumulative destruction reached 1,000,000".L10N("UI:Main:killText"), new Point(TOTAL_STATS_LOCATION_X1, locationY), 1);
+            locationY += TOTAL_STATS_Y_INCREASE;
+            AddAchBtn("PrgVictorValue", "Always victorious general".L10N("UI:Main:VictorTitle"), "Just a stroke of luck! Win/loss ratio reached 10 (0.9 win percentage)".L10N("UI:Main:VictorText"), new Point(TOTAL_STATS_LOCATION_X1, locationY), 2);
+            locationY += TOTAL_STATS_Y_INCREASE;
+            AddAchBtn("PrgLongValue", "Boil eagle".L10N("UI:Main:LongTitle"), "I have two computers. Who's afraid of who? : Complete 200 45 minute matches".L10N("UI:Main:LongText"), new Point(TOTAL_STATS_LOCATION_X1, locationY), 3);
+            locationY += TOTAL_STATS_Y_INCREASE;
+            AddAchBtn("PrgShortValue", "blitzkrieg".L10N("UI:Main:ShortTitle"), "Throw punches and kill the old master. : Complete 200 matches under 10 minutes".L10N("UI:Main:ShortText"), new Point(TOTAL_STATS_LOCATION_X1, locationY), 4);
+            locationY += TOTAL_STATS_Y_INCREASE;
+            AddAchBtn("PrgSoldierValue", "Love soldiers like sons".L10N("UI:Main:SoldierTitle"), "We have very precise blood volume control. : Complete 200 matches with less than 10 losses".L10N("UI:Main:SoldierText"), new Point(TOTAL_STATS_LOCATION_X1, locationY), 5);
+            locationY += TOTAL_STATS_Y_INCREASE;
+            AddAchBtn("PrgNavalValue", "One Piece".L10N("UI:Main:NavalTitle"), "I want to be One Piece, not One Piece! Complete 10 naval battles".L10N("UI:Main:NavalText"), new Point(TOTAL_STATS_LOCATION_X1, locationY), 6);
+            locationY += TOTAL_STATS_Y_INCREASE;
+            AddAchBtn("PrgGermanyValue", "Convince others by virtue".L10N("UI:Main:GermanyTitle"), "Persuade by virtue (physics). Win 20 matches with Germany".L10N("UI:Main:GermanyText"), new Point(TOTAL_STATS_LOCATION_X1, locationY), 7);
+            locationY += TOTAL_STATS_Y_INCREASE;
+            AddAchBtn(" PrgOneValue", "Please call me the King of singles".L10N("UI:Main:OneTitle"), "The single king is back. Win 200 singles matches".L10N("UI:Main:OneText"), new Point(TOTAL_STATS_LOCATION_X1, locationY), 8);
+            locationY = TOTAL_STATS_FIRST_ITEM_Y;
+            AddAchBtn("PrgBulletsValue", "Bullets rained down".L10N("UI:Main:BulletsTitle"), "Report! Pilot's back with a steering wheel! : Complete 200 matches with damage + Destruction greater than 100".L10N("UI:Main:BulletsText"), new Point(TOTAL_STATS_LOCATION_X2 + 10, locationY), 9);
+            locationY += TOTAL_STATS_Y_INCREASE;
+            AddAchBtn("PrgFkyValue", "Fakew".L10N("UI:Main:FkyTitle"), "This is destiny: Use France to win 20 games against Yuri in a single match".L10N("UI:Main:FkyText"), new Point(TOTAL_STATS_LOCATION_X2 + 10, locationY), 10);
+            locationY += TOTAL_STATS_Y_INCREASE;
+            AddAchBtn("PrgMaxValue", "Secretary for Endeavour".L10N("UI:Main:MaxTitle"), "How can you play when all your teammates are cute? : Top rated but lost 100 games".L10N("UI:Main:MaxText"), new Point(TOTAL_STATS_LOCATION_X2 + 10, locationY), 11);
+            locationY += TOTAL_STATS_Y_INCREASE;
+            AddAchBtn("PrgMinValue", "Lie down and win the game".L10N("UI:Main:MinTitle"), "Beneficiaries of the ELO mechanism. Lowest rating yet 100 wins".L10N("UI:Main:MinText"), new Point(TOTAL_STATS_LOCATION_X2 + 10, locationY), 12);
+            locationY += TOTAL_STATS_Y_INCREASE;
+            AddAchBtn("PrgMaginotValue", "Maginot line".L10N("UI:Main:MaginotTitle"), "Why don't you come at me? : Use France and reach 400 to build 20 matches".L10N("UI:Main:MaginotText"), new Point(TOTAL_STATS_LOCATION_X2 + 10, locationY), 13);
+            locationY += TOTAL_STATS_Y_INCREASE;
+            AddAchBtn("PrgBtValue", "See the ice and know the tree".L10N("UI:Main:BtTitle"), "I know how many trees there are in the ice and snow: play ice (big) snow 20 times".L10N("UI:Main:BtText"), new Point(TOTAL_STATS_LOCATION_X2 + 10, locationY), 14);
+            locationY += TOTAL_STATS_Y_INCREASE;
+            //冰天雪地里有多少棵树我都知道
+
+           
         }
 
         private void Instance_GameAdded(object sender, EventArgs e)
@@ -433,6 +665,29 @@ namespace DTAClient.DXGUI.Generic
             panelTotalStatistics.AddChild(label);
         }
 
+        private void AddAchBtn(string name, string Title, string Content, Point location, int i)
+        {
+            XNAButton btn = new XNAClientButton(WindowManager);
+            btn.Name = name;
+            btn.Text = Title;
+            btn.ClientRectangle = new Rectangle(location.X - 25, location.Y - 5, 100, 30);
+            btn.IdleTexture = AssetLoader.LoadTexture("92pxbtn.png");
+            btn.HoverTexture = AssetLoader.LoadTexture("92pxbtn_c.png");
+            if (Value[i, 0] <= Value[i, 1])
+                Content += "          " + Value[i, 0].ToString() + "/" + Value[i, 1].ToString();
+            else
+                Content += "          Completed".L10N("UI:Main:100%");
+            btn.LeftClick += (s, e) => Messagebox(Title, Content);
+            panelAchStatistics.AddChild(btn);
+
+        }
+
+        private void Messagebox(string Title, string Content)
+        {
+            XNAMessageBox messageBox = new XNAMessageBox(WindowManager, Title, Content, XNAMessageBoxButtons.OK);
+            messageBox.Show();
+        }
+
         private void TabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (tabControl.SelectedTab == 1)
@@ -441,6 +696,17 @@ namespace DTAClient.DXGUI.Generic
                 panelGameStatistics.Enabled = false;
                 panelTotalStatistics.Visible = true;
                 panelTotalStatistics.Enabled = true;
+                panelAchStatistics.Visible = false;
+                panelAchStatistics.Enabled = false;
+            }
+            else if (tabControl.SelectedTab == 2)
+            {
+                panelGameStatistics.Visible = false;
+                panelGameStatistics.Enabled = false;
+                panelTotalStatistics.Visible = false;
+                panelTotalStatistics.Enabled = false;
+                panelAchStatistics.Visible = true;
+                panelAchStatistics.Enabled = true;
             }
             else
             {
@@ -448,6 +714,8 @@ namespace DTAClient.DXGUI.Generic
                 panelGameStatistics.Enabled = true;
                 panelTotalStatistics.Visible = false;
                 panelTotalStatistics.Enabled = false;
+                panelAchStatistics.Visible = false;
+                panelAchStatistics.Enabled = false;
             }
         }
 
@@ -578,6 +846,7 @@ namespace DTAClient.DXGUI.Generic
             StatisticsManager sm = StatisticsManager.Instance;
 
             sm.ReadStatistics(ProgramConstants.GamePath);
+            
         }
 
         private void ListGameModes()
@@ -603,6 +872,87 @@ namespace DTAClient.DXGUI.Generic
                 cmbGameModeFilter.AddItem(gm);
 
             cmbGameModeFilter.SelectedIndex = 0;
+        }
+
+        private void SetAchStatistics()
+        {
+            TimeSpan timePlayed = TimeSpan.Zero;
+            Value[3, 0] = 0;
+            Value[4, 0] = 0;
+            Value[5, 0] = 0;
+            Value[6, 0] = 0;
+            Value[7, 0] = 0;    //以德服人
+            Value[8, 0] = 0;    //过关斩将
+            Value[9, 0] = 0;    //枪林弹雨
+            Value[10, 0] = 0;  //法克尤
+            Value[11, 0] = 0;  //尽力局
+            Value[12, 0] = 0;  //躺赢局
+            Value[13, 0] = 0;//马奇诺防线
+            Value[14, 0] = 0;//冰天
+
+            foreach (int gameIndex in listedGameIndexes)
+            {
+                MatchStatistics ms = sm.GetMatchByIndex(gameIndex);
+                PlayerStatistics localPlayer = FindLocalPlayer(ms);
+                if (ms.GameMode == "海战")
+                {
+                    Value[6, 0]++;
+                }
+                if (string.Compare(TimeSpan.FromSeconds(ms.LengthInSeconds).ToString(), "00:45:00") > 0)
+                    Value[3, 0]++;
+                if (string.Compare(TimeSpan.FromSeconds(ms.LengthInSeconds).ToString(), "00:10:00") < 0)
+                    Value[4, 0]++;
+                if (!localPlayer.WasSpectator)//玩家不是观察者
+                {
+                    if (localPlayer.Won)//玩家胜利
+                    {
+                        if (localPlayer.Side == 4)//玩家德国
+                            Value[7, 0]++;
+                        if (ms.MapName[1] == '2') // 单人图
+                            Value[8, 0]++;
+                        if (ms.MapName == "[8]冰天大雪地" || ms.MapName == "[8]冰天雪地")
+                            Value[14, 0]++;
+                        if (localPlayer.Side == 3)
+                        {//玩家法国
+                            if ((ms.GetPlayer(0).Side == 3 && ms.GetPlayer(1).Side == 10) || (ms.GetPlayer(1).Side == 3 && ms.GetPlayer(0).Side == 10)) //两人为法国和尤里
+                                Value[10, 0]++;
+                            if (localPlayer.Economy > 500)
+                                Value[13, 0]++;
+                        }
+                        int Max = 0, Min = 9999999;
+                        for (int c = 0; c < ms.GetPlayerCount(); c++)
+                        {
+                            if (ms.GetPlayer(c).Score > Max)
+                                Max = ms.GetPlayer(c).Score;
+                            if (ms.GetPlayer(c).Score < Min)
+                                Min = ms.GetPlayer(c).Score;
+                        }
+                        if (localPlayer.Score == Max && !localPlayer.Won)
+                            Value[11, 0]++;
+                        if (localPlayer.Score == Min && localPlayer.Won)
+                            Value[12, 0]++;
+                        if (localPlayer.Losses <= 10)
+                            Value[5, 0]++;
+                        if (localPlayer.Losses + localPlayer.Kills > 1000)
+                            Value[9, 0]++;
+                    }
+                }
+            }
+            PrghardenedValue.Value = (int)Value[0, 0];
+            PrgkillValue.Value = (int)Value[1, 0];
+            PrgVictorValue.Value = (int)Value[2, 0];
+            PrgLongValue.Value = (int)Value[3, 0];
+            PrgShortValue.Value = (int)Value[4, 0];
+            PrgSoldierValue.Value = (int)Value[5, 0];
+            PrgNavalValue.Value = (int)Value[6, 0];
+            PrgGermanyValue.Value = (int)Value[7, 0];
+            PrgOneValue.Value = (int)Value[8, 0];
+            PrgBulletsValue.Value = (int)Value[9, 0];
+            PrgFkyValue.Value = (int)Value[10, 0];
+            PrgMaxValue.Value = (int)Value[11, 0];
+            PrgMinValue.Value = (int)Value[12, 0];
+            PrgMaginotValue.Value = (int)Value[13, 0];
+            PrgBtValue.Value = (int)Value[14, 0];
         }
 
         private void ListGames()
@@ -635,7 +985,11 @@ namespace DTAClient.DXGUI.Generic
 
             listedGameIndexes.Reverse();
 
+            
+
             SetTotalStatistics();
+
+            SetAchStatistics();
 
             foreach (int gameIndex in listedGameIndexes)
             {
@@ -652,6 +1006,7 @@ namespace DTAClient.DXGUI.Generic
                 info.Add(Renderer.GetSafeString(TimeSpan.FromSeconds(ms.LengthInSeconds).ToString(), lbGameList.FontIndex));
                 info.Add(Conversions.BooleanToString(ms.SawCompletion, BooleanStringStyle.YESNO));
                 lbGameList.AddItem(info, true);
+                
             }
         }
 
@@ -662,6 +1017,7 @@ namespace DTAClient.DXGUI.Generic
             for (int i = 0; i < gameCount; i++)
             {
                 ListGameIndexIfPrerequisitesMet(i);
+            
             }
         }
 
@@ -687,6 +1043,7 @@ namespace DTAClient.DXGUI.Generic
                         if (hpCount > 1)
                         {
                             ListGameIndexIfPrerequisitesMet(i);
+                     
                             break;
                         }
                     }
@@ -716,6 +1073,7 @@ namespace DTAClient.DXGUI.Generic
                         if (pTeam > -1 && (ps.Team != pTeam || ps.Team == 0))
                         {
                             ListGameIndexIfPrerequisitesMet(i);
+                       
                             break;
                         }
 
@@ -759,6 +1117,7 @@ namespace DTAClient.DXGUI.Generic
                 if (add && hpCount > 1)
                 {
                     ListGameIndexIfPrerequisitesMet(i);
+               
                 }
             }
         }
@@ -792,6 +1151,7 @@ namespace DTAClient.DXGUI.Generic
                 if (add)
                 {
                     ListGameIndexIfPrerequisitesMet(i);
+                 
                 }
             }
         }
@@ -815,7 +1175,7 @@ namespace DTAClient.DXGUI.Generic
                 if (ps.WasSpectator)
                     return;
             }
-
+         
             listedGameIndexes.Add(gameIndex);
         }
 
@@ -907,10 +1267,13 @@ namespace DTAClient.DXGUI.Generic
             if (gameLosses > 0)
             {
                 lblWinLossRatioValue.Text = Math.Round(wins / (double)gameLosses, 2).ToString();
+                Value[2, 0] = Math.Round(wins / (double)gameLosses, 2);
             }
             else
+            {
+                Value[2, 0] = 0;
                 lblWinLossRatioValue.Text = "-";
-
+            }
             if (gamesStarted > 0)
             {
                 lblAverageGameLengthValue.Text = TimeSpan.FromSeconds((int)timePlayed.TotalSeconds / gamesStarted).ToString();
@@ -941,6 +1304,8 @@ namespace DTAClient.DXGUI.Generic
             }
             else
                 lblKillLossRatioValue.Text = "-";
+            Value[0, 0] = gamesStarted;
+            Value[1, 0] = totalKills;
 
             lblTotalTimePlayedValue.Text = timePlayed.ToString();
             lblTotalKillsValue.Text = totalKills.ToString();

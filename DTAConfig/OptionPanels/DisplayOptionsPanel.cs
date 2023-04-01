@@ -8,6 +8,8 @@ using Rampastring.XNAUI;
 using Rampastring.XNAUI.XNAControls;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Diagnostics;
 #if WINFORMS
 using System.Windows.Forms;
 #endif
@@ -32,6 +34,8 @@ namespace DTAConfig.OptionPanels
         {
         }
 
+        private XNAClientCheckBox chkRandom_wallpaper;
+
         private XNAClientDropDown ddIngameResolution;
         private XNAClientDropDown ddDetailLevel;
         private XNAClientDropDown ddRenderer;
@@ -41,6 +45,8 @@ namespace DTAConfig.OptionPanels
         private XNAClientPreferredItemDropDown ddClientResolution;
         private XNAClientCheckBox chkBorderlessClient;
         private XNAClientDropDown ddClientTheme;
+        private XNAClientDropDown ddLanguage;
+        private XNAClientDropDown ddVoice;
 
         private List<DirectDrawWrapper> renderers;
 
@@ -170,7 +176,7 @@ namespace DTAConfig.OptionPanels
             ddClientResolution.ClientRectangle = new Rectangle(
                 lblClientResolution.Right + 12,
                 lblClientResolution.Y - 2,
-                Width - (lblClientResolution.Right + 24),
+                160,
                 ddIngameResolution.Height);
             ddClientResolution.AllowDropDown = false;
             ddClientResolution.PreferredItemLabel = "(recommended)".L10N("UI:DTAConfig:Recommended");
@@ -222,6 +228,15 @@ namespace DTAConfig.OptionPanels
             chkBorderlessClient.CheckedChanged += ChkBorderlessMenu_CheckedChanged;
             chkBorderlessClient.Checked = true;
 
+            //随机启动封面
+            chkRandom_wallpaper = new XNAClientCheckBox(WindowManager);
+            chkRandom_wallpaper.Name = "chkRandom_wallpaper";
+            chkRandom_wallpaper.ClientRectangle = new Rectangle(
+                lblClientResolution.X,
+                ddRenderer.Bottom + 16, 0, 0);
+            chkRandom_wallpaper.Text = "Random start cover".L10N("UI:Main:RanWall");
+            chkRandom_wallpaper.Checked = false;
+
             var lblClientTheme = new XNALabel(WindowManager);
             lblClientTheme.Name = "lblClientTheme";
             lblClientTheme.ClientRectangle = new Rectangle(
@@ -237,11 +252,69 @@ namespace DTAConfig.OptionPanels
                 ddClientResolution.Width,
                 ddRenderer.Height);
 
+            var lblLanguage = new XNALabel(WindowManager);
+            lblLanguage.Name = "lblLanguage";
+            lblLanguage.ClientRectangle = new Rectangle(
+                lblClientResolution.X,
+                lblRenderer.Y + 60, 0, 0);
+            lblLanguage.Text = "Language:".L10N("UI:Main:Language");
+
+            ddLanguage = new XNAClientDropDown(WindowManager);
+            ddLanguage.Name = "ddLanguage";
+            ddLanguage.ClientRectangle = new Rectangle(
+                ddClientResolution.X,
+                ddRenderer.Y + 60,
+                160,
+                ddRenderer.Height);
+
+            var lblVoice = new XNALabel(WindowManager);
+            lblVoice.Name = "lblVoice";
+            lblVoice.ClientRectangle = new Rectangle(
+                lblClientResolution.X,
+                lblLanguage.Y + 60, 0, 0);
+            lblVoice.Text = "Voice:".L10N("UI:Main:Voice");
+
+            ddVoice = new XNAClientDropDown(WindowManager);
+            ddVoice.Name = "ddVoice";
+            ddVoice.ClientRectangle = new Rectangle(
+                ddClientResolution.X,
+                ddLanguage.Y + 60,
+                160,
+                ddRenderer.Height);
+
+            int languageCount = ClientConfiguration.Instance.LanguageCount;
+
+            
+            for (int i = 0; i < languageCount; i++)
+            {
+                XNADropDownItem item1 = new XNADropDownItem();
+                item1.Text = ClientConfiguration.Instance.GetLanguageInfoFromIndex(i)[0].L10N("UI:Language:" + ClientConfiguration.Instance.GetLanguageInfoFromIndex(i)[0]);
+                item1.Tag = ClientConfiguration.Instance.GetLanguageInfoFromIndex(i)[0];
+                ddLanguage.AddItem(item1);
+            }
+
+            if (languageCount == 0)
+            {
+                lblLanguage.Visible = false;
+                ddLanguage.Visible = false;
+            }
+
+                int VoiceCount = ClientConfiguration.Instance.VoiceCount;
+            for (int i = 0; i < VoiceCount; i++)
+            {
+                XNADropDownItem item1 = new XNADropDownItem();
+                item1.Text = ClientConfiguration.Instance.GetVoiceInfoFromIndex(i)[0].L10N("UI:Voice:" + ClientConfiguration.Instance.GetVoiceInfoFromIndex(i)[0]);
+                item1.Tag = ClientConfiguration.Instance.GetVoiceInfoFromIndex(i)[0];
+                ddVoice.AddItem(item1);
+            }
+
             int themeCount = ClientConfiguration.Instance.ThemeCount;
-
-            for (int i = 0; i < themeCount; i++)
-                ddClientTheme.AddItem(ClientConfiguration.Instance.GetThemeInfoFromIndex(i)[0]);
-
+            for (int i = 0; i < themeCount; i++) {
+                XNADropDownItem item1 = new XNADropDownItem();
+                item1.Text = ClientConfiguration.Instance.GetThemeInfoFromIndex(i)[0].L10N("UI:Themes:" + ClientConfiguration.Instance.GetThemeInfoFromIndex(i)[0]);
+                item1.Tag = ClientConfiguration.Instance.GetThemeInfoFromIndex(i)[0];
+                ddClientTheme.AddItem(item1);
+            }
 #if TS
             lblCompatibilityFixes = new XNALabel(WindowManager);
             lblCompatibilityFixes.Name = "lblCompatibilityFixes";
@@ -311,6 +384,12 @@ namespace DTAConfig.OptionPanels
             AddChild(ddDetailLevel);
             AddChild(lblIngameResolution);
             AddChild(ddIngameResolution);
+            AddChild(lblLanguage); 
+            AddChild(ddLanguage);
+            AddChild(lblVoice);
+            AddChild(ddVoice);
+            //随机封面
+            AddChild(chkRandom_wallpaper);
         }
 
         /// <summary>
@@ -655,6 +734,17 @@ namespace DTAConfig.OptionPanels
                 chkBorderlessWindowedMode.Checked = UserINISettings.Instance.BorderlessWindowedMode;
             }
 
+            //随机壁纸
+            chkRandom_wallpaper.Checked = UserINISettings.Instance.Random_wallpaper;
+
+            int selectedLanguageIndex = ddLanguage.Items.FindIndex(
+                ddi => (string)ddi.Tag == UserINISettings.Instance.Language);
+            ddLanguage.SelectedIndex = selectedLanguageIndex > -1 ? selectedLanguageIndex : 0;
+
+            int selectedVoiceIndex = ddVoice.Items.FindIndex(
+                ddi => (string)ddi.Tag == UserINISettings.Instance.Voice);
+            ddVoice.SelectedIndex = selectedVoiceIndex > -1 ? selectedVoiceIndex : 0;
+
             string currentClientRes = IniSettings.ClientResolutionX.Value + "x" + IniSettings.ClientResolutionY.Value;
 
             int clientResIndex = ddClientResolution.Items.FindIndex(i => (string)i.Tag == currentClientRes);
@@ -664,7 +754,7 @@ namespace DTAConfig.OptionPanels
             chkBorderlessClient.Checked = UserINISettings.Instance.BorderlessWindowedClient;
 
             int selectedThemeIndex = ddClientTheme.Items.FindIndex(
-                ddi => ddi.Text == UserINISettings.Instance.ClientTheme);
+                ddi => (string)ddi.Tag == UserINISettings.Instance.ClientTheme);
             ddClientTheme.SelectedIndex = selectedThemeIndex > -1 ? selectedThemeIndex : 0;
 
 #if TS
@@ -714,6 +804,34 @@ namespace DTAConfig.OptionPanels
 #endif
         }
 
+        private void CopyDirectory(string sourceDirPath, string saveDirPath)
+        {
+
+            if (sourceDirPath != null)
+            {
+
+                if (!Directory.Exists(saveDirPath))
+                {
+                    Directory.CreateDirectory(saveDirPath);
+                }
+
+                string[] files = Directory.GetFiles(sourceDirPath);
+                foreach (string file in files)
+                {
+                    string pFilePath = saveDirPath + "\\" + Path.GetFileName(file);
+
+                    File.Copy(file, pFilePath, true);
+                }
+                string[] folders = System.IO.Directory.GetDirectories(sourceDirPath);
+                                foreach (string folder in folders)
+                                     {
+                                       string name = System.IO.Path.GetFileName(folder);
+                                        string dest = System.IO.Path.Combine(saveDirPath, name);
+                                    CopyDirectory(folder, dest);//构建目标路径,递归复制文件
+                                    }
+            }
+        }
+
         public override bool Save()
         {
             bool restartRequired = base.Save();
@@ -756,10 +874,65 @@ namespace DTAConfig.OptionPanels
 
             IniSettings.BorderlessWindowedClient.Value = chkBorderlessClient.Checked;
 
-            if (IniSettings.ClientTheme != ddClientTheme.SelectedItem.Text)
-                restartRequired = true;
+            if (UserINISettings.Instance.Language != "")
+            {
+                string language = ClientConfiguration.Instance.GetLanguagePath(UserINISettings.Instance.Language);
+                if (language == null)
+                {
+                    language = ClientConfiguration.Instance.GetLanguageInfoFromIndex(0)[1];
+                }
+                else
+                {
+                    language = ClientConfiguration.Instance.GetLanguageInfoFromIndex(ddLanguage.SelectedIndex)[1];
+                }
 
-            IniSettings.ClientTheme.Value = ddClientTheme.SelectedItem.Text;
+                if (IniSettings.Language != (string)ddLanguage.SelectedItem.Tag)
+                {
+
+                    File.Delete(ProgramConstants.GamePath + "cameo..mix");
+                    File.Delete(ProgramConstants.GamePath + "cameomd.mix");
+                    File.Delete(ProgramConstants.GamePath + "ra2md.csf");
+                    CopyDirectory(language, "./");
+                    restartRequired = true;
+                    Logger.Log("123");
+                }
+                IniSettings.Language.Value = (string)ddLanguage.SelectedItem.Tag;
+            }
+            string voice = ClientConfiguration.Instance.GetVoicePath(UserINISettings.Instance.Voice);
+            if (voice == null)
+            {
+                voice = ClientConfiguration.Instance.GetVoiceInfoFromIndex(0)[1];
+            }
+            else
+            {
+                voice = ClientConfiguration.Instance.GetVoiceInfoFromIndex(ddVoice.SelectedIndex)[1];
+            }
+
+
+            if (IniSettings.Voice != (string)ddVoice.SelectedItem.Tag)
+            {
+              
+                File.Delete(ProgramConstants.GamePath + "audiomd.mix");
+                File.Delete(ProgramConstants.GamePath + "audio.mix");
+                File.Delete(ProgramConstants.GamePath + "expandmd51.mix");
+                File.Delete(ProgramConstants.GamePath + "expandmd50.mix");
+                CopyDirectory(voice, "./");
+              
+            }
+
+            if (IniSettings.ClientTheme != (string)ddClientTheme.SelectedItem.Tag)
+            {
+         
+                restartRequired = true;
+            }
+            
+
+            
+            IniSettings.Voice.Value = (string)ddVoice.SelectedItem.Tag;
+            IniSettings.ClientTheme.Value = (string)ddClientTheme.SelectedItem.Tag;
+    
+            //随机壁纸
+            IniSettings.Random_wallpaper.Value = chkRandom_wallpaper.Checked;
 
 #if TS
             IniSettings.BackBufferInVRAM.Value = !chkBackBufferInVRAM.Checked;

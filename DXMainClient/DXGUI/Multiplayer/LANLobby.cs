@@ -97,6 +97,7 @@ namespace DTAClient.DXGUI.Multiplayer
 
         bool initSuccess = false;
 
+        //public  string GetSwitchName() => "Game Lobby".L10N("UI:Main:GameLobby");
         public override void Initialize()
         {
             Name = "LANLobby";
@@ -318,6 +319,8 @@ namespace DTAClient.DXGUI.Multiplayer
 
             lanGameLobby.Enable();
         }
+
+        
 
         private void SetChatColor()
         {
@@ -629,6 +632,7 @@ namespace DTAClient.DXGUI.Multiplayer
 
         private void BtnNewGame_LeftClick(object sender, EventArgs e)
         {
+
             if (!ClientConfiguration.Instance.DisableMultiplayerGameLoading)
                 gameCreationWindow.Open();
             else
@@ -655,5 +659,7 @@ namespace DTAClient.DXGUI.Multiplayer
 
             base.Update(gameTime);
         }
+
+        
     }
 }

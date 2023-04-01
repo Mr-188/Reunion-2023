@@ -7,6 +7,10 @@ using Microsoft.Xna.Framework;
 using Rampastring.XNAUI;
 using Rampastring.XNAUI.XNAControls;
 using System;
+using System.IO;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+//using static System.Windows.Forms.VisualStyles.VisualStyleElement.Menu;
 
 namespace DTAConfig.OptionPanels
 {
@@ -37,6 +41,8 @@ namespace DTAConfig.OptionPanels
 #else
         private XNAClientCheckBox chkShowHiddenObjects;
 #endif
+
+        private XNADropDown ddGameMod;
 
         private XNAControl topBar;
 
@@ -82,6 +88,19 @@ namespace DTAConfig.OptionPanels
                 lblScrollRate.X,
                 trbScrollRate.Bottom + 20, 0, 0);
             chkScrollCoasting.Text = "Scroll Coasting".L10N("UI:DTAConfig:ScrollCoasting");
+
+            //选择游戏
+            var lblGameMod = new XNALabel(WindowManager);
+            lblGameMod.Name = "lblGameMod";
+            lblGameMod.ClientRectangle = new Rectangle(400,chkScrollCoasting.Y,0,0);
+            lblGameMod.Text = "Mod:".L10N("UI:DTAConfig:Mod");
+
+            ddGameMod = new XNAClientDropDown(WindowManager);
+            ddGameMod.Name = "ddGameMod";
+            ddGameMod.ClientRectangle = new Rectangle(lblGameMod.X + 60, chkScrollCoasting.Y, 150, 20);
+
+            foreach (string s in UserINISettings.Instance.GameModName.Value.Split(','))
+                ddGameMod.AddItem(s);
 
             chkTargetLines = new SettingCheckBox(WindowManager, true, UserINISettings.OPTIONS, "UnitActionLines");
             chkTargetLines.Name = "chkTargetLines";
@@ -179,6 +198,8 @@ namespace DTAConfig.OptionPanels
             AddChild(tbPlayerName);
             AddChild(lblNotice);
             AddChild(btnConfigureHotkeys);
+            AddChild(lblGameMod);
+            AddChild(ddGameMod);
         }
 
         private void BtnConfigureHotkeys_LeftClick(object sender, EventArgs e)
@@ -214,13 +235,28 @@ namespace DTAConfig.OptionPanels
                 trbScrollRate.Value = scrollRate;
                 lblScrollRateValue.Text = scrollRate.ToString();
             }
+            
+            ddGameMod.SelectedIndex = UserINISettings.Instance.GameModSelect;
+
 
             tbPlayerName.Text = UserINISettings.Instance.PlayerName;
+        }
+
+        public bool HasChinese(string str)
+        {
+            return Regex.IsMatch(str, @"[\u4e00-\u9fa5]");
         }
 
         public override bool Save()
         {
             bool restartRequired = base.Save();
+
+            if (HasChinese(tbPlayerName.Text))
+            {
+                XNAMessageBox messageBox = new XNAMessageBox(WindowManager, "出错", "请不要使用中文作为游戏名。", XNAMessageBoxButtons.OK);
+                messageBox.Show();
+                return false;
+            }
 
             IniSettings.ScrollRate.Value = ReverseScrollRate(trbScrollRate.Value);
 
@@ -229,9 +265,68 @@ namespace DTAConfig.OptionPanels
             if (playerName.Length > 0)
                 IniSettings.PlayerName.Value = playerName;
 
+            if (ddGameMod.SelectedIndex != IniSettings.GameModSelect) {
+                restartRequired = true;
+
+                List<string> deleteFile = new List<string>();
+                foreach (string file in Directory.GetFiles(UserINISettings.Instance.GameModPath.Value.Split(',')[UserINISettings.Instance.GameModSelect.Value]))
+                    deleteFile.Add(Path.GetFileName(file));
+
+                DelFile(deleteFile);
+                CopyDirectory(UserINISettings.Instance.GameModPath.Value.Split(',')[ddGameMod.SelectedIndex],"./");
+
+                IniSettings.GameModSelect.Value = ddGameMod.SelectedIndex;
+        }
             return restartRequired;
         }
 
+        private void CopyDirectory(string sourceDirPath, string saveDirPath)
+        {
+
+            if (sourceDirPath != null)
+            {
+
+                if (!Directory.Exists(saveDirPath))
+                {
+                    Directory.CreateDirectory(saveDirPath);
+                }
+
+                string[] files = Directory.GetFiles(sourceDirPath);
+                foreach (string file in files)
+                {
+                    string pFilePath = saveDirPath + "\\" + Path.GetFileName(file);
+
+                    File.Copy(file, pFilePath, true);
+                }
+                string[] folders = System.IO.Directory.GetDirectories(sourceDirPath);
+                foreach (string folder in folders)
+                {
+                    string name = System.IO.Path.GetFileName(folder);
+                    string dest = System.IO.Path.Combine(saveDirPath, name);
+                    CopyDirectory(folder, dest);//构建目标路径,递归复制文件
+                }
+            }
+        }
+
+        public void DelFile(List<string> deleteFile)
+        {
+            //  string resultDirectory = Environment.CurrentDirectory;//目录
+
+            if (deleteFile != null)
+            {
+                for (int i = 0; i < deleteFile.Count; i++)
+                {
+                    try
+                    {
+                        File.Delete(deleteFile[i]);
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+                }
+            }
+        }
         private int ReverseScrollRate(int scrollRate)
         {
             return Math.Abs(scrollRate - MAX_SCROLL_RATE);

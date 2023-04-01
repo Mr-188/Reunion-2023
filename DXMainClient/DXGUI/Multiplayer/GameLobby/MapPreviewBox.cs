@@ -47,6 +47,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
         {
             PanelBackgroundDrawMode = PanelBackgroundImageDrawMode.STRETCHED;
             FontIndex = 1;
+
         }
 
 
@@ -162,17 +163,16 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
         private List<ExtraMapPreviewTexture> extraTextures = new List<ExtraMapPreviewTexture>(0);
 
         public EventHandler ToggleFavorite;
-
+       
         public override void Initialize()
         {
             EnableStartLocationSelection = true;
-
+            Name = "MapPreviewBox";
+            PanelBackgroundDrawMode = PanelBackgroundImageDrawMode.STRETCHED;
             BackgroundTexture = AssetLoader.CreateTexture(new Color(0, 0, 0, 128), 1, 1);
 #if !GL
-
             disposeTextures = !UserINISettings.Instance.PreloadMapPreviews;
 #endif
-
             mainContextMenu = new XNAContextMenu(WindowManager);
             mainContextMenu.Name = nameof(mainContextMenu);
             mainContextMenu.ClientRectangle = new Rectangle(0, 0, 150, 2);
@@ -205,8 +205,10 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
 
             btnToggleFavoriteMap = new XNAClientButton(WindowManager);
             btnToggleFavoriteMap.IdleTexture = AssetLoader.LoadTexture("favInactive.png");
+            btnToggleFavoriteMap.ClientRectangle = new Rectangle(Width- 35, 8, 30, 30);
             btnToggleFavoriteMap.LeftClick += (sender, args) => ToggleFavorite?.Invoke(sender, args);
             btnToggleFavoriteMap.SetToolTipText("Toggle Favorite Map".L10N("UI:Main:ToggleFavoriteMap"));
+
 
             btnToggleExtraTextures = new XNAClientButton(WindowManager);
             btnToggleExtraTextures.IdleTexture = AssetLoader.LoadTexture("pvTexturesActive.png");
@@ -382,7 +384,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
         /// this control's display rectangle and the 
         /// starting location indicators' positions.
         /// </summary>
-        private void UpdateMap()
+        public void UpdateMap()
         {
             if (disposeTextures && previewTexture != null && !previewTexture.IsDisposed)
                 previewTexture.Dispose();
@@ -501,7 +503,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
                 btnToggleExtraTextures.Disable();
             }
 
-            btnToggleFavoriteMap.ClientRectangle = new Rectangle(buttonX - 22, 4, 18, 18);
+            btnToggleFavoriteMap.ClientRectangle = new Rectangle(buttonX - 35, 8, 30, 30);
 
             RefreshExtraTexturesBtn();
             RefreshFavoriteBtn();
@@ -617,6 +619,10 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             base.OnMouseLeave();
         }
 
+        public override void OnMouseLeftDown()
+        {
+            base.OnMouseLeftDown();
+        }
         public override void OnLeftClick()
         {
             if (Keyboard.IsKeyHeldDown(Keys.LeftControl))
@@ -626,7 +632,8 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
                 if (previewFileInfo.Exists)
                     ProcessLauncher.StartShellProcess(previewFileInfo.FullName);
             }
-
+            
+            
             base.OnLeftClick();
         }
 
