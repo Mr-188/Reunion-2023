@@ -1372,9 +1372,11 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
 
          public List<string> GetDeleteFile(string oldGame)
         {
+            if (oldGame == null || oldGame == "")
+                return null;
             List<string> deleteFile = new List<string>();
-            if(oldGame!="")
-            foreach (string file in Directory.GetFiles(oldGame))
+            
+                foreach (string file in Directory.GetFiles(oldGame))
             {
                 deleteFile.Add(Path.GetFileName(file));
             }
@@ -1581,8 +1583,8 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             string oldGame = spawnReader.GetStringValue("Settings", "Game", "INI\\Game Options\\Game\\YR");
             string newGame = ((string[])cmbGame.SelectedItem.Tag)[1];
             
-            string oldAttached = spawnReader.GetStringValue("Settings", "attached", string.Empty);
-            string newAttached = Map.attached;
+            string oldAttached = spawnReader.GetStringValue("Settings", "Attached", string.Empty);
+            string newAttached = Map.Attached;
 
             string oldAi = spawnReader.GetStringValue("Settings", "AI", "INI\\Game Options\\AI\\Other");
             string newAi = ((string[])cmbAI.SelectedItem.Tag)[1];
@@ -1636,7 +1638,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             //写入新AI
             settings.SetStringValue("AI", newAi);
 
-            settings.SetStringValue("attached", newAttached);
+            settings.SetStringValue("Attached", newAttached);
 
             settings.SetStringValue("Name", ProgramConstants.PLAYERNAME);
             settings.SetStringValue("Scenario", ProgramConstants.SPAWNMAP_INI);

@@ -28,7 +28,7 @@ namespace DTAClient.Domain
             PlayerAlwaysOnNormalDifficulty = iniFile.GetBooleanValue(sectionName, nameof(PlayerAlwaysOnNormalDifficulty), false);
             Mod = iniFile.GetStringValue(sectionName, "Mod", string.Empty);
             defaultMod = iniFile.GetIntValue(sectionName, "defaultMod", 0);
-            attached = iniFile.GetStringValue(sectionName, "attached", string.Empty);
+            Attached = iniFile.GetStringValue(sectionName, "Attached", string.Empty);
             difficulty = iniFile.GetStringValue(sectionName, "difficulty", "一般"); //难度筛选用
 
             // GUIDescription = GUIDescription.Replace("@", Environment.NewLine);
@@ -75,7 +75,7 @@ namespace DTAClient.Domain
         public int defaultMod { get; }
         public string sectionName { get; }
 
-        public string attached { get; }
+        public string Attached { get; }
         public string difficulty { get; }
         private  string InsertFormat(string input, int interval, string value)
         {

@@ -216,7 +216,7 @@ namespace DTAClient.Domain.Multiplayer
         public List<string> waypoints = new List<string>();
 
         [JsonInclude]
-        public string attached="";
+        public string Attached="";
 
         /// <summary>
         /// The pixel coordinates of the map's player starting locations.
@@ -278,7 +278,7 @@ namespace DTAClient.Domain.Multiplayer
                 Author = section.GetStringValue("Author", "Unknown author");
                 GameModes = section.GetStringValue("GameModes", "Default").Split(',');
 
-                attached = section.GetStringValue("attached", string.Empty);
+                Attached = section.GetStringValue("Attached", string.Empty);
 
                 MinPlayers = section.GetIntValue("MinPlayers", 0);
                 MaxPlayers = section.GetIntValue("MaxPlayers", 0);
@@ -308,6 +308,8 @@ namespace DTAClient.Domain.Multiplayer
                 ForceNoTeams = section.GetBooleanValue("ForceNoTeams", false);
                 ExtraININame = section.GetStringValue("ExtraININame", string.Empty);
                 string bases = section.GetStringValue("Bases", string.Empty);
+                
+                
                 if (!string.IsNullOrEmpty(bases))
                 {
                     Bases = Convert.ToInt32(Conversions.BooleanFromString(bases, false));
@@ -527,6 +529,9 @@ namespace DTAClient.Domain.Multiplayer
 
                 IniSection basicSection = iniFile.GetSection("Basic");
 
+                if(!basicSection.GetBooleanValue("MultiplayerOnly", false))
+                    return false;
+
                 Name = basicSection.GetStringValue("Name", "Unnamed map");
                 Author = basicSection.GetStringValue("Author", "Unknown author");
 
@@ -551,7 +556,7 @@ namespace DTAClient.Domain.Multiplayer
                     string gameMode = GameModes[i].Trim().L10N("UI:GameMode:" + GameModes[i].Trim());
                     GameModes[i] = gameMode.Substring(0, 1).ToUpperInvariant() + gameMode.Substring(1);
 
-                    Logger.Log(GameModes[i]);
+                    
                 }
 
                 MinPlayers = 0;

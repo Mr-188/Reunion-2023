@@ -422,7 +422,7 @@ namespace DTAClient.DXGUI.Generic
         public void CopyDirectory(string sourceDirPath, string saveDirPath)
         {
 
-            if (sourceDirPath != null)
+            if (sourceDirPath != null&& sourceDirPath!="")
             {
 
                 if (!Directory.Exists(saveDirPath))
@@ -441,12 +441,15 @@ namespace DTAClient.DXGUI.Generic
 
         protected List<string> GetDeleteFile(string oldGame)
         {
+            if(oldGame == null|| oldGame=="")
+                return null;
+
             List<string> deleteFile = new List<string>();
 
             foreach (string file in Directory.GetFiles(oldGame))
             {
                 deleteFile.Add(Path.GetFileName(file));
-                Logger.Log(file);
+               
             }
 
             return deleteFile;
@@ -487,10 +490,11 @@ namespace DTAClient.DXGUI.Generic
             string oldGame = spawnReader.GetStringValue("Settings", "Game", "INI\\Game Options\\Game\\YR");
             string newGame = (string)ddGameMod.SelectedItem.Tag;
             string oldAttached = spawnReader.GetStringValue("Settings", "Attached", string.Empty);
-            string newAttached = mission.attached;
+            string newAttached = mission.Attached;
             string oldAi = spawnReader.GetStringValue("Settings", "AI", "INI\\Game Options\\AI\\Other");
             string newAi = "INI\\Game Options\\AI\\Other";
 
+            
 
             //如果和前一次使用的游戏不一样
             if (oldGame != newGame)
@@ -507,6 +511,7 @@ namespace DTAClient.DXGUI.Generic
 
             if(oldAttached != newAttached)
             {
+                //Logger.Log("111");
                 DelFile(GetDeleteFile(oldAttached));
                 CopyDirectory(newAttached, "./");
             }
@@ -527,8 +532,9 @@ namespace DTAClient.DXGUI.Generic
             //写入当前游戏
             spawnStreamWriter.WriteLine("Game=" + newGame);
             spawnStreamWriter.WriteLine("AI=" + newAi);
-            spawnStreamWriter.WriteLine("Attached=", newAttached);
-
+            
+            spawnStreamWriter.WriteLine("Attached=" + newAttached);
+            Logger.Log(newAttached);
             spawnStreamWriter.WriteLine("CampaignID=" + mission.Index);
             spawnStreamWriter.WriteLine("GameSpeed=" + UserINISettings.Instance.GameSpeed);
             spawnStreamWriter.WriteLine("Firestorm=" + mission.RequiredAddon);
