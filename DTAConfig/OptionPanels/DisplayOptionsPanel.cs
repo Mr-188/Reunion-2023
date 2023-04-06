@@ -184,7 +184,7 @@ namespace DTAConfig.OptionPanels
             int width = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
             int height = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
 
-            resolutions = GetResolutions(800, 600, width, height);
+            resolutions = GetResolutions(1280, 768, width, height);
 
             // Add "optimal" client resolutions for windowed mode
             // if they're not supported in fullscreen mode
@@ -194,7 +194,7 @@ namespace DTAConfig.OptionPanels
             AddResolutionIfFitting(1280, 600, resolutions);
             AddResolutionIfFitting(1280, 720, resolutions);
             AddResolutionIfFitting(1280, 768, resolutions);
-            AddResolutionIfFitting(1280, 800, resolutions);
+            //AddResolutionIfFitting(1280, 800, resolutions);
 
             resolutions.Sort();
 

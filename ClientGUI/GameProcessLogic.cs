@@ -114,6 +114,8 @@ namespace ClientGUI
                 else
                     arguments = additionalExecutableName + "-SPAWN";
 
+
+                
                 FileInfo gameFileInfo = SafePath.GetFile(ProgramConstants.GamePath, gameExecutableName);
                 var gameProcess = Process.Start(new ProcessStartInfo(gameFileInfo.FullName, arguments));
 

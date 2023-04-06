@@ -108,7 +108,11 @@ namespace DTAClient.Domain.Multiplayer
                     continue;
                 }
 
-                Map map = new Map(mapFilePathValue);
+                //Logger.Log(mapFilePathValue);
+
+               // mapFilePathValue = mapFilePathValue + ".map";
+
+                Map map = new Map(mapFilePathValue + ".map");
 
                 if (!map.SetInfoFromMpMapsINI(mpMapsIni))
                     continue;
@@ -185,7 +189,7 @@ namespace DTAClient.Domain.Multiplayer
                     tasks.Add(Task.Factory.StartNew(() =>
                     {
                         string baseFilePath = mapFile.FullName.Substring(ProgramConstants.GamePath.Length);
-                        baseFilePath = baseFilePath.Substring(0, baseFilePath.Length - 4);
+                        // baseFilePath = baseFilePath.Substring(0, baseFilePath.Length - 4);
 
 
 

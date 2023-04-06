@@ -122,7 +122,7 @@ namespace DTAClient.Domain.Multiplayer
         /// Includes the game directory in the path.
         /// </summary>
         [JsonInclude]
-        public string CompleteFilePath => SafePath.CombineFilePath(ProgramConstants.GamePath, FormattableString.Invariant($"{BaseFilePath}{MapLoader.MAP_FILE_EXTENSION}"));
+        public string CompleteFilePath => SafePath.CombineFilePath(ProgramConstants.GamePath, FormattableString.Invariant($"{BaseFilePath}"));
 
         /// <summary>
         /// The file name of the preview image.
@@ -272,7 +272,9 @@ namespace DTAClient.Domain.Multiplayer
                 if (!string.IsNullOrEmpty(baseSectionName))
                     iniFile.CombineSections(baseSectionName, BaseFilePath);
 
-                var section = iniFile.GetSection(BaseFilePath);
+                
+
+                var section = iniFile.GetSection(BaseFilePath.Remove(BaseFilePath.Length-4));
 
                 Name = section.GetStringValue("Description", "Unnamed map");
                 Author = section.GetStringValue("Author", "Unknown author");
@@ -707,6 +709,8 @@ namespace DTAClient.Domain.Multiplayer
 
         public IniFile GetMapIni()
         {
+           
+            
             var mapIni = new IniFile(CompleteFilePath);
 
             if (!string.IsNullOrEmpty(ExtraININame))

@@ -210,7 +210,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             //if (WindowManager.RenderResolutionY < 800)
             //    ClientRectangle = new Rectangle(0, 0, WindowManager.RenderResolutionX, WindowManager.RenderResolutionY);
             //else
-            ClientRectangle = new Rectangle(0, 0, 1280, 800);
+            ClientRectangle = new Rectangle(0, 0, 1280, 768);
            // ClientRectangle = new Rectangle(0, 0, WindowManager.RenderResolutionX - 60, WindowManager.RenderResolutionY - 32);
             WindowManager.CenterControlOnScreen(this);
             BackgroundTexture = AssetLoader.LoadTexture("gamelobbybg.png");
