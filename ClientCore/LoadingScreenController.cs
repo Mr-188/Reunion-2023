@@ -21,7 +21,8 @@ namespace ClientCore
             Random random = new Random();
             int randomInt = random.Next(1, 1 + ClientConfiguration.Instance.LoadingScreenCount);
 
-            return loadingScreenName + Convert.ToString(randomInt) + ".pcx";
+              return loadingScreenName + Convert.ToString(randomInt) + ".pcx";
+           // return "Maps\\Campaign\\JYD\\ls800a01.shp";
         }
     }
 }

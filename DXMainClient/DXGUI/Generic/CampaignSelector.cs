@@ -52,10 +52,13 @@ namespace DTAClient.DXGUI.Generic
         private XNALabel lbGameMod;
         private XNADropDown ddGameMod;
 
+
+
         private CheaterWindow cheaterWindow;
 
         List<string> difficultyList = new List<string>();
         List<string> sideList = new List<string>();
+        Dictionary<string,string[]> Mod = new Dictionary<string, string[]>();
 
         private string[] filesToCheck = new string[]
         {
@@ -342,16 +345,14 @@ namespace DTAClient.DXGUI.Generic
 
             Mission mission = Missions[lbCampaignList.SelectedIndex];
 
-            var battleIni = new IniFile("INI\\Battle.ini");
-
 
             ddGameMod.Items.Clear();
 
             foreach (string s in mission.Mod.Split(','))
             {
                 XNADropDownItem item = new XNADropDownItem();
-                item.Text = battleIni.GetStringValue(s, "Text", "").L10N("UI:ModName:" + s);
-                item.Tag = battleIni.GetStringValue(s, "Path", "");
+                item.Text = Mod[s][0];
+                item.Tag = Mod[s][1];
                 ddGameMod.AddItem(item);
                 ddGameMod.SelectedIndex = mission.defaultMod;
             }
@@ -601,10 +602,24 @@ namespace DTAClient.DXGUI.Generic
 
         private void ReadMissionList()
         {
-            ParseBattleIni("INI/Battle.ini");
+            lbCampaignList.Clear();
+            Missions.Clear();
+            Mod.Clear();
+            string path = @"INI/";
+
+            var files = Directory.GetFiles(path, "Battle*.ini");
+
+            foreach (var file in files)
+            {
+               // Logger.Log(file);
+                ParseBattleIni(file);
+            }
 
             if (Missions.Count == 0)
                 ParseBattleIni("INI/" + ClientConfiguration.Instance.BattleFSFileName);
+
+            difficultyList = difficultyList.ToArray().GroupBy(p => p).Select(p => p.Key).ToList();
+            sideList = sideList.ToArray().GroupBy(p => p).Select(p => p.Key).ToList();
         }
 
         /// <summary>
@@ -614,8 +629,7 @@ namespace DTAClient.DXGUI.Generic
         /// <returns>True if succesful, otherwise false.</returns>
         private bool ParseBattleIni(string path)
         {
-            lbCampaignList.Clear();
-            Missions.Clear();
+            
             Logger.Log("Attempting to parse " + path + " to populate mission list.");
 
             FileInfo battleIniFileInfo = SafePath.GetFile(ProgramConstants.GamePath, path);
@@ -625,31 +639,41 @@ namespace DTAClient.DXGUI.Generic
                 return false;
             }
 
-            if (Missions.Count > 0)
-            {
-                throw new InvalidOperationException("Loading multiple Battle*.ini files is not supported anymore.");
-            }
+            //if (Missions.Count > 0)
+            //{
+            //    throw new InvalidOperationException("Loading multiple Battle*.ini files is not supported anymore.");
+            //}
           
+
+
             var battleIni = new IniFile(battleIniFileInfo.FullName);
+
+            List<string> modKeys = battleIni.GetSectionKeys("Mod");
+            if (modKeys != null)
+            for (int i = 0; i < modKeys.Count; i++)
+            {
+                string modSection = battleIni.GetStringValue("Mod", modKeys[i], "NOT FOUND");
+
+                Mod.Add(modSection, new string[] { battleIni.GetStringValue(modSection, "Text", string.Empty).L10N("UI:ModName:"+ modSection), battleIni.GetStringValue(modSection, "Path", string.Empty) });
+
+            }
 
             List<string> battleKeys = battleIni.GetSectionKeys("Battles");
 
             if (battleKeys == null)
                 return false; // File exists but [Battles] doesn't
 
+          
                 for (int i = 0; i < battleKeys.Count; i++)
             {
-
-                
-
                 string battleEntry = battleKeys[i];
                 string battleSection = battleIni.GetStringValue("Battles", battleEntry, "NOT FOUND");
-                
-
+ 
                 if (!battleIni.SectionExists(battleSection))
                     continue;
 
                 var mission = new Mission(battleIni, battleSection, i);
+
 
                 if (dddifficulty.SelectedIndex != 0 && mission.difficulty != (string)dddifficulty.SelectedItem.Tag)
                     continue;
@@ -663,7 +687,7 @@ namespace DTAClient.DXGUI.Generic
                     sideList.Add(mission.IconPath);
 
                 Missions.Add(mission);
-
+                
                 var item = new XNAListBoxItem();
                 item.Text = mission.GUIName.L10N("UI:MissionName:" + mission.sectionName);
                 if (!mission.Enabled)
@@ -686,10 +710,10 @@ namespace DTAClient.DXGUI.Generic
                     item.Texture = AssetLoader.LoadTexture(mission.IconPath + "icon.png");
 
                 lbCampaignList.AddItem(item);
+                
             }
 
-            difficultyList = difficultyList.ToArray().GroupBy(p => p).Select(p => p.Key).ToList();
-            sideList = sideList.ToArray().GroupBy(p => p).Select(p => p.Key).ToList();
+            
 
             Logger.Log("Finished parsing " + path + ".");
             return true;
