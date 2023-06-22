@@ -1,19 +1,18 @@
-﻿using ClientCore;
-using Microsoft.Xna.Framework.Graphics;
-using Rampastring.Tools;
-using Rampastring.XNAUI;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.Json.Serialization;
+using ClientCore;
+using Localization;
+using Microsoft.Xna.Framework.Graphics;
+using Rampastring.Tools;
+using Rampastring.XNAUI;
 using SixLabors.ImageSharp;
 using Color = Microsoft.Xna.Framework.Color;
 using Point = Microsoft.Xna.Framework.Point;
 using Utilities = Rampastring.Tools.Utilities;
-using static System.Collections.Specialized.BitVector32;
-using Localization;
 
 namespace DTAClient.Domain.Multiplayer
 {
@@ -155,7 +154,7 @@ namespace DTAClient.Domain.Multiplayer
         public bool ForceNoTeams { get; private set; }
 
         /// <summary>
-        /// The name of an extra INI file in INI\Map Code\ that should be
+        /// The name of an extra INI file in INI\MapCode\ that should be
         /// embedded into this map's INI code when a game is started.
         /// </summary>
         [JsonInclude]
@@ -216,7 +215,7 @@ namespace DTAClient.Domain.Multiplayer
         public List<string> waypoints = new List<string>();
 
         [JsonInclude]
-        public string Attached="";
+        public string Attached = "";
 
         /// <summary>
         /// The pixel coordinates of the map's player starting locations.
@@ -272,9 +271,9 @@ namespace DTAClient.Domain.Multiplayer
                 if (!string.IsNullOrEmpty(baseSectionName))
                     iniFile.CombineSections(baseSectionName, BaseFilePath);
 
-                
 
-                var section = iniFile.GetSection(BaseFilePath.Remove(BaseFilePath.Length-4));
+
+                var section = iniFile.GetSection(BaseFilePath.Remove(BaseFilePath.Length - 4));
 
                 Name = section.GetStringValue("Description", "Unnamed map");
                 Author = section.GetStringValue("Author", "Unknown author");
@@ -310,8 +309,8 @@ namespace DTAClient.Domain.Multiplayer
                 ForceNoTeams = section.GetBooleanValue("ForceNoTeams", false);
                 ExtraININame = section.GetStringValue("ExtraININame", string.Empty);
                 string bases = section.GetStringValue("Bases", string.Empty);
-                
-                
+
+
                 if (!string.IsNullOrEmpty(bases))
                 {
                     Bases = Convert.ToInt32(Conversions.BooleanFromString(bases, false));
@@ -518,12 +517,12 @@ namespace DTAClient.Domain.Multiplayer
         /// </summary>
         public bool SetInfoFromCustomMap()
         {
-          
+
 
             if (!File.Exists(customMapFilePath))
                 return false;
 
-            
+
 
             try
             {
@@ -531,8 +530,8 @@ namespace DTAClient.Domain.Multiplayer
 
                 IniSection basicSection = iniFile.GetSection("Basic");
 
-                if(!basicSection.GetBooleanValue("MultiplayerOnly", false))
-                    return false;
+                //if(!basicSection.GetBooleanValue("MultiplayerOnly", false))
+                //    return false;
 
                 Name = basicSection.GetStringValue("Name", "Unnamed map");
                 Author = basicSection.GetStringValue("Author", "Unknown author");
@@ -543,7 +542,7 @@ namespace DTAClient.Domain.Multiplayer
                     gameModesString = basicSection.GetStringValue("GameMode", "Standard");
                 }
 
-               
+
 
                 GameModes = gameModesString.Split(',');
 
@@ -558,7 +557,7 @@ namespace DTAClient.Domain.Multiplayer
                     string gameMode = GameModes[i].Trim().L10N("UI:GameMode:" + GameModes[i].Trim());
                     GameModes[i] = gameMode.Substring(0, 1).ToUpperInvariant() + gameMode.Substring(1);
 
-                    
+
                 }
 
                 MinPlayers = 0;
@@ -624,7 +623,7 @@ namespace DTAClient.Domain.Multiplayer
 
                 for (int i = 0; i < MAX_PLAYERS; i++)
                 {
-                    
+
                     string waypoint = GetCustomMapIniFile().GetStringValue("Waypoints", i.ToString(CultureInfo.InvariantCulture), string.Empty);
 
                     if (string.IsNullOrEmpty(waypoint))
@@ -709,13 +708,13 @@ namespace DTAClient.Domain.Multiplayer
 
         public IniFile GetMapIni()
         {
-           
-            
+
+
             var mapIni = new IniFile(CompleteFilePath);
 
             if (!string.IsNullOrEmpty(ExtraININame))
             {
-                var extraIni = new IniFile(SafePath.CombineFilePath(ProgramConstants.GamePath, "INI", "Map Code", ExtraININame));
+                var extraIni = new IniFile(SafePath.CombineFilePath(ProgramConstants.GamePath, "INI", "MapCode", ExtraININame));
                 IniFile.ConsolidateIniFiles(mapIni, extraIni);
             }
 

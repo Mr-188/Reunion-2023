@@ -253,7 +253,7 @@ namespace DTAClient.DXGUI.Multiplayer
                 "This is best used with random teams and random starts. However, only random teams is required.\n" +
                 "Manually specified starts will take precedence.\n\n").L10N("UI:Main:AutoAllyingText1") +
                 $"{TeamStartMapping.NO_TEAM} : " + "Block this location from being assigned to a player.".L10N("UI:Main:AutoAllyingTextNoTeam") + "\n" +
-                $"{TeamStartMapping.RANDOM_TEAM} : "+"Allow a player here, but don't assign a team.".L10N("UI:Main:AutoAllyingTextRandomTeam")
+                $"{TeamStartMapping.RANDOM_TEAM} : " + "Allow a player here, but don't assign a team.".L10N("UI:Main:AutoAllyingTextRandomTeam")
             );
         }
 

@@ -1,11 +1,11 @@
-﻿using ClientCore;
+﻿using System;
+using ClientCore;
 using ClientCore.CnCNet5;
 using ClientGUI;
 using Localization;
 using Microsoft.Xna.Framework;
 using Rampastring.XNAUI;
 using Rampastring.XNAUI.XNAControls;
-using System;
 
 namespace DTAClient.DXGUI.Multiplayer.CnCNet
 {
@@ -42,7 +42,7 @@ namespace DTAClient.DXGUI.Multiplayer.CnCNet
             lblConnectToCnCNet.CenterOnParent();
             lblConnectToCnCNet.ClientRectangle = new Rectangle(
                 lblConnectToCnCNet.X, 12,
-                lblConnectToCnCNet.Width, 
+                lblConnectToCnCNet.Width,
                 lblConnectToCnCNet.Height);
 
             tbPlayerName = new XNATextBox(WindowManager);

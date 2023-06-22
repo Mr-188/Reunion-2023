@@ -1,9 +1,9 @@
-﻿using ClientGUI;
+﻿using System;
+using ClientGUI;
 using DTAClient.Domain;
 using Microsoft.Xna.Framework;
 using Rampastring.XNAUI;
 using Rampastring.XNAUI.XNAControls;
-using System;
 
 namespace DTAClient.DXGUI.Generic
 {
@@ -74,6 +74,11 @@ namespace DTAClient.DXGUI.Generic
             XNAWindow child = (XNAWindow)sender;
             if (!child.Enabled)
                 Hide();
+        }
+
+        public void reload()
+        {
+            CampaignSelector.ReadMissionList();
         }
 
         public void Show(XNAControl control)

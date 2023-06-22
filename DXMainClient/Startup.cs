@@ -1,24 +1,24 @@
 ﻿using System;
-using System.IO;
-using System.Threading;
-using Microsoft.Win32;
-using DTAClient.Domain;
-using ClientCore;
-using Rampastring.Tools;
-using DTAClient.DXGUI;
-using ClientUpdater;
-using System.Security.Principal;
 using System.DirectoryServices;
-using System.Linq;
-using DTAClient.Online;
-using ClientCore.INIProcessing;
-using System.Threading.Tasks;
 using System.Globalization;
+using System.IO;
+using System.Linq;
 using System.Management;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
+using System.Security.Principal;
+using System.Threading;
+using System.Threading.Tasks;
+using ClientCore;
+using ClientCore.INIProcessing;
 using ClientCore.Settings;
+using ClientUpdater;
+using DTAClient.Domain;
+using DTAClient.DXGUI;
+using DTAClient.Online;
+using Microsoft.Win32;
 using Microsoft.Xna.Framework.Graphics;
+using Rampastring.Tools;
 
 namespace DTAClient
 {
@@ -33,17 +33,17 @@ namespace DTAClient
         public void Execute()
         {
             string themePath = ClientConfiguration.Instance.GetThemePath(UserINISettings.Instance.ClientTheme);
-           // string language = ClientConfiguration.Instance.GetLanguagePath(UserINISettings.Instance.Language);
-           
+            // string language = ClientConfiguration.Instance.GetLanguagePath(UserINISettings.Instance.Language);
+
             if (themePath == null)
             {
                 themePath = ClientConfiguration.Instance.GetThemeInfoFromIndex(0)[1];
             }
 
-          //  if (language == null)
-        //    {
-           //     language = ClientConfiguration.Instance.GetLanguageInfoFromIndex(0)[1];
-        //    }
+            //  if (language == null)
+            //    {
+            //     language = ClientConfiguration.Instance.GetLanguageInfoFromIndex(0)[1];
+            //    }
 
             ProgramConstants.RESOURCES_DIR = SafePath.CombineDirectoryPath(ProgramConstants.BASE_RESOURCE_PATH, themePath);
 

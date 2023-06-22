@@ -1,9 +1,9 @@
-﻿using ClientGUI;
-using System;
+﻿using System;
+using ClientGUI;
+using Localization;
+using Microsoft.Xna.Framework;
 using Rampastring.XNAUI;
 using Rampastring.XNAUI.XNAControls;
-using Microsoft.Xna.Framework;
-using Localization;
 
 namespace DTAClient.DXGUI.Generic
 {
@@ -25,15 +25,15 @@ namespace DTAClient.DXGUI.Generic
             lblCheater.Name = "lblCheater";
             lblCheater.ClientRectangle = new Rectangle(0, 0, 0, 0);
             lblCheater.FontIndex = 1;
-      //      lblCheater.Text = "CHEATER!".L10N("UI:Main:Cheater");
+            //      lblCheater.Text = "CHEATER!".L10N("UI:Main:Cheater");
 
             var lblDescription = new XNALabel(WindowManager);
             lblDescription.Name = "lblDescription";
             lblDescription.ClientRectangle = new Rectangle(12, 40, 0, 0);
             // lblDescription.Text = ("Modified game files have been detected. They could affect" + Environment.NewLine + 
-          //      "the game experience." +
-        //        Environment.NewLine + Environment.NewLine +
-        //        "Do you really lack the skill for winning the mission without" + Environment.NewLine + "cheating?").L10N("UI:Main:CheaterText");
+            //      "the game experience." +
+            //        Environment.NewLine + Environment.NewLine +
+            //        "Do you really lack the skill for winning the mission without" + Environment.NewLine + "cheating?").L10N("UI:Main:CheaterText");
 
             var imagePanel = new XNAPanel(WindowManager);
             imagePanel.Name = "imagePanel";

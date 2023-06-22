@@ -27,9 +27,6 @@ using System.Diagnostics;
 using System.IO;
 #endif
 #if WINFORMS
-using System.Windows.Forms;
-using System.IO;
-using System.Text.RegularExpressions;
 #endif
 
 namespace DTAClient.DXGUI
@@ -175,12 +172,12 @@ namespace DTAClient.DXGUI
             if (string.IsNullOrEmpty(playerName))
             {
                 playerName = Environment.UserName;
-                
+
                 playerName = playerName.Substring(playerName.IndexOf("\\") + 1);
             }
 
             //中文名
-          //  Regex.IsMatch(playerName, @"[\u4e00-\u9fa5]");
+            //  Regex.IsMatch(playerName, @"[\u4e00-\u9fa5]");
 
             playerName = Renderer.GetSafeString(NameValidator.GetValidOfflineName(playerName), 0);
 
@@ -195,7 +192,7 @@ namespace DTAClient.DXGUI
 
         }
 
-        
+
 
         private IServiceProvider BuildServiceProvider(WindowManager windowManager)
         {
@@ -276,6 +273,7 @@ namespace DTAClient.DXGUI
             settings.AltColor = AssetLoader.GetColorFromString(ClientConfiguration.Instance.AltUIColor);
             settings.SubtleTextColor = AssetLoader.GetColorFromString(ClientConfiguration.Instance.UIHintTextColor);
             settings.ButtonTextColor = settings.AltColor;
+
             settings.ButtonHoverColor = AssetLoader.GetColorFromString(ClientConfiguration.Instance.ButtonHoverColor);
             settings.TextColor = AssetLoader.GetColorFromString(ClientConfiguration.Instance.UILabelColor);
             //settings.WindowBorderColor = AssetLoader.GetColorFromString(ClientConfiguration.Instance.WindowBorderColor);
@@ -298,7 +296,7 @@ namespace DTAClient.DXGUI
             UISettings.ActiveSettings = settings;
         }
 
- 
+
         /// <summary>
         /// Sets the client's graphics mode.
         /// TODO move to some helper class?

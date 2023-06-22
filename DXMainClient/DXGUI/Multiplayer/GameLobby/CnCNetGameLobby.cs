@@ -1,24 +1,24 @@
-using ClientCore;
-using ClientCore.CnCNet5;
-using ClientGUI;
-using DTAClient.Domain.Multiplayer;
-using DTAClient.Domain;
-using DTAClient.DXGUI.Generic;
-using DTAClient.DXGUI.Multiplayer.CnCNet;
-using DTAClient.DXGUI.Multiplayer.GameLobby.CommandHandlers;
-using DTAClient.Online;
-using DTAClient.Online.EventArguments;
-using Microsoft.Xna.Framework;
-using Rampastring.Tools;
-using Rampastring.XNAUI;
-using Rampastring.XNAUI.XNAControls;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using ClientCore;
+using ClientCore.CnCNet5;
+using ClientGUI;
+using DTAClient.Domain;
+using DTAClient.Domain.Multiplayer;
 using DTAClient.Domain.Multiplayer.CnCNet;
+using DTAClient.DXGUI.Generic;
+using DTAClient.DXGUI.Multiplayer.CnCNet;
+using DTAClient.DXGUI.Multiplayer.GameLobby.CommandHandlers;
+using DTAClient.Online;
+using DTAClient.Online.EventArguments;
 using Localization;
+using Microsoft.Xna.Framework;
+using Rampastring.Tools;
+using Rampastring.XNAUI;
+using Rampastring.XNAUI.XNAControls;
 
 namespace DTAClient.DXGUI.Multiplayer.GameLobby
 {
@@ -42,13 +42,13 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
         private const string CHANGE_TUNNEL_SERVER_MESSAGE = "CHTNL";
 
         public CnCNetGameLobby(
-            WindowManager windowManager, 
-            TopBar topBar, 
+            WindowManager windowManager,
+            TopBar topBar,
             CnCNetManager connectionManager,
-            TunnelHandler tunnelHandler, 
-            GameCollection gameCollection, 
-            CnCNetUserData cncnetUserData, 
-            MapLoader mapLoader, 
+            TunnelHandler tunnelHandler,
+            GameCollection gameCollection,
+            CnCNetUserData cncnetUserData,
+            MapLoader mapLoader,
             DiscordHandler discordHandler
         ) : base(windowManager, "MultiplayerGameLobby", topBar, mapLoader, discordHandler)
         {
@@ -58,7 +58,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             this.gameCollection = gameCollection;
             this.cncnetUserData = cncnetUserData;
             this.pmWindow = pmWindow;
-
+            
             ctcpCommandHandlers = new CommandHandlerBase[]
             {
                 new IntCommandHandler("OR", HandleOptionsRequest),
@@ -109,6 +109,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
         private TunnelHandler tunnelHandler;
         private TunnelSelectionWindow tunnelSelectionWindow;
         private XNAClientButton btnChangeTunnel;
+        private XNAClientButton btnClosePass;
 
         private Channel channel;
         private CnCNetManager connectionManager;
@@ -132,6 +133,8 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
         private bool closed = false;
 
         private bool isCustomPassword = false;
+
+        private string password = string.Empty;
 
         private string gameFilesHash;
 
@@ -169,6 +172,12 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
 
             btnChangeTunnel.LeftClick += BtnChangeTunnel_LeftClick;
 
+            btnClosePass = new XNAClientButton(WindowManager);
+            btnClosePass.Text = "解除密码";
+            btnClosePass.ClientRectangle = new Rectangle(btnChangeTunnel.X - 150, btnChangeTunnel.Y, btnChangeTunnel.Width, btnChangeTunnel.Height);
+            btnClosePass.LeftClick += BtnClosePass_LeftClick;
+            
+
             gameBroadcastTimer = new XNATimerControl(WindowManager);
             gameBroadcastTimer.AutoReset = true;
             gameBroadcastTimer.Interval = TimeSpan.FromSeconds(GAME_BROADCAST_INTERVAL);
@@ -194,8 +203,17 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             AddChild(globalContextMenu);
 
             MultiplayerNameRightClicked += MultiplayerName_RightClick;
-
+            AddChild(btnClosePass);
             PostInitialize();
+        }
+
+        private void BtnClosePass_LeftClick(object sender, EventArgs e)
+        {
+            isCustomPassword = false;
+            
+            connectionManager.FindChannel(channel.ChannelName).Password = password;
+            btnClosePass.Visible = false;
+            AddNotice("房主已解除房间密码");
         }
 
         private void MultiplayerName_RightClick(object sender, MultiplayerNameRightClickedEventArgs args)
@@ -212,7 +230,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
         private void GameBroadcastTimer_TimeElapsed(object sender, EventArgs e) => BroadcastGame();
 
         public void SetUp(Channel channel, bool isHost, int playerLimit,
-            CnCNetTunnel tunnel, string hostName, bool isCustomPassword)
+            CnCNetTunnel tunnel, string hostName, bool isCustomPassword,string password)
         {
             this.channel = channel;
             channel.MessageAdded += Channel_MessageAdded;
@@ -223,10 +241,11 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             channel.UserAdded += Channel_UserAdded;
             channel.UserNameChanged += Channel_UserNameChanged;
             channel.UserListReceived += Channel_UserListReceived;
-
+            
             this.hostName = hostName;
             this.playerLimit = playerLimit;
             this.isCustomPassword = isCustomPassword;
+            this.password = password;
 
             if (isHost)
             {
@@ -240,7 +259,15 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
                 AIPlayers.Clear();
                 btnChangeTunnel.Disable();
             }
-
+            
+            if (!isCustomPassword)
+            {
+                btnClosePass.Visible = false;
+            }
+            else
+            {
+                btnClosePass.Visible = true;
+            }
             tunnelHandler.CurrentTunnel = tunnel;
             tunnelHandler.CurrentTunnelPinged += TunnelHandler_CurrentTunnelPinged;
 
@@ -957,7 +984,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
         }
 
         /// <summary>
-        /// Broadcasts game options to non-host players
+        /// Broadcasts GameOptions to non-host players
         /// when the host has changed an option.
         /// </summary>
         protected override void OnGameOptionChanged()
@@ -1021,7 +1048,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
 
             if (parts.Length < partIndex + 6)
             {
-                AddNotice(("The game host has sent an invalid game options message! " +
+                AddNotice(("The game host has sent an invalid GameOptions message! " +
                     "The game host's game version might be different from yours.").L10N("UI:Main:HostGameOptionInvalid"), Color.Red);
                 return;
             }
@@ -1076,8 +1103,8 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
                 ChangeMap(GameModeMap);
             }
 
-            // By changing the game options after changing the map, we know which
-            // game options were changed by the map and which were changed by the game host
+            // By changing the GameOptions after changing the map, we know which
+            // GameOptions were changed by the map and which were changed by the game host
 
             // If the map doesn't exist on the local installation, it's impossible
             // to know which options were set by the host and which were set by the
@@ -1127,7 +1154,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             {
                 if (parts.Length <= i)
                 {
-                    AddNotice(("The game host has sent an invalid game options message! " +
+                    AddNotice(("The game host has sent an invalid GameOptions message! " +
                     "The game host's game version might be different from yours.").L10N("UI:Main:HostGameOptionInvalid"), Color.Red);
                     return;
                 }
@@ -1164,7 +1191,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
 
             if (!parseSuccess)
             {
-                AddNotice(("Failed to parse random seed from game options message! " +
+                AddNotice(("Failed to parse random seed from GameOptions message! " +
                     "The game host's game version might be different from yours.").L10N("UI:Main:HostRandomSeedError"), Color.Red);
             }
 
@@ -1478,6 +1505,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
 
         protected override void HandleLockGameButtonClick()
         {
+
             if (!Locked)
             {
                 AddNotice("You've locked the game room.".L10N("UI:Main:RoomLockedByYou"));
@@ -1501,6 +1529,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             connectionManager.SendCustomMessage(new QueuedMessage(
                 string.Format("MODE {0} +i", channel.ChannelName), QueuedMessageType.INSTANT_MESSAGE, -1));
 
+            
             Locked = true;
             btnLockGame.Text = "Unlock Game".L10N("UI:Main:UnlockGame");
             AccelerateGameBroadcasting();

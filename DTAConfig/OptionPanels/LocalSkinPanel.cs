@@ -266,8 +266,14 @@ namespace DTAConfig.OptionPanels
         public override bool Save()
         {
 
-            File.WriteAllText("SkinRulesmd.ini", ";皮肤Rules" + Environment.NewLine);
-            File.WriteAllText("SkinArtmd.ini", ";皮肤Art" + Environment.NewLine);
+            File.WriteAllText("Resources\\SkinRulesmd.ini", ";皮肤Rules" + Environment.NewLine);
+            File.WriteAllText("Resources\\SkinArtmd.ini", ";皮肤Art" + Environment.NewLine);
+            if(!Directory.Exists("./Resources/SkinCashe"))
+                Directory.CreateDirectory("./Resources/SkinCashe");
+
+            if (File.Exists("./Resources/expandmd96.mix"))
+                File.Delete("./Resources/expandmd96.mix");
+
             List<string[]> Rules = new List<string[]>();
             List<string[]> Art = new List<string[]>();
 
@@ -301,7 +307,7 @@ namespace DTAConfig.OptionPanels
                         Art.Add(File.ReadAllLines(file[1] + file[10].Split(',')[dd.SelectedIndex] + "/" + file[8].Split('|')[dd.SelectedIndex], Encoding.UTF8));
                     }
 
-                    CopyDirectory(file[1] + file[10].Split(',')[dd.SelectedIndex], "./");
+                    CopyDirectory(file[1] + file[10].Split(',')[dd.SelectedIndex], "./Resources/SkinCashe");
 
                 }
 
@@ -312,13 +318,33 @@ namespace DTAConfig.OptionPanels
 
             for (int i = 0; i < Rules.Count; i++)
             {
-                File.AppendAllLines("SkinRulesmd.ini", Rules[i]);
+                File.AppendAllLines("Resources\\SkinRulesmd.ini", Rules[i]);
             }
             for (int i = 0; i < Art.Count; i++)
             {
-                File.AppendAllLines("SkinArtmd.ini", Art[i]);
+                File.AppendAllLines("Resources\\SkinArtmd.ini", Art[i]);
             }
 
+            string[] mixFiles = Directory.GetFiles("./Resources/SkinCashe", "*.mix");
+
+            if(mixFiles.Length> 0)
+            {
+                foreach (string mixFile in mixFiles)
+                {
+                    string fileName = Path.GetFileName(mixFile);
+                    string destinationPath = Path.Combine("./", fileName);
+
+                    File.Move(mixFile, destinationPath);
+                  //  Console.WriteLine($"已将文件 {fileName} 移动到目标目录。");
+                }
+            }
+
+            Mix.PackToMix("./Resources/SkinCashe", "./Resources/expandmd96.mix");
+          
+            if (File.Exists("./expandmd96.mix"))
+                File.Delete("./expandmd96.mix");
+
+            File.Move("./Resources/expandmd96.mix", "./expandmd96.mix");
             //   iniSettings.SaveSettings();
 
             return false;
@@ -339,7 +365,7 @@ namespace DTAConfig.OptionPanels
         //    process.Start();
         //    process.WaitForExit();  //等待程序执行完退出进程
         //    process.Close();
-        //}
+        ////}
 
         private void btnDefaultLeftClick(object sender, EventArgs e)
         {
@@ -370,8 +396,10 @@ namespace DTAConfig.OptionPanels
                     {
                         if (deleteFile[i] != "")
                         {
-
-                            File.Delete(deleteFile[i]);
+                            if(deleteFile[i].EndsWith(".mix", StringComparison.OrdinalIgnoreCase))
+                                File.Delete(deleteFile[i]);
+                            else
+                                        File.Delete("Resources\\SkinCashe\\"+deleteFile[i]);
                         }
                     }
                     catch

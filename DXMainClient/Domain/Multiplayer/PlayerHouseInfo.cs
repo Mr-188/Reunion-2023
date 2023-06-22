@@ -18,7 +18,7 @@ namespace DTAClient.Domain.Multiplayer
             {
                 if (IsSpectator && !string.IsNullOrEmpty(ClientConfiguration.Instance.SpectatorInternalSideIndex))
                     return int.Parse(ClientConfiguration.Instance.SpectatorInternalSideIndex);
-                
+
                 if (!string.IsNullOrEmpty(ClientConfiguration.Instance.InternalSideIndices))
                     return Array.ConvertAll(ClientConfiguration.Instance.InternalSideIndices.Split(','), int.Parse)[SideIndex];
 
@@ -39,7 +39,7 @@ namespace DTAClient.Domain.Multiplayer
         /// <param name="pInfo">The PlayerInfo of the player.</param>
         /// <param name="sideCount">The number of sides in the game.</param>
         /// <param name="random">Random number generator.</param>
-        /// <param name="disallowedSideArray">A bool array that determines which side indexes are disallowed by game options.</param>
+        /// <param name="disallowedSideArray">A bool array that determines which side indexes are disallowed by GameOptions.</param>
         public void RandomizeSide(PlayerInfo pInfo, int sideCount, Random random,
             bool[] disallowedSideArray, List<int[]> randomSelectors, int randomCount)
         {
@@ -62,7 +62,7 @@ namespace DTAClient.Domain.Multiplayer
                     int[] randomsides = randomSelectors[pInfo.SideId - 1];
                     int count = randomsides.Length;
                     int sideId;
-                    
+
                     do sideId = randomsides[random.Next(0, count)];
                     while (disallowedSideArray[sideId]);
 
@@ -81,7 +81,7 @@ namespace DTAClient.Domain.Multiplayer
         /// <param name="freeColors">The list of available (un-used) colors.</param>
         /// <param name="mpColors">The list of all multiplayer colors.</param>
         /// <param name="random">Random number generator.</param>
-        public void RandomizeColor(PlayerInfo pInfo, List<int> freeColors, 
+        public void RandomizeColor(PlayerInfo pInfo, List<int> freeColors,
             List<MultiplayerColor> mpColors, Random random)
         {
             if (pInfo.ColorId == 0)
@@ -114,9 +114,9 @@ namespace DTAClient.Domain.Multiplayer
         /// <returns>True if the player's starting location index exceeds the map's number of starting waypoints,
         /// otherwise false.</returns>
         public void RandomizeStart(
-            PlayerInfo pInfo, 
+            PlayerInfo pInfo,
             Random random,
-            List<int> freeStartingLocations, 
+            List<int> freeStartingLocations,
             List<int> takenStartingLocations,
             bool overrideGameRandomLocations
         )

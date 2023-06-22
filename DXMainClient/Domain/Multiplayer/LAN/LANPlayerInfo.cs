@@ -1,14 +1,14 @@
-﻿using ClientCore;
-using Microsoft.Xna.Framework;
-using Rampastring.Tools;
-using Rampastring.XNAUI;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using ClientCore;
+using Microsoft.Xna.Framework;
+using Rampastring.Tools;
+using Rampastring.XNAUI;
 
 namespace DTAClient.Domain.Multiplayer.LAN
 {

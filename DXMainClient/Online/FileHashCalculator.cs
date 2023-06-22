@@ -1,10 +1,10 @@
-﻿using ClientCore;
-using DTAClient.Domain.Multiplayer;
-using Rampastring.Tools;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using ClientCore;
+using DTAClient.Domain.Multiplayer;
+using Rampastring.Tools;
 using Utilities = Rampastring.Tools.Utilities;
 
 namespace DTAClient.Online
@@ -35,22 +35,22 @@ namespace DTAClient.Online
             "soundmd.ini",
             "aimd.ini",
             "shroud.shp",
-            "INI/Map Code/Cooperative.ini",
-            "INI/Map Code/Free For All.ini",
-            "INI/Map Code/Land Rush.ini",
-            "INI/Map Code/Meat Grinder.ini",
-            "INI/Map Code/Megawealth.ini",
-            "INI/Map Code/Naval War.ini",
-            "INI/Map Code/Standard.ini",
-            "INI/Map Code/Team Alliance.ini",
-            "INI/Map Code/Unholy Alliance.ini",
-            "INI/Game Options/Allies Allowed.ini",
-            "INI/Game Options/Brutal AI.ini",
-            "INI/Game Options/No Dog Engi Eat.ini",
-            "INI/Game Options/No Spawn Previews.ini",
-            "INI/Game Options/RA2 Classic Mode.ini",
-            "INI/Map Code/GlobalCode.ini",
-            "INI/Map Code/MultiplayerGlobalCode.ini",
+            "INI/MapCode/Cooperative.ini",
+            "INI/MapCode/Free For All.ini",
+            "INI/MapCode/Land Rush.ini",
+            "INI/MapCode/Meat Grinder.ini",
+            "INI/MapCode/Megawealth.ini",
+            "INI/MapCode/Naval War.ini",
+            "INI/MapCode/Standard.ini",
+            "INI/MapCode/Team Alliance.ini",
+            "INI/MapCode/Unholy Alliance.ini",
+            "INI/GameOptions/Allies Allowed.ini",
+            "INI/GameOptions/Brutal AI.ini",
+            "INI/GameOptions/No Dog Engi Eat.ini",
+            "INI/GameOptions/No Spawn Previews.ini",
+            "INI/GameOptions/RA2 Classic Mode.ini",
+            "INI/MapCode/GlobalCode.ini",
+            "INI/MapCode/MultiplayerGlobalCode.ini",
 #elif TS
             "spawner.xdp",
             "rules.ini",
@@ -112,9 +112,9 @@ namespace DTAClient.Online
             DirectoryInfo[] iniPaths =
             {
 #if !YR
-               SafePath.GetDirectory(ProgramConstants.GamePath, "INI", "Map Code"),
+               SafePath.GetDirectory(ProgramConstants.GamePath, "INI", "MapCode"),
 #endif
-               SafePath.GetDirectory(ProgramConstants.GamePath, "INI", "Game Options")
+               SafePath.GetDirectory(ProgramConstants.GamePath, "INI", "GameOptions")
             };
 
             foreach (DirectoryInfo path in iniPaths)

@@ -1,11 +1,11 @@
-﻿using DTAClient.Domain.Multiplayer.CnCNet;
+﻿using System;
+using System.Collections.Generic;
+using DTAClient.Domain.Multiplayer.CnCNet;
 using Localization;
 using Microsoft.Xna.Framework;
 using Rampastring.Tools;
 using Rampastring.XNAUI;
 using Rampastring.XNAUI.XNAControls;
-using System;
-using System.Collections.Generic;
 
 namespace DTAClient.DXGUI.Multiplayer.CnCNet
 {
@@ -61,6 +61,36 @@ namespace DTAClient.DXGUI.Multiplayer.CnCNet
                 isManuallySelectedTunnel = true;
                 manuallySelectedTunnelAddress = address;
             }
+        }
+
+        private int GetMinms()
+        {
+            int pingMin = 100000; //最低延迟  
+                                  //  int people;  //平均人数
+            int index = 0; //最适合索引
+
+            for (int i = 0; i < ItemCount; i++)
+            {
+                try
+                {
+                    if (GetItem(0, i).Text == "[CN]Alliance and Hegemony")
+                        return i;
+
+                    int ping = Convert.ToInt32(GetItem(2, i).Text.Replace(" ms", "").ToString());
+                    int people = Convert.ToInt32(GetItem(3, i).Text.Split('/')[0].Replace(" ", "").ToString());
+                    if (ping < pingMin && people != 0)
+                    {
+                        pingMin = ping;
+                        index = i;
+                    }
+
+                }
+                catch
+                {
+                    continue;
+                }
+            }
+            return index;
         }
 
         /// <summary>
@@ -150,6 +180,7 @@ namespace DTAClient.DXGUI.Multiplayer.CnCNet
                     SelectedIndex = tunnelIndex;
                 }
             }
+            SelectedIndex = GetMinms();
         }
 
         private int GetTunnelRating(CnCNetTunnel tunnel)

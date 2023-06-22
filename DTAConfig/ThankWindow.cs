@@ -104,8 +104,9 @@ namespace DTAClient.DXGUI.Generic
             lblThankList.AddItem("地图：达达利亚");
             lblThankList.AddItem("bug修复：ruanhuhu,边缘星2020");
             lblThankList.AddItem("汉化：黑色圣杯");
+            lblThankList.AddItem("服务器: 精武止戈");
 
-            
+
 
             // lblThankList.AddItem("注册机：伤心的笔");
             // lblThankList.AddItem("国旗：Mc孤狼君");

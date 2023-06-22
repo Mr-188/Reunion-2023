@@ -1,17 +1,17 @@
-﻿using ClientCore;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using ClientCore;
+using ClientGUI;
 using DTAClient.Domain.Multiplayer;
+using Localization;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Rampastring.Tools;
 using Rampastring.XNAUI;
 using Rampastring.XNAUI.XNAControls;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using ClientGUI;
-using Localization;
 
 namespace DTAClient.DXGUI.Multiplayer.GameLobby
 {
@@ -163,7 +163,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
         private List<ExtraMapPreviewTexture> extraTextures = new List<ExtraMapPreviewTexture>(0);
 
         public EventHandler ToggleFavorite;
-       
+
         public override void Initialize()
         {
             EnableStartLocationSelection = true;
@@ -205,7 +205,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
 
             btnToggleFavoriteMap = new XNAClientButton(WindowManager);
             btnToggleFavoriteMap.IdleTexture = AssetLoader.LoadTexture("favInactive.png");
-            btnToggleFavoriteMap.ClientRectangle = new Rectangle(Width- 35, 8, 30, 30);
+            btnToggleFavoriteMap.ClientRectangle = new Rectangle(Width - 35, 8, 30, 30);
             btnToggleFavoriteMap.LeftClick += (sender, args) => ToggleFavorite?.Invoke(sender, args);
             btnToggleFavoriteMap.SetToolTipText("Toggle Favorite Map".L10N("UI:Main:ToggleFavoriteMap"));
 
@@ -632,8 +632,8 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
                 if (previewFileInfo.Exists)
                     ProcessLauncher.StartShellProcess(previewFileInfo.FullName);
             }
-            
-            
+
+
             base.OnLeftClick();
         }
 

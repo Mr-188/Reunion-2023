@@ -1,8 +1,10 @@
-﻿using Localization;
-using Rampastring.Tools;
-using System;
-using System.Reflection;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
+using Localization;
+using Rampastring.Tools;
 
 namespace DTAClient.Domain
 {
@@ -26,24 +28,26 @@ namespace DTAClient.Domain
             Enabled = iniFile.GetBooleanValue(sectionName, nameof(Enabled), true);
             BuildOffAlly = iniFile.GetBooleanValue(sectionName, nameof(BuildOffAlly), false);
             PlayerAlwaysOnNormalDifficulty = iniFile.GetBooleanValue(sectionName, nameof(PlayerAlwaysOnNormalDifficulty), false);
-            Mod = iniFile.GetStringValue(sectionName, "Mod", string.Empty);
-            defaultMod = iniFile.GetIntValue(sectionName, "defaultMod", 0);
-            Attached = iniFile.GetStringValue(sectionName, "Attached", string.Empty);
+            Mod = iniFile.GetStringValue(sectionName, "Mod", string.Empty).Split(',').ToList();
+            defaultMod = iniFile.GetStringValue(sectionName, "defaultMod", Mod[0]);
+            Attached = "INI\\GameOptions\\Mission\\" + iniFile.GetStringValue(sectionName, "Attached", string.Empty);
             difficulty = iniFile.GetStringValue(sectionName, "difficulty", "一般"); //难度筛选用
 
             // GUIDescription = GUIDescription.Replace("@", Environment.NewLine);
 
-            if (HasChinese(GUIDescription))
+            
+
+                if (HasChinese(GUIDescription))
             {
 
                 string description = string.Empty;
                 string s1;
                 foreach (string s in GUIDescription.Split('@'))
                 {
-                    s1 = s+'@';
+                    s1 = s + '@';
                     if (s1.Length > 31)
                     {
-                        // Logger.Log(s1);
+                      
                         s1 = InsertFormat(s1, 31, "@");
                     }
                     description += s1;
@@ -51,7 +55,7 @@ namespace DTAClient.Domain
 
                 GUIDescription = description;
             }
-                GUIDescription = GUIDescription.Replace("@", Environment.NewLine);
+            GUIDescription = GUIDescription.Replace("@", Environment.NewLine);
         }
 
         public bool HasChinese(string str)
@@ -71,13 +75,13 @@ namespace DTAClient.Domain
         public bool Enabled { get; }
         public bool BuildOffAlly { get; }
         public bool PlayerAlwaysOnNormalDifficulty { get; }
-        public string Mod { get; }
-        public int defaultMod { get; }
+        public List<string> Mod { get; }
+        public string defaultMod { get; }
         public string sectionName { get; }
 
         public string Attached { get; }
         public string difficulty { get; }
-        private  string InsertFormat(string input, int interval, string value)
+        private string InsertFormat(string input, int interval, string value)
         {
             for (int i = interval; i < input.Length; i += interval + 1)
                 input = input.Insert(i, value);

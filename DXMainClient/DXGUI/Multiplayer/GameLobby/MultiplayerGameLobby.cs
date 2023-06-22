@@ -1,20 +1,20 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Rampastring.XNAUI;
-using Rampastring.XNAUI.XNAControls;
-using Microsoft.Xna.Framework;
-using ClientCore;
 using System.IO;
-using Rampastring.Tools;
-using ClientCore.Statistics;
-using DTAClient.DXGUI.Generic;
-using DTAClient.Domain.Multiplayer;
-using ClientGUI;
+using System.Linq;
 using System.Text;
+using ClientCore;
+using ClientCore.Statistics;
+using ClientGUI;
 using DTAClient.Domain;
-using Microsoft.Xna.Framework.Graphics;
+using DTAClient.Domain.Multiplayer;
+using DTAClient.DXGUI.Generic;
+using DTAClient.Online;
 using Localization;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Rampastring.Tools;
+using Rampastring.XNAUI;
 
 namespace DTAClient.DXGUI.Multiplayer.GameLobby
 {
@@ -228,7 +228,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             for (int pId = 0; pId < Players.Count; pId++)
                 Players[pId].IsInGame = true;
 
-        
+
             base.StartGame();
         }
 
@@ -282,6 +282,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
 
         protected virtual void HandleLockGameButtonClick()
         {
+            
             if (Locked)
                 UnlockGame(true);
             else
@@ -496,7 +497,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
         /// <param name="mapName">Name of the map given as a parameter, without file extension.</param>
         private void LoadCustomMap(string mapName)
         {
-           // Logger.Log("111111");
+            // Logger.Log("111111");
             Map map = MapLoader.LoadCustomMap($"Maps/Custom/{mapName}", out string resultMessage);
             if (map != null)
             {
@@ -643,7 +644,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             tbChatInput.Name = "tbChatInput_Player";
             MapPreviewBox.Name = "MapPreviewBox";
             lblMapName.Name = "lblMapName";
-         //   lblMapAuthor.Name = "lblMapAuthor";
+            //   lblMapAuthor.Name = "lblMapAuthor";
             lblGameMode.Name = "lblGameMode";
             lblMapSize.Name = "lblMapSize";
 
@@ -652,7 +653,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             ReadINIForControl(tbChatInput);
             ReadINIForControl(lbGameModeMapList);
             ReadINIForControl(lblMapName);
-     //       ReadINIForControl(lblMapAuthor);
+            //       ReadINIForControl(lblMapAuthor);
             ReadINIForControl(lblGameMode);
             ReadINIForControl(lblMapSize);
             ReadINIForControl(btnMapSortAlphabetically);
@@ -673,7 +674,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             tbChatInput.Name = "tbChatInput_Host";
             MapPreviewBox.Name = "MapPreviewBox";
             lblMapName.Name = "lblMapName";
-      //      lblMapAuthor.Name = "lblMapAuthor";
+            //      lblMapAuthor.Name = "lblMapAuthor";
             lblGameMode.Name = "lblGameMode";
             lblMapSize.Name = "lblMapSize";
 
@@ -689,7 +690,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             ReadINIForControl(tbChatInput);
             ReadINIForControl(lbGameModeMapList);
             ReadINIForControl(lblMapName);
-        //    ReadINIForControl(lblMapAuthor);
+            //    ReadINIForControl(lblMapAuthor);
             ReadINIForControl(lblGameMode);
             ReadINIForControl(lblMapSize);
             ReadINIForControl(btnMapSortAlphabetically);
@@ -851,7 +852,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
                     GetReadyNotification();
                     return;
                 }
-                
+
             }
 
             HostLaunchGame();
@@ -973,7 +974,8 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
                 {
                     StatusIndicators[pId].SwitchTexture("error");
                 }
-                else */ if (Players[pId].IsInGame) // If player is ingame
+                else */
+                if (Players[pId].IsInGame) // If player is ingame
                 {
                     StatusIndicators[pId].SwitchTexture(PlayerSlotState.InGame);
                 }

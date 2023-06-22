@@ -14,12 +14,13 @@
   </PropertyGroup>
   <Import Project="$(MSBuildThisFileDirectory)..\build\WinForms.props" />
   <ItemGroup>
-    <PackageReference Include="CnCNet.ClientUpdater" Version="1.0.5" />
+    <PackageReference Include="CnCNet.ClientUpdater" Version="1.0.15" />
     <PackageReference Include="GitVersion.MsBuild" Version="5.11.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
+    <PackageReference Include="ini-parser" Version="2.5.2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ClientGUI\ClientGUI.csproj" />

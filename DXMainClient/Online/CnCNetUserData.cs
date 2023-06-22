@@ -1,11 +1,11 @@
-﻿using ClientCore;
-using Rampastring.Tools;
-using Rampastring.XNAUI;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using ClientCore;
+using Rampastring.Tools;
+using Rampastring.XNAUI;
 
 namespace DTAClient.Online
 {

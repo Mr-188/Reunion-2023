@@ -1,9 +1,9 @@
-﻿using ClientCore;
+﻿using System;
+using System.Net;
+using ClientCore;
 using ClientCore.CnCNet5;
 using DTAClient.Domain.Multiplayer;
 using Rampastring.Tools;
-using System;
-using System.Net;
 
 namespace DTAClient.Domain.LAN
 {

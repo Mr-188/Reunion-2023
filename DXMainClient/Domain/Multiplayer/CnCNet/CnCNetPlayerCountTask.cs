@@ -1,8 +1,6 @@
-﻿using ClientCore;
-using System;
-using System.IO;
-using System.Net;
+﻿using System;
 using System.Threading;
+using ClientCore;
 
 namespace DTAClient.Domain.Multiplayer.CnCNet
 {

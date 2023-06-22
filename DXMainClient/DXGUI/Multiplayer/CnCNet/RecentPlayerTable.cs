@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using DTAClient.Online;
+using Localization;
 using Rampastring.XNAUI;
 using Rampastring.XNAUI.XNAControls;
-using Localization;
 
 namespace DTAClient.DXGUI.Multiplayer.CnCNet
 {
@@ -21,7 +21,7 @@ namespace DTAClient.DXGUI.Multiplayer.CnCNet
         public override void Initialize()
         {
             AllowRightClickUnselect = false;
-            
+
             base.Initialize();
 
             AddColumn("Player".L10N("UI:Main:RecentPlayerPlayer"));
@@ -83,7 +83,7 @@ namespace DTAClient.DXGUI.Multiplayer.CnCNet
         {
             if (HoveredIndex < 0 || HoveredIndex >= ItemCount)
                 return;
-            
+
             SelectedIndex = HoveredIndex;
 
             var selectedItem = GetItem(0, SelectedIndex);

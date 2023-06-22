@@ -1,8 +1,7 @@
-﻿using ClientCore;
-using Localization;
-using Rampastring.Tools;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using ClientCore;
+using Rampastring.Tools;
 
 namespace DTAClient.Domain.Multiplayer
 {
@@ -17,7 +16,7 @@ namespace DTAClient.Domain.Multiplayer
             Initialize();
         }
 
-        private const string BASE_INI_PATH = "INI/Map Code/";
+        private const string BASE_INI_PATH = "INI/MapCode/";
         private const string SPAWN_INI_OPTIONS_SECTION = "ForcedSpawnIniOptions";
 
         /// <summary>

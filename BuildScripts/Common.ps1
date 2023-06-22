@@ -17,7 +17,7 @@ function Build-Project($Configuration, $Game, $Engine, $Framework) {
     dotnet publish $ProjectPath --configuration=$Configuration -property:GAME=$Game -property:ENGINE=$Engine --framework=$Framework --output=$Output --arch=x86
   }
   else {
-    dotnet publish $ProjectPath --configuration=$Configuration -property:GAME=$Game -property:ENGINE=$Engine --framework=$Framework --output=$Output
+    dotnet publish $ProjectPath --configuration=$Configuration -property:GAME=$Game -property:ENGINE=$Engine --framework=$Framework --output=$Output 
   }
   if ($LASTEXITCODE) {
     throw "Build failed for $Game $Engine $Framework $Configuration"

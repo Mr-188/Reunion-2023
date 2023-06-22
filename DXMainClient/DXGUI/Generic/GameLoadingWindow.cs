@@ -1,15 +1,16 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using ClientCore;
 using ClientGUI;
 using DTAClient.Domain;
 using Localization;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using Rampastring.Tools;
 using Rampastring.XNAUI;
 using Rampastring.XNAUI.XNAControls;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace DTAClient.DXGUI.Generic
 {
@@ -72,6 +73,8 @@ namespace DTAClient.DXGUI.Generic
             btnCancel.Text = "Cancel".L10N("UI:Main:ButtonCancel");
             btnCancel.LeftClick += BtnCancel_LeftClick;
 
+            Keyboard.OnKeyPressed += Keyboard_OnKeyPressed;
+
             AddChild(lbSaveGameList);
             AddChild(btnLaunch);
             AddChild(btnDelete);
@@ -80,6 +83,21 @@ namespace DTAClient.DXGUI.Generic
             base.Initialize();
 
             ListSaves();
+        }
+
+        private void Keyboard_OnKeyPressed(object sender, Rampastring.XNAUI.Input.KeyPressEventArgs e)
+        {
+            if (Enabled)
+            {
+                if (e.PressedKey == Keys.Escape)
+                {
+                    btnCancel.OnLeftClick();
+                }
+                if (e.PressedKey == Keys.Enter)
+                {
+                    btnLaunch.OnLeftClick();
+                }
+            }
         }
 
         private void ListBox_SelectedIndexChanged(object sender, EventArgs e)

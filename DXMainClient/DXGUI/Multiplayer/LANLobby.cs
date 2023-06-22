@@ -1,4 +1,13 @@
-﻿using ClientCore;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Reflection;
+using System.Text;
+using System.Threading;
+using ClientCore;
 using ClientCore.CnCNet5;
 using ClientGUI;
 using DTAClient.Domain;
@@ -13,15 +22,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Rampastring.Tools;
 using Rampastring.XNAUI;
 using Rampastring.XNAUI.XNAControls;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
-using System.Reflection;
-using System.Text;
-using System.Threading;
 using SixLabors.ImageSharp;
 using Color = Microsoft.Xna.Framework.Color;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
@@ -320,7 +320,7 @@ namespace DTAClient.DXGUI.Multiplayer
             lanGameLobby.Enable();
         }
 
-        
+
 
         private void SetChatColor()
         {
@@ -660,6 +660,6 @@ namespace DTAClient.DXGUI.Multiplayer
             base.Update(gameTime);
         }
 
-        
+
     }
 }

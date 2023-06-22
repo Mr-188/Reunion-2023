@@ -1,5 +1,5 @@
-﻿using Rampastring.Tools;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Rampastring.Tools;
 
 namespace DTAClient.Domain.Multiplayer
 {
@@ -10,7 +10,7 @@ namespace DTAClient.Domain.Multiplayer
     {
         public static void WriteInfoToSpawnIni(
             List<PlayerInfo> players,
-            List<PlayerInfo> aiPlayers, 
+            List<PlayerInfo> aiPlayers,
             List<int> multiCmbIndexes,
             List<PlayerHouseInfo> playerHouseInfos,
             List<TeamStartMapping> teamStartMappings,

@@ -1,7 +1,7 @@
 ﻿using System.IO;
-using Rampastring.Tools;
 using ClientCore;
 using ClientCore.PlatformShim;
+using Rampastring.Tools;
 
 namespace DTAClient.Domain
 {

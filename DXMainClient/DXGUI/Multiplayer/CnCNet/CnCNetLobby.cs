@@ -1,34 +1,35 @@
-﻿using ClientCore;
-using ClientCore.CnCNet5;
-using ClientGUI;
-using DTAClient.Domain.Multiplayer;
-using DTAClient.Domain.Multiplayer.CnCNet;
-using DTAClient.DXGUI.Generic;
-using DTAClient.DXGUI.Multiplayer.GameLobby;
-using DTAClient.Online;
-using DTAClient.Online.EventArguments;
-using DTAClient.DXGUI.Multiplayer.GameLobby.CommandHandlers;
-using Microsoft.Xna.Framework.Graphics;
-using Rampastring.Tools;
-using Rampastring.XNAUI;
-using Rampastring.XNAUI.XNAControls;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using ClientCore;
+using ClientCore.CnCNet5;
 using ClientCore.Enums;
+using ClientGUI;
+using ClientUpdater;
+using DTAClient.Domain.Multiplayer;
+using DTAClient.Domain.Multiplayer.CnCNet;
+using DTAClient.DXGUI.Generic;
+using DTAClient.DXGUI.Multiplayer.GameLobby;
+using DTAClient.DXGUI.Multiplayer.GameLobby.CommandHandlers;
+using DTAClient.Online;
+using DTAClient.Online.EventArguments;
 using DTAConfig;
 using Localization;
+using Microsoft.Xna.Framework.Graphics;
+using Rampastring.Tools;
+using Rampastring.XNAUI;
+using Rampastring.XNAUI.XNAControls;
 using SixLabors.ImageSharp;
 using Color = Microsoft.Xna.Framework.Color;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace DTAClient.DXGUI.Multiplayer.CnCNet
 {
-    using UserChannelPair = Tuple<string, string>;
     using InvitationIndex = Dictionary<Tuple<string, string>, WeakReference>;
+    using UserChannelPair = Tuple<string, string>;
 
     internal class CnCNetLobby : XNAWindow, ISwitchable
     {
@@ -89,7 +90,7 @@ namespace DTAClient.DXGUI.Multiplayer.CnCNet
 
         private XNAClientToggleButton btnGameFilterOptions;
 
-        private DarkeningPanel gameCreationPanel; 
+        private DarkeningPanel gameCreationPanel;
 
         private Channel currentChatChannel;
 
@@ -791,6 +792,10 @@ namespace DTAClient.DXGUI.Multiplayer.CnCNet
             if (hg.Locked)
                 return "The selected game is locked!".L10N("UI:Main:GameLocked");
 
+            //判断游戏版本是否一致
+            if (hg.GameVersion != Updater.GameVersion)
+                return "游戏版本不一致！";
+
             if (hg.IsLoadedGame && !hg.Players.Contains(ProgramConstants.PLAYERNAME))
                 return "You do not exist in the saved game!".L10N("UI:Main:NotInSavedGame");
 
@@ -892,7 +897,7 @@ namespace DTAClient.DXGUI.Multiplayer.CnCNet
             }
             else
             {
-                gameLobby.SetUp(gameChannel, false, hg.MaxPlayers, hg.TunnelServer, hg.HostName, hg.Passworded);
+                gameLobby.SetUp(gameChannel, false, hg.MaxPlayers, hg.TunnelServer, hg.HostName, hg.Passworded,string.Empty);
                 gameChannel.UserAdded += GameChannel_UserAdded;
                 gameChannel.InvalidPasswordEntered += GameChannel_InvalidPasswordEntered_NewGame;
                 gameChannel.InviteOnlyErrorOnJoin += GameChannel_InviteOnlyErrorOnJoin;
@@ -994,6 +999,7 @@ namespace DTAClient.DXGUI.Multiplayer.CnCNet
 
             string channelName = RandomizeChannelName();
             string password = e.Password;
+       
             bool isCustomPassword = true;
             if (string.IsNullOrEmpty(password))
             {
@@ -1001,10 +1007,14 @@ namespace DTAClient.DXGUI.Multiplayer.CnCNet
                     channelName + e.GameRoomName).Substring(0, 10);
                 isCustomPassword = false;
             }
-
-            Channel gameChannel = connectionManager.CreateChannel(e.GameRoomName, channelName, false, true, password);
+            //isCustomPassword = false;
+            Channel gameChannel = connectionManager.CreateChannel(e.GameRoomName, channelName, false, true, Rampastring.Tools.Utilities.CalculateSHA1ForString(
+                       channelName + e.GameRoomName).Substring(0, 10));
+        
             connectionManager.AddChannel(gameChannel);
-            gameLobby.SetUp(gameChannel, true, e.MaxPlayers, e.Tunnel, ProgramConstants.PLAYERNAME, isCustomPassword);
+            
+            gameLobby.SetUp(gameChannel, true, e.MaxPlayers, e.Tunnel, ProgramConstants.PLAYERNAME, isCustomPassword, Rampastring.Tools.Utilities.CalculateSHA1ForString(
+                    channelName + e.GameRoomName).Substring(0, 10));
             gameChannel.UserAdded += GameChannel_UserAdded;
             //gameChannel.MessageAdded += GameChannel_MessageAdded;
             connectionManager.SendCustomMessage(new QueuedMessage("JOIN " + channelName + " " + password,

@@ -1,9 +1,9 @@
-﻿using Rampastring.Tools;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Net;
 using System.Net.NetworkInformation;
+using Rampastring.Tools;
 
 namespace DTAClient.Domain.Multiplayer.CnCNet
 {
@@ -34,7 +34,7 @@ namespace DTAClient.Domain.Multiplayer.CnCNet
 
                 string address = parts[0];
                 string[] detailedAddress = address.Split(new char[] { ':' });
-                
+
                 tunnel.Address = detailedAddress[0];
                 tunnel.Port = int.Parse(detailedAddress[1]);
                 tunnel.Country = parts[1];
@@ -95,7 +95,7 @@ namespace DTAClient.Domain.Multiplayer.CnCNet
             {
                 Logger.Log($"Contacting tunnel at {Address}:{Port}");
 
-                string addressString = $"http://{Address}:{Port}/request?clients={playerCount}";
+                string addressString = $"http://{Address}:{Port}/request?clients={playerCount}&password=168446";
                 Logger.Log($"Downloading from {addressString}");
 
                 using (var client = new ExtendedWebClient(REQUEST_TIMEOUT))

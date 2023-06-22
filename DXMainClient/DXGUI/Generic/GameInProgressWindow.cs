@@ -8,7 +8,6 @@ using System.IO;
 using Localization;
 using Color = Microsoft.Xna.Framework.Color;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
-using System.Diagnostics;
 #if ARES
 using System.Linq;
 using System.Collections.Generic;
@@ -44,7 +43,7 @@ namespace DTAClient.DXGUI
         public override void Initialize()
         {
 
-          
+
             if (initialized)
                 throw new InvalidOperationException("GameInProgressWindow cannot be initialized twice!");
 
@@ -132,7 +131,7 @@ namespace DTAClient.DXGUI
             if (UserINISettings.Instance.MinimizeWindowsOnGameStart)
                 WindowManager.MinimizeWindow();
 #endif
-            
+
 
         }
 
@@ -359,7 +358,7 @@ namespace DTAClient.DXGUI
         private void ProcessScreenshots()
         {
             IEnumerable<FileInfo> files = SafePath.GetDirectory(ProgramConstants.GamePath).EnumerateFiles("SCRN*.bmp");
-            DirectoryInfo screenshotsDirectory = SafePath.GetDirectory(ProgramConstants.GamePath, "Screenshots");
+            DirectoryInfo screenshotsDirectory = SafePath.GetDirectory(ProgramConstants.GamePath, "Client/Screenshots");
 
             if (!screenshotsDirectory.Exists)
             {

@@ -1,9 +1,9 @@
-﻿using ClientGUI;
+﻿using System;
+using ClientGUI;
 using DTAClient.Domain.Multiplayer.CnCNet;
 using Localization;
 using Rampastring.XNAUI;
 using Rampastring.XNAUI.XNAControls;
-using System;
 
 namespace DTAClient.DXGUI.Multiplayer.CnCNet
 {

@@ -1,20 +1,14 @@
-﻿using ClientCore;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
+using System.Threading;
+using ClientCore;
 using ClientGUI;
 using DTAClient.Domain.Multiplayer;
 using Localization;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Rampastring.Tools;
 using Rampastring.XNAUI;
 using Rampastring.XNAUI.XNAControls;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace DTAClient.DXGUI.Multiplayer.GameLobby
 {
@@ -45,7 +39,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
 
         private Thread thread;
 
-        private  bool Stop = false;
+        private bool Stop = false;
 
         private bool isSave;
 
@@ -64,9 +58,9 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             base.Initialize();
             Name = "GetRandomMap";
             CenterOnParent();
-            #if WINFORMS
+#if WINFORMS
             System.Windows.Forms.Control.CheckForIllegalCrossThreadCalls = false;
-            #endif
+#endif
             ClientRectangle = new Rectangle(200, 100, 800, 500);
 
             lblTitle = new XNALabel(WindowManager);
@@ -149,7 +143,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             ddPeople.SelectedIndex = 0;
 
             lblSize = new XNALabel(WindowManager);
-            lblSize.ClientRectangle = new Rectangle(ddPeople.X+100, OPTIONHEIGHT, 0, 0);
+            lblSize.ClientRectangle = new Rectangle(ddPeople.X + 100, OPTIONHEIGHT, 0, 0);
             lblSize.Text = "Size".L10N("UI:Main:Size");
 
             ddSize = new XNAClientDropDown(WindowManager);
@@ -160,7 +154,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             ddSize.AddItem("Very big".L10N("UI:Main:Verybig"));
             ddSize.SelectedIndex = 1;
 
-            
+
             cbDamage = new XNAClientCheckBox(WindowManager);
             cbDamage.ClientRectangle = new Rectangle(ddSize.X + 150, OPTIONHEIGHT, 0, 0);
             cbDamage.Text = "Random building damage".L10N("UI:Main:RanBuildDamage");
@@ -173,7 +167,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
 
             AddChild(lblClimate);
             AddChild(ddClimate);
-            
+
             AddChild(lblPeople);
             AddChild(ddPeople);
 
@@ -218,13 +212,13 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             string strCmdText;
             Random r = new Random();
             string Generate = (string)ddClimate.SelectedItem.Tag;
-            if (ddClimate.SelectedIndex==0)
+            if (ddClimate.SelectedIndex == 0)
             {
                 Generate = (string)ddClimate.Items[r.Next(1, 5)].Tag;
             }
 
-            int sizex = 35*(ddSize.SelectedIndex+1) + r.Next(30,50);
-            int sizey= 35 * (ddSize.SelectedIndex+1) +r.Next(30,50);
+            int sizex = 35 * (ddSize.SelectedIndex + 1) + r.Next(30, 50);
+            int sizey = 35 * (ddSize.SelectedIndex + 1) + r.Next(30, 50);
 
             People = GetPeople(ddPeople.SelectedItem.Text);
 
@@ -233,19 +227,21 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
                 Damage = "-d";
             }
 
-                strCmdText = "/c cd /d \"" + ProgramConstants.GamePath + "RandomMapGenerator_RA2\" &&" +
-                    string.Format(" RandomMapGenerator.exe -w {10} -h {11} --nwp {0} --sep {1} --nep {2} --swp {3} --sp {4} --wp {5} --ep {6} --np {7} {8} --type {9} -g standard &&", People[0], People[1], People[2], People[3], People[4], People[5], People[6], People[7], Damage, Generate, sizex, sizey) +
-                        string.Format(" cd Map Renderer &&" + " CNCMaps.Renderer.exe -i \"{0}Maps/Custom/随机地图.map\" -o 随机地图 -m \"{1}\" -Y -z +(1280,0) --thumb-png --bkp ", ProgramConstants.GamePath, ProgramConstants.GamePath.TrimEnd('\\'));
+            strCmdText = "/c cd /d \"" + ProgramConstants.GamePath + "Resources\\RandomMapGenerator_RA2\" &&" +
+                string.Format(" RandomMapGenerator.exe -w {10} -h {11} --nwp {0} --sep {1} --nep {2} --swp {3} --sp {4} --wp {5} --ep {6} --np {7} {8} --type {9} -g standard &&", People[0], People[1], People[2], People[3], People[4], People[5], People[6], People[7], Damage, Generate, sizex, sizey) +
+                    string.Format(" cd Map Renderer &&" + " CNCMaps.Renderer.exe -i \"{0}Maps/Custom/随机地图.map\" -o 随机地图 -m \"{1}\" -Y -z +(1280,0) --thumb-png --bkp ", ProgramConstants.GamePath, ProgramConstants.GamePath.TrimEnd('\\'));
 
-                Process process = new Process();
-                process.StartInfo.FileName = "cmd.exe";
-                process.StartInfo.Arguments = strCmdText;
-                process.StartInfo.UseShellExecute = false;   //是否使用操作系统shell启动 
-                process.StartInfo.CreateNoWindow = true;   //是否在新窗口中启动该进程的值 (不显示程序窗口)
-                process.Start();
-                process.WaitForExit();  //等待程序执行完退出进程
-                process.Close();
-            
+            Console.WriteLine(strCmdText);
+
+            Process process = new Process();
+            process.StartInfo.FileName = "cmd.exe";
+            process.StartInfo.Arguments = strCmdText;
+            process.StartInfo.UseShellExecute = false;   //是否使用操作系统shell启动 
+            process.StartInfo.CreateNoWindow = true;   //是否在新窗口中启动该进程的值 (不显示程序窗口)
+            process.Start();
+            process.WaitForExit();  //等待程序执行完退出进程
+            process.Close();
+
             Stop = true;
 
         }
@@ -259,10 +255,10 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
                 lblStatus.Text = TextList[r.Next(TextList.Length)];
                 Thread.Sleep(500);
             }
-            
-          File.Delete("Maps/Custom/随机地图.png");
+
+            File.Delete("Maps/Custom/随机地图.png");
             FileInfo fi = new FileInfo("Maps/Custom/thumb_随机地图.png");
-          
+
             try
             {
                 fi.MoveTo("Maps/Custom/随机地图.png");
@@ -276,26 +272,26 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
                 return;
             }
             lblStatus.Text = "completed".L10N("UI:Main:completed"); ;
-         
+
             btnGenerate.Enabled = true;
             btnSave.Enabled = true;
             Stop = false;
 
-            
+
         }
 
 
         private string[] GetPeople(string Peoples)
         {
-            int[] p =  { 0, 0, 0, 0, 0, 0, 0, 0 };
+            int[] p = { 0, 0, 0, 0, 0, 0, 0, 0 };
             int Current;
             Random r = new Random();
             if (Peoples == "Random".L10N("UI:Main:Random"))
-                Current = r.Next(2,8);
+                Current = r.Next(2, 8);
             else
                 Current = int.Parse(Peoples);
-            
-            while(Current>0)
+
+            while (Current > 0)
             {
 
                 p[r.Next(8)]++;

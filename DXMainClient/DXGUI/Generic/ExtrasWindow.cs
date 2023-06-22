@@ -1,12 +1,12 @@
-﻿using ClientCore;
+﻿using System;
+using System.Diagnostics;
+using ClientCore;
 using ClientGUI;
 using DTAClient.Domain;
 using Localization;
 using Microsoft.Xna.Framework;
-using Rampastring.XNAUI;
 using Rampastring.Tools;
-using System;
-using System.Diagnostics;
+using Rampastring.XNAUI;
 
 namespace DTAClient.DXGUI.Generic
 {

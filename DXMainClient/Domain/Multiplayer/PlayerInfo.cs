@@ -1,5 +1,5 @@
-﻿using Rampastring.Tools;
-using System;
+﻿using System;
+using Rampastring.Tools;
 
 namespace DTAClient.Domain.Multiplayer
 {

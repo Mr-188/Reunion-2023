@@ -1,16 +1,17 @@
-﻿using ClientCore;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using ClientCore;
 using ClientCore.Statistics;
 using ClientGUI;
 using DTAClient.Domain.Multiplayer;
 using Localization;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using Rampastring.Tools;
 using Rampastring.XNAUI;
 using Rampastring.XNAUI.XNAControls;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace DTAClient.DXGUI.Generic
 {
@@ -34,6 +35,7 @@ namespace DTAClient.DXGUI.Generic
         private XNAMultiColumnListBox lbGameList;
         private XNAMultiColumnListBox lbGameStatistics;
 
+        private XNAClientButton btnReturnToMenu;
         private Texture2D[] sideTextures;
 
         // *****************************
@@ -161,7 +163,7 @@ namespace DTAClient.DXGUI.Generic
             cmbGameModeFilter.ClientRectangle = new Rectangle(500, 11, 114, 21);
             cmbGameModeFilter.SelectedIndexChanged += CmbGameModeFilter_SelectedIndexChanged;
 
-            var btnReturnToMenu = new XNAClientButton(WindowManager);
+            btnReturnToMenu = new XNAClientButton(WindowManager);
             btnReturnToMenu.Name = nameof(btnReturnToMenu);
             btnReturnToMenu.ClientRectangle = new Rectangle(700, 486, UIDesignConstants.BUTTON_WIDTH_160, UIDesignConstants.BUTTON_HEIGHT);
             btnReturnToMenu.Text = "Return to Main Menu".L10N("UI:Main:ReturnToMainMenu");
@@ -183,7 +185,7 @@ namespace DTAClient.DXGUI.Generic
             chkIncludeSpectatedGames.ClientRectangle = new Rectangle(
                 Width - chkIncludeSpectatedGames.Width - 12,
                 cmbGameModeFilter.Bottom + 3,
-                chkIncludeSpectatedGames.Width, 
+                chkIncludeSpectatedGames.Width,
                 chkIncludeSpectatedGames.Height);
             chkIncludeSpectatedGames.CheckedChanged += ChkIncludeSpectatedGames_CheckedChanged;
 
@@ -234,9 +236,9 @@ namespace DTAClient.DXGUI.Generic
             panelGameStatistics.AddChild(lbGameList);
             panelGameStatistics.AddChild(lbGameStatistics);
 
-#endregion
+            #endregion
 
-#region Total statistics
+            #region Total statistics
 
             panelTotalStatistics = new XNAPanel(WindowManager);
             panelTotalStatistics.Name = "panelTotalStatistics";
@@ -419,7 +421,7 @@ namespace DTAClient.DXGUI.Generic
 
             #endregion
 
-#region Achievement
+            #region Achievement
             //成就
             panelAchStatistics = new XNAPanel(WindowManager);
             panelAchStatistics.Name = "panelAchStatistics";
@@ -577,7 +579,7 @@ namespace DTAClient.DXGUI.Generic
             panelAchStatistics.AddChild(PrgMinValue);
             panelAchStatistics.AddChild(PrgMaginotValue);
             panelAchStatistics.AddChild(PrgBtValue);
- #endregion
+            #endregion
 
             AddChild(tabControl);
             AddChild(lblFilter);
@@ -602,11 +604,11 @@ namespace DTAClient.DXGUI.Generic
             mpColors = MultiplayerColor.LoadColors();
 
             ReadStatistics();
-            
+
             ListGameModes();
             ListGames();
 
-            
+
 
             StatisticsManager.Instance.GameAdded += Instance_GameAdded;
 
@@ -643,7 +645,16 @@ namespace DTAClient.DXGUI.Generic
             locationY += TOTAL_STATS_Y_INCREASE;
             //冰天雪地里有多少棵树我都知道
 
-           
+            Keyboard.OnKeyPressed += Keyboard_OnKeyPressed;
+        }
+
+        private void Keyboard_OnKeyPressed(object sender, Rampastring.XNAUI.Input.KeyPressEventArgs e)
+        {
+            if (e.PressedKey == Keys.Escape)
+            {
+                btnReturnToMenu.OnLeftClick();
+            }
+
         }
 
         private void Instance_GameAdded(object sender, EventArgs e)
@@ -782,7 +793,7 @@ namespace DTAClient.DXGUI.Generic
                     items.Add(new XNAListBoxItem("-", textColor));
                 }
                 else
-                { 
+                {
                     if (!ms.SawCompletion)
                     {
                         // The game wasn't completed - we don't know the stats
@@ -846,7 +857,7 @@ namespace DTAClient.DXGUI.Generic
             StatisticsManager sm = StatisticsManager.Instance;
 
             sm.ReadStatistics(ProgramConstants.GamePath);
-            
+
         }
 
         private void ListGameModes()
@@ -985,7 +996,7 @@ namespace DTAClient.DXGUI.Generic
 
             listedGameIndexes.Reverse();
 
-            
+
 
             SetTotalStatistics();
 
@@ -1006,7 +1017,7 @@ namespace DTAClient.DXGUI.Generic
                 info.Add(Renderer.GetSafeString(TimeSpan.FromSeconds(ms.LengthInSeconds).ToString(), lbGameList.FontIndex));
                 info.Add(Conversions.BooleanToString(ms.SawCompletion, BooleanStringStyle.YESNO));
                 lbGameList.AddItem(info, true);
-                
+
             }
         }
 
@@ -1017,7 +1028,7 @@ namespace DTAClient.DXGUI.Generic
             for (int i = 0; i < gameCount; i++)
             {
                 ListGameIndexIfPrerequisitesMet(i);
-            
+
             }
         }
 
@@ -1043,7 +1054,7 @@ namespace DTAClient.DXGUI.Generic
                         if (hpCount > 1)
                         {
                             ListGameIndexIfPrerequisitesMet(i);
-                     
+
                             break;
                         }
                     }
@@ -1073,7 +1084,7 @@ namespace DTAClient.DXGUI.Generic
                         if (pTeam > -1 && (ps.Team != pTeam || ps.Team == 0))
                         {
                             ListGameIndexIfPrerequisitesMet(i);
-                       
+
                             break;
                         }
 
@@ -1117,7 +1128,7 @@ namespace DTAClient.DXGUI.Generic
                 if (add && hpCount > 1)
                 {
                     ListGameIndexIfPrerequisitesMet(i);
-               
+
                 }
             }
         }
@@ -1151,7 +1162,7 @@ namespace DTAClient.DXGUI.Generic
                 if (add)
                 {
                     ListGameIndexIfPrerequisitesMet(i);
-                 
+
                 }
             }
         }
@@ -1175,7 +1186,7 @@ namespace DTAClient.DXGUI.Generic
                 if (ps.WasSpectator)
                     return;
             }
-         
+
             listedGameIndexes.Add(gameIndex);
         }
 

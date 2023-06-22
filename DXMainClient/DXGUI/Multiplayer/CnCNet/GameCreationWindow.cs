@@ -1,13 +1,14 @@
-﻿using ClientCore;
+﻿using System;
+using System.IO;
+using ClientCore;
 using ClientGUI;
 using DTAClient.Domain.Multiplayer.CnCNet;
 using Localization;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using Rampastring.Tools;
 using Rampastring.XNAUI;
 using Rampastring.XNAUI.XNAControls;
-using System;
-using System.IO;
 
 namespace DTAClient.DXGUI.Multiplayer.CnCNet
 {
@@ -36,7 +37,7 @@ namespace DTAClient.DXGUI.Multiplayer.CnCNet
 
         private XNALabel lblTunnelServer;
         private TunnelListBox lbTunnelList;
-        private XNACheckBox chkAuto;
+    
 
         private XNAClientButton btnCreateGame;
         private XNAClientButton btnCancel;
@@ -102,18 +103,13 @@ namespace DTAClient.DXGUI.Multiplayer.CnCNet
             btnDisplayAdvancedOptions.Text = "Advanced Options".L10N("UI:Main:AdvancedOptions");
             btnDisplayAdvancedOptions.LeftClick += BtnDisplayAdvancedOptions_LeftClick;
 
-            chkAuto = new XNACheckBox(WindowManager);
-            chkAuto.Name = nameof(chkAuto);
-            chkAuto.ClientRectangle = new Rectangle(tbGameName.X, lblPassword.Bottom + UIDesignConstants.CONTROL_VERTICAL_MARGIN * 3, 0, 0);
-            chkAuto.Text = "Auto select servers".L10N("UI:Main:Auto");
-            chkAuto.CheckedChanged += (s,e)=> Auto();
-            chkAuto.Checked = true;
+           
 
             lblTunnelServer = new XNALabel(WindowManager);
             lblTunnelServer.Name = nameof(lblTunnelServer);
             lblTunnelServer.ClientRectangle = new Rectangle(UIDesignConstants.EMPTY_SPACE_SIDES +
                 UIDesignConstants.CONTROL_HORIZONTAL_MARGIN, lblPassword.Bottom + UIDesignConstants.CONTROL_VERTICAL_MARGIN * 4, 0, 0);
-            lblTunnelServer.Text = "Tunnel server:".L10N("UI:Main:TunnelServer");
+            lblTunnelServer.Text = "服务器:".L10N("UI:Main:TunnelServer");
             lblTunnelServer.Enabled = false;
             lblTunnelServer.Visible = false;
 
@@ -146,6 +142,9 @@ namespace DTAClient.DXGUI.Multiplayer.CnCNet
             btnLoadMPGame.Text = "Load Game".L10N("UI:Main:LoadGame");
             btnLoadMPGame.LeftClick += BtnLoadMPGame_LeftClick;
 
+
+            Keyboard.OnKeyPressed += Keyboard_OnKeyPressed;
+
             AddChild(tbGameName);
             AddChild(lblRoomName);
             AddChild(ddMaxPlayers);
@@ -155,7 +154,7 @@ namespace DTAClient.DXGUI.Multiplayer.CnCNet
             AddChild(btnDisplayAdvancedOptions);
             AddChild(lblTunnelServer);
             AddChild(lbTunnelList);
-            AddChild(chkAuto);
+           
             AddChild(btnCreateGame);
             if (!ClientConfiguration.Instance.DisableMultiplayerGameLoading)
                 AddChild(btnLoadMPGame);
@@ -173,14 +172,21 @@ namespace DTAClient.DXGUI.Multiplayer.CnCNet
                 BtnDisplayAdvancedOptions_LeftClick(this, EventArgs.Empty);
         }
 
-        private void Auto()
+        private void Keyboard_OnKeyPressed(object sender, Rampastring.XNAUI.Input.KeyPressEventArgs e)
         {
-            if (chkAuto.Checked)
-            {
-                lbTunnelList.SelectedIndex = GetMinms();  //获取最适合的服务器
+            if (Enabled) {
+                if (e.PressedKey == Keys.Escape)
+                {
+                    btnCancel.OnLeftClick();
+                }
+                if (e.PressedKey == Keys.Enter)
+                {
+                    btnCreateGame.OnLeftClick();
+                }
             }
-         
         }
+
+       
 
         private void LbTunnelList_ListRefreshed(object sender, EventArgs e)
         {
@@ -247,9 +253,6 @@ namespace DTAClient.DXGUI.Multiplayer.CnCNet
                 return;
             }
 
-            if (chkAuto.Checked)
-                lbTunnelList.SelectedIndex = GetMinms();  //获取最适合的服务器
-
             GameCreated?.Invoke(this, new GameCreationEventArgs(gameName,
                 int.Parse(ddMaxPlayers.SelectedItem.Text), tbPassword.Text,
                 tunnelHandler.Tunnels[lbTunnelList.SelectedIndex]));
@@ -305,7 +308,7 @@ namespace DTAClient.DXGUI.Multiplayer.CnCNet
             SetAttributesFromIni();
 
             CenterOnParent();
-            Auto();
+           
         }
 
         public void Refresh()

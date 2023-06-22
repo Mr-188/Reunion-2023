@@ -1,8 +1,8 @@
-﻿using ClientCore;
-using DTAClient.Online.EventArguments;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using ClientCore;
 using DTAClient.DXGUI;
+using DTAClient.Online.EventArguments;
 using Localization;
 
 namespace DTAClient.Online
@@ -70,7 +70,7 @@ namespace DTAClient.Online
 
         public bool IsChatChannel { get; }
 
-        public string Password { get; private set; }
+        public string Password { get; set; }
 
         private readonly Connection connection;
 

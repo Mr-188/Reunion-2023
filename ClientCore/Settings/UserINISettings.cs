@@ -12,7 +12,7 @@ namespace ClientCore
     public class UserINISettings
     {
         private static UserINISettings _instance;
-
+       
         public const string VIDEO = "Video";
         public const string MULTIPLAYER = "MultiPlayer";
         public const string OPTIONS = "Options";
@@ -116,7 +116,8 @@ namespace ClientCore
 
             //随机壁纸
             Random_wallpaper = new BoolSetting(iniFile, OPTIONS, "Random_wallpaper", false);
-
+            //壁纸还是视频
+            video_wallpaper = new BoolSetting(iniFile, OPTIONS, "video_wallpaper", false);
             IsFirstRun = new BoolSetting(iniFile, OPTIONS, "IsFirstRun", true);
             CustomComponentsDenied = new BoolSetting(iniFile, OPTIONS, "CustomComponentsDenied", false);
             Difficulty = new IntSetting(iniFile, OPTIONS, "Difficulty", 1);
@@ -139,7 +140,10 @@ namespace ClientCore
            //皮肤
            Skin = new StringListSetting(iniFile, SKIN, "Skin", new List<string>());
 
-            GameModSelect = new IntSetting(iniFile, GAMEMOD, "Select", 0);
+            Mod_cath = new BoolSetting(iniFile, OPTIONS, "Mod_cath", true);
+
+
+            StartCap = new BoolSetting(iniFile, OPTIONS, "StartCap", true);
             GameModName = new StringSetting(iniFile, GAMEMOD, "items", string.Empty);
             GameModPath = new StringSetting(iniFile, GAMEMOD, "Mod", string.Empty);
         }
@@ -251,6 +255,12 @@ namespace ClientCore
         //随机壁纸
         public BoolSetting Random_wallpaper { get; private set; }
 
+        //壁纸或视频
+        public BoolSetting video_wallpaper { get; private set; }
+    //Mod缓存机制
+        public BoolSetting Mod_cath { get; private set; }
+
+
         public StringListSetting Skin { get; private set; }
         public BoolSetting CustomComponentsDenied { get; private set; }
 
@@ -273,9 +283,9 @@ namespace ClientCore
         public IntSetting CampaignDefaultGameSpeed { get; private set; }
 
 
-        //外部Mod
+        //启动时检查任务包
 
-        public IntSetting GameModSelect { get; private set; }
+        public BoolSetting StartCap { get; private set; }
 
         public StringSetting GameModName { get; private set; }
 

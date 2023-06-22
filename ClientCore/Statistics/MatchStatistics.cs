@@ -123,7 +123,7 @@ namespace ClientCore.Statistics
             stream.WriteString(GameMode, 64);
             // Unique game ID, 4 bytes
             stream.WriteInt(GameID);
-            // Whether game options were valid for earning a star, 1 byte
+            // Whether GameOptions were valid for earning a star, 1 byte
             stream.WriteBool(IsValidForStar);
 
             // Write player info

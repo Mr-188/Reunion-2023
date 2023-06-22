@@ -1,20 +1,18 @@
-﻿using Rampastring.XNAUI.XNAControls;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using Rampastring.XNAUI;
-using Microsoft.Xna.Framework;
-using Rampastring.XNAUI.Input;
-using Microsoft.Xna.Framework.Input;
-using DTAClient.Online;
-using ClientGUI;
-using ClientCore;
 using System.Threading;
+using ClientCore;
+using ClientGUI;
 using DTAClient.Domain.Multiplayer.CnCNet;
+using DTAClient.Online;
 using DTAClient.Online.EventArguments;
 using DTAConfig;
 using Localization;
-
-using Rampastring.Tools;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
+using Rampastring.XNAUI;
+using Rampastring.XNAUI.Input;
+using Rampastring.XNAUI.XNAControls;
 
 namespace DTAClient.DXGUI.Generic
 {
@@ -89,8 +87,8 @@ namespace DTAClient.DXGUI.Generic
         {
             primarySwitches.Add(switchable);
             btnMainButton.Text = switchable.GetSwitchName() + " (F2)";
-             if(switchable.GetSwitchName()== "Game Lobby".L10N("UI:Main:GameLobby"))
-              optionsWindow.tabControl.MakeUnselectable(4);
+            if (switchable.GetSwitchName() == "Game Lobby".L10N("UI:Main:GameLobby"))
+                optionsWindow.tabControl.MakeUnselectable(4);
         }
 
         public void RemovePrimarySwitchable(ISwitchable switchable)
@@ -122,7 +120,7 @@ namespace DTAClient.DXGUI.Generic
                 optionsWindow.ToggleMainMenuOnlyOptions(primarySwitches.Count == 1 && !lanMode);
         }
 
-       
+
 
         public void Clean()
         {
@@ -355,7 +353,7 @@ namespace DTAClient.DXGUI.Generic
         private void BtnOptions_LeftClick(object sender, EventArgs e)
         {
             privateMessageSwitch.SwitchOff();
-            
+
             //optionsWindow.tabControl.MakeUnselectable(4);
             optionsWindow.Open();
             optionsWindow.tabControl.SelectedTab = 0;
@@ -425,10 +423,10 @@ namespace DTAClient.DXGUI.Generic
             this.lanMode = lanMode;
             SetSwitchButtonsClickable(!lanMode);
             if (lanMode)
-            
-                
+
+
                 ConnectionEvent("LAN MODE".L10N("UI:Main:StatusLanMode"));
-            
+
             else
                 ConnectionEvent("OFFLINE".L10N("UI:Main:StatusOffline"));
         }

@@ -1,14 +1,14 @@
-﻿using ClientCore;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using ClientCore;
 using ClientCore.CnCNet5;
 using DTAClient.Online.EventArguments;
 using Localization;
 using Microsoft.Xna.Framework;
 using Rampastring.Tools;
 using Rampastring.XNAUI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace DTAClient.Online
 {

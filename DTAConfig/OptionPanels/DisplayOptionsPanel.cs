@@ -47,6 +47,8 @@ namespace DTAConfig.OptionPanels
         private XNAClientDropDown ddClientTheme;
         private XNAClientDropDown ddLanguage;
         private XNAClientDropDown ddVoice;
+        private XNAClientDropDown ddStart;
+
 
         private List<DirectDrawWrapper> renderers;
 
@@ -157,6 +159,9 @@ namespace DTAConfig.OptionPanels
             chkBorderlessWindowedMode.Text = "Borderless Windowed Mode".L10N("UI:DTAConfig:BorderlessWindowedMode");
             chkBorderlessWindowedMode.AllowChecking = false;
 
+           
+            
+
             chkBackBufferInVRAM = new XNAClientCheckBox(WindowManager);
             chkBackBufferInVRAM.Name = "chkBackBufferInVRAM";
             chkBackBufferInVRAM.ClientRectangle = new Rectangle(
@@ -180,6 +185,8 @@ namespace DTAConfig.OptionPanels
                 ddIngameResolution.Height);
             ddClientResolution.AllowDropDown = false;
             ddClientResolution.PreferredItemLabel = "(recommended)".L10N("UI:DTAConfig:Recommended");
+
+            ddClientResolution.Enabled = false;
 
             int width = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
             int height = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
@@ -227,13 +234,37 @@ namespace DTAConfig.OptionPanels
             chkBorderlessClient.Text = "Fullscreen Client".L10N("UI:DTAConfig:FullscreenClient");
             chkBorderlessClient.CheckedChanged += ChkBorderlessMenu_CheckedChanged;
             chkBorderlessClient.Checked = true;
+            //暂时禁用客户端窗口化
+            chkBorderlessClient.Visible = false;
+
+            //壁纸or视频
+            var lblStart = new XNALabel(WindowManager);
+            lblStart.Name = "lblStart";
+            lblStart.Text = "载入:";
+            lblStart.ClientRectangle = new Rectangle(lblClientResolution.X, chkWindowedMode.Y, 0, 0);
+
+            ddStart = new XNAClientDropDown(WindowManager);
+            ddStart.Name = "ddStart";
+            ddStart.ClientRectangle = new Rectangle(ddClientResolution.X,
+                chkWindowedMode.Y,
+                60,
+                ddRenderer.Height);
+            ddStart.AddItem("图");
+            ddStart.AddItem("视频");
+            ddStart.SelectedChanged += DdStart_SelectedChanged;
+
+            var btnOpen = new XNAButton(WindowManager);
+            btnOpen.Name = "btnOpen";
+            btnOpen.Text = "打开位置";
+            btnOpen.ClientRectangle = new Rectangle(ddStart.X + 80, chkWindowedMode.Y, 50, ddRenderer.Height);
+            btnOpen.LeftClick += BtnOpen_LeftClick;
 
             //随机启动封面
             chkRandom_wallpaper = new XNAClientCheckBox(WindowManager);
             chkRandom_wallpaper.Name = "chkRandom_wallpaper";
             chkRandom_wallpaper.ClientRectangle = new Rectangle(
                 lblClientResolution.X,
-                ddRenderer.Bottom + 16, 0, 0);
+                chkBorderlessWindowedMode.Y, 0, 0);
             chkRandom_wallpaper.Text = "Random start cover".L10N("UI:Main:RanWall");
             chkRandom_wallpaper.Checked = false;
 
@@ -312,7 +343,8 @@ namespace DTAConfig.OptionPanels
             for (int i = 0; i < themeCount; i++) {
                 XNADropDownItem item1 = new XNADropDownItem();
                 item1.Text = ClientConfiguration.Instance.GetThemeInfoFromIndex(i)[0].L10N("UI:Themes:" + ClientConfiguration.Instance.GetThemeInfoFromIndex(i)[0]);
-                item1.Tag = ClientConfiguration.Instance.GetThemeInfoFromIndex(i)[0];
+                item1.Tag = ClientConfiguration.Instance.GetThemeInfoFromIndex(i)[1];
+               // Console.WriteLine(item1.Tag.ToString());
                 ddClientTheme.AddItem(item1);
             }
 #if TS
@@ -390,6 +422,27 @@ namespace DTAConfig.OptionPanels
             AddChild(ddVoice);
             //随机封面
             AddChild(chkRandom_wallpaper);
+            AddChild(lblStart);
+            AddChild(ddStart);
+            AddChild(btnOpen);
+        }
+
+        private void BtnOpen_LeftClick(object sender, EventArgs e)
+        {
+            if (ddStart.SelectedIndex == 0)
+                Process.Start("explorer", $"{ProgramConstants.GamePath}Resources\\{ddClientTheme.SelectedItem.Tag}Wallpaper\\");
+            else
+                Process.Start("explorer", $"/select,{ProgramConstants.GamePath}Resources\\a.mp4");
+        }
+
+        private void DdStart_SelectedChanged(object sender, EventArgs e)
+        {
+               if(ddStart.SelectedIndex!=0)
+            {
+                chkRandom_wallpaper.Enabled = false;
+            }
+              else
+                chkRandom_wallpaper.Enabled = true;
         }
 
         /// <summary>
@@ -736,7 +789,7 @@ namespace DTAConfig.OptionPanels
 
             //随机壁纸
             chkRandom_wallpaper.Checked = UserINISettings.Instance.Random_wallpaper;
-
+            ddStart.SelectedIndex = UserINISettings.Instance.video_wallpaper ? 1 : 0;
             int selectedLanguageIndex = ddLanguage.Items.FindIndex(
                 ddi => (string)ddi.Tag == UserINISettings.Instance.Language);
             ddLanguage.SelectedIndex = selectedLanguageIndex > -1 ? selectedLanguageIndex : 0;
@@ -868,6 +921,8 @@ namespace DTAConfig.OptionPanels
 
             IniSettings.ClientResolutionX.Value = clientRes[0];
             IniSettings.ClientResolutionY.Value = clientRes[1];
+
+            IniSettings.video_wallpaper.Value = ddStart.SelectedIndex == 0? false: true;
 
             if (IniSettings.BorderlessWindowedClient.Value != chkBorderlessClient.Checked)
                 restartRequired = true;

@@ -1,4 +1,10 @@
-﻿using ClientCore;
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading;
+using ClientCore;
 using DTAClient.Domain;
 using DTAClient.Domain.LAN;
 using DTAClient.Domain.Multiplayer;
@@ -9,12 +15,6 @@ using Localization;
 using Microsoft.Xna.Framework;
 using Rampastring.Tools;
 using Rampastring.XNAUI;
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading;
 
 namespace DTAClient.DXGUI.Multiplayer
 {
@@ -473,8 +473,8 @@ namespace DTAClient.DXGUI.Multiplayer
 
         private void Server_HandleFileHashMessage(LANPlayerInfo sender, string hash)
         {
-            if (hash != localFileHash)
-                AddNotice(string.Format("{0} - modified files detected! They could be cheating!".L10N("UI:Main:PlayerCheating"), sender.Name), Color.Red);
+            //if (hash != localFileHash)
+            //    AddNotice(string.Format("{0} - modified files detected! They could be cheating!".L10N("UI:Main:PlayerCheating"), sender.Name), Color.Red);
             sender.Verified = true;
         }
 

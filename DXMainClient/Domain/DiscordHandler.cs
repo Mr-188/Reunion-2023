@@ -1,18 +1,16 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using ClientCore;
 using DiscordRPC;
 using DiscordRPC.Message;
-using Microsoft.Xna.Framework;
 using Rampastring.Tools;
-using Rampastring.XNAUI;
-using System.Text.RegularExpressions;
 
 namespace DTAClient.Domain
 {
     /// <summary>
     /// A class for handling Discord integration.
     /// </summary>
-    public class DiscordHandler: IDisposable
+    public class DiscordHandler : IDisposable
     {
         private DiscordRpcClient client;
 

@@ -1,13 +1,13 @@
-﻿using Rampastring.XNAUI.XNAControls;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using ClientCore;
-using Rampastring.XNAUI;
-using Microsoft.Xna.Framework.Graphics;
-using PlayerInfo = DTAClient.Domain.Multiplayer.PlayerInfo;
-using Microsoft.Xna.Framework;
 using DTAClient.Domain.Multiplayer;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Rampastring.XNAUI;
+using Rampastring.XNAUI.XNAControls;
+using PlayerInfo = DTAClient.Domain.Multiplayer.PlayerInfo;
 
 namespace DTAClient.DXGUI.Multiplayer.GameLobby
 {
@@ -257,7 +257,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
 
                 Renderer.DrawTexture(WaypointTexture,
                     new Vector2(displayRectangle.Center.X + 0.5f, displayRectangle.Center.Y),
-                    0f, 
+                    0f,
                     new Vector2(WaypointTexture.Width / 2, WaypointTexture.Height / 2),
                     new Vector2(1f, 1f),
                     Color.White);

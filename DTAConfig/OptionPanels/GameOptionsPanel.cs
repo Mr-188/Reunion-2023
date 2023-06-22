@@ -42,7 +42,7 @@ namespace DTAConfig.OptionPanels
         private XNAClientCheckBox chkShowHiddenObjects;
 #endif
 
-        private XNADropDown ddGameMod;
+        private XNAClientCheckBox chkStartCap;
 
         private XNAControl topBar;
 
@@ -95,12 +95,13 @@ namespace DTAConfig.OptionPanels
             lblGameMod.ClientRectangle = new Rectangle(400,chkScrollCoasting.Y,0,0);
             lblGameMod.Text = "Mod:".L10N("UI:DTAConfig:Mod");
 
-            ddGameMod = new XNAClientDropDown(WindowManager);
-            ddGameMod.Name = "ddGameMod";
-            ddGameMod.ClientRectangle = new Rectangle(lblGameMod.X + 60, chkScrollCoasting.Y, 150, 20);
+            chkStartCap = new XNAClientCheckBox(WindowManager);
+            chkStartCap.Name = "chkStartCap";
+            chkStartCap.ClientRectangle = new Rectangle(lblGameMod.X + 60, chkScrollCoasting.Y, 150, 20);
+            chkStartCap.Text = "启动时是否检查任务包";
 
-            foreach (string s in UserINISettings.Instance.GameModName.Value.Split(','))
-                ddGameMod.AddItem(s);
+            //foreach (string s in UserINISettings.Instance.GameModName.Value.Split(','))
+            //    chkStartCap.AddItem(s);
 
             chkTargetLines = new SettingCheckBox(WindowManager, true, UserINISettings.OPTIONS, "UnitActionLines");
             chkTargetLines.Name = "chkTargetLines";
@@ -188,6 +189,13 @@ namespace DTAConfig.OptionPanels
             btnConfigureHotkeys.Text = "Configure Hotkeys".L10N("UI:DTAConfig:ConfigureHotkeys");
             btnConfigureHotkeys.LeftClick += BtnConfigureHotkeys_LeftClick;
 
+            var btnRecover = new XNAClientButton(WindowManager);
+            btnRecover.Name = "btnRecover";
+            btnRecover.ClientRectangle = new Rectangle(lblPlayerName.X, lblNotice.Bottom + 72, UIDesignConstants.BUTTON_WIDTH_160, UIDesignConstants.BUTTON_HEIGHT);
+            btnRecover.Text = "清理游戏文件";
+            btnRecover.SetToolTipText("如果游戏出现问题，可以点击这个按钮尝试修复。");
+            btnRecover.LeftClick += BtnRecover_LeftClick;
+
             AddChild(lblScrollRate);
             AddChild(lblScrollRateValue);
             AddChild(trbScrollRate);
@@ -198,10 +206,39 @@ namespace DTAConfig.OptionPanels
             AddChild(tbPlayerName);
             AddChild(lblNotice);
             AddChild(btnConfigureHotkeys);
-            AddChild(lblGameMod);
-            AddChild(ddGameMod);
+            AddChild(btnRecover);
+           // AddChild(lblGameMod);
+            AddChild(chkStartCap);
+        }
+        
+             private void BtnRecover_LeftClick(object sender, EventArgs e)
+        {
+            XNAMessageBox xNAMessageBox = new XNAMessageBox(WindowManager, "清理确认", "你确定要清理文件吗？", XNAMessageBoxButtons.YesNo);
+            xNAMessageBox.Show();
+            xNAMessageBox.YesClickedAction += (e) => Recover();
         }
 
+        private void Recover()
+        {
+            try
+            {
+                File.Delete("expandmd94.mix");
+                File.Delete("expandmd95.mix");
+                File.Delete("expandmd96.mix");
+                File.Delete("expandmd97.mix");
+                File.Delete("movies01.mix");
+                File.Delete("movies02.mix");
+                File.Delete("movmd03.mix");
+                File.Delete("spawn.ini");
+                File.Delete("phobos.dll");
+                XNAMessageBox.Show(WindowManager, "清理文件", "清理成功！");
+            }
+            catch(Exception ex)
+            {
+                XNAMessageBox.Show(WindowManager, "错误", "清理失败，可能是某个文件被占用了");
+            }
+            
+        }
         private void BtnConfigureHotkeys_LeftClick(object sender, EventArgs e)
         {
             hotkeyConfigWindow.Enable();
@@ -236,7 +273,7 @@ namespace DTAConfig.OptionPanels
                 lblScrollRateValue.Text = scrollRate.ToString();
             }
             
-            ddGameMod.SelectedIndex = UserINISettings.Instance.GameModSelect;
+            chkStartCap.Checked = UserINISettings.Instance.StartCap;
 
 
             tbPlayerName.Text = UserINISettings.Instance.PlayerName;
@@ -265,18 +302,18 @@ namespace DTAConfig.OptionPanels
             if (playerName.Length > 0)
                 IniSettings.PlayerName.Value = playerName;
 
-            if (ddGameMod.SelectedIndex != IniSettings.GameModSelect) {
-                restartRequired = true;
+            //if (chkStartCap.SelectedIndex != IniSettings.GameModSelect) {
+            //    restartRequired = true;
 
-                List<string> deleteFile = new List<string>();
-                foreach (string file in Directory.GetFiles(UserINISettings.Instance.GameModPath.Value.Split(',')[UserINISettings.Instance.GameModSelect.Value]))
-                    deleteFile.Add(Path.GetFileName(file));
+            //    List<string> deleteFile = new List<string>();
+            //    foreach (string file in Directory.GetFiles(UserINISettings.Instance.GameModPath.Value.Split(',')[UserINISettings.Instance.GameModSelect.Value]))
+            //        deleteFile.Add(Path.GetFileName(file));
 
-                DelFile(deleteFile);
-                CopyDirectory(UserINISettings.Instance.GameModPath.Value.Split(',')[ddGameMod.SelectedIndex],"./");
+            //    DelFile(deleteFile);
+            //    CopyDirectory(UserINISettings.Instance.GameModPath.Value.Split(',')[chkStartCap.SelectedIndex],"./");
 
-                IniSettings.GameModSelect.Value = ddGameMod.SelectedIndex;
-        }
+                IniSettings.StartCap.Value = chkStartCap.Enabled;
+       // }
             return restartRequired;
         }
 

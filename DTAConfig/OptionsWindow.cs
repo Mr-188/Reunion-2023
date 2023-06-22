@@ -10,6 +10,8 @@ using Rampastring.XNAUI.XNAControls;
 using System;
 using ClientUpdater;
 using DTAClient.DXGUI.Generic;
+using System.Linq;
+using Microsoft.Xna.Framework.Input;
 
 namespace DTAConfig
 {
@@ -35,6 +37,8 @@ namespace DTAConfig
 
         private GameCollection gameCollection;
 
+        private XNAClientButton btnSave;
+        private XNAClientButton btnCancel;
 
 
         public static void AddAndInitializeWithControl(WindowManager wm, XNAControl control)
@@ -65,14 +69,14 @@ namespace DTAConfig
             tabControl.AddTab("Components".L10N("UI:DTAConfig:TabComponents"), UIDesignConstants.BUTTON_WIDTH_92);
             tabControl.SelectedIndexChanged += TabControl_SelectedIndexChanged;
 
-            var btnCancel = new XNAClientButton(WindowManager);
+            btnCancel = new XNAClientButton(WindowManager);
             btnCancel.Name = "btnCancel";
             btnCancel.ClientRectangle = new Rectangle(Width - 104,
                 Height - 35, UIDesignConstants.BUTTON_WIDTH_92, UIDesignConstants.BUTTON_HEIGHT);
             btnCancel.Text = "Cancel".L10N("UI:DTAConfig:ButtonCancel");
             btnCancel.LeftClick += BtnBack_LeftClick;
 
-            var btnSave = new XNAClientButton(WindowManager);
+            btnSave = new XNAClientButton(WindowManager);
             btnSave.Name = "btnSave";
             btnSave.ClientRectangle = new Rectangle(12, btnCancel.Y, UIDesignConstants.BUTTON_WIDTH_92, UIDesignConstants.BUTTON_HEIGHT);
             btnSave.Text = "Save".L10N("UI:DTAConfig:ButtonSave");
@@ -105,15 +109,15 @@ namespace DTAConfig
                 componentsPanel
             };
 
-            
+            Keyboard.OnKeyPressed += Keyboard_OnKeyPressed;
 
             if (ClientConfiguration.Instance.ModMode || Updater.UpdateMirrors == null || Updater.UpdateMirrors.Count < 1)
             {
                 tabControl.MakeUnselectable(5);
-                tabControl.MakeUnselectable(6);
+               // tabControl.MakeUnselectable(6);
             }
-            else if (Updater.CustomComponents == null || Updater.CustomComponents.Count < 1)
-                 tabControl.MakeUnselectable(6);
+            //else if (Updater.CustomComponents == null || Updater.CustomComponents.Count < 1)
+            //     tabControl.MakeUnselectable(6);
 
             foreach (var panel in optionsPanels)
             {
@@ -206,6 +210,11 @@ namespace DTAConfig
             SaveSettings();
         }
 
+        public bool getst()
+        {
+            return optionsPanels[4].Save();
+        }
+
         private void SaveDownloadCancelConfirmation_YesClicked(XNAMessageBox messageBox)
         {
             componentsPanel.CancelAllDownloads();
@@ -213,7 +222,22 @@ namespace DTAConfig
             SaveSettings();
         }
 
-        private void SaveSettings()
+        private void Keyboard_OnKeyPressed(object sender, Rampastring.XNAUI.Input.KeyPressEventArgs e)
+        {
+            if (Enabled)
+            {
+                if (e.PressedKey == Keys.Escape)
+                {
+                    btnCancel.OnLeftClick();
+                }
+                if (e.PressedKey == Keys.Enter)
+                {
+                    btnSave.OnLeftClick();
+                }
+            }
+        }
+
+            private void SaveSettings()
         {
             if (RefreshOptionPanels())
                 return;
@@ -225,6 +249,7 @@ namespace DTAConfig
                 foreach (var panel in optionsPanels)
                     restartRequired = panel.Save() || restartRequired;
 
+                
                 UserINISettings.Instance.SaveSettings();
             }
             catch (Exception ex)

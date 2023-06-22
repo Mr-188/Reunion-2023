@@ -36,7 +36,7 @@ namespace DTAConfig.OptionPanels
         }
 
         /// <summary>
-        /// Parses user-defined game options from an INI file.
+        /// Parses user-defined GameOptions from an INI file.
         /// </summary>
         /// <param name="iniFile">The INI file.</param>
         public void ParseUserOptions(IniFile iniFile)

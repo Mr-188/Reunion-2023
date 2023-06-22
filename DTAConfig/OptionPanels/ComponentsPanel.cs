@@ -9,7 +9,19 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using ClientUpdater;
-
+using System.Threading.Tasks;
+using System.Net.Http;
+using HtmlAgilityPack;
+using IniParser;
+using IniParser.Model;
+using System.Text;
+using System.IO.Compression;
+using System.Net;
+using System.Diagnostics;
+using static System.Collections.Specialized.BitVector32;
+using System.Linq;
+using Newtonsoft.Json.Linq;
+using ClientCore.CnCNet5;
 
 namespace DTAConfig.OptionPanels
 {
@@ -20,10 +32,18 @@ namespace DTAConfig.OptionPanels
         {
         }
 
+        public int i = 0;
+
         List<XNAClientButton> installationButtons = new List<XNAClientButton>();
 
         bool downloadCancelled = false;
 
+
+
+        string componentNamePath = Path.Combine(ProgramConstants.GamePath, "Resources", "components");
+
+        FileIniDataParser iniParser;
+        IniData iniData;
         public override void Initialize()
         {
             base.Initialize();
@@ -32,42 +52,125 @@ namespace DTAConfig.OptionPanels
 
             Name = "ComponentsPanel";
 
-            int componentIndex = 0;
+            
+           iniParser = new FileIniDataParser();
+           iniData = iniParser.ReadFile(componentNamePath);
 
-            if (Updater.CustomComponents == null)
-                return;
 
-            foreach (CustomComponent c in Updater.CustomComponents)
+
+            GetComponentsDataAsync();
+           
+
+
+            //int componentIndex = 0;
+
+            //if (Updater.CustomComponents == null)
+            //    return;
+
+            //foreach (CustomComponent c in Updater.CustomComponents)
+            //{
+            //    string buttonText = "Not Available".L10N("UI:DTAConfig:NotAvailable");
+
+            //    if (SafePath.GetFile(ProgramConstants.GamePath, c.LocalPath).Exists)
+            //    {
+            //        buttonText = "Uninstall".L10N("UI:DTAConfig:ButtonUninstall");
+
+            //        if (c.LocalIdentifier != c.RemoteIdentifier)
+            //            buttonText = "Update".L10N("UI:DTAConfig:ButtonUpdate");
+            //    }
+            //    else
+            //    {
+            //        if (!string.IsNullOrEmpty(c.RemoteIdentifier))
+            //        {
+            //            buttonText = "Install".L10N("UI:DTAConfig:ButtonInstall");
+            //        }
+            //    }
+            //    GetFileList("http://127.0.0.1:8080/").Wait();
+            //    XNAClientButton btn = new XNAClientButton(WindowManager);
+            //    btn.Name = "btn" + c.ININame;
+            //    btn.ClientRectangle = new Rectangle(Width - 145,
+            //        12 + componentIndex * 35, UIDesignConstants.BUTTON_WIDTH_133, UIDesignConstants.BUTTON_HEIGHT);
+            //    btn.Text = buttonText;
+            //    btn.Tag = c;
+            //    btn.LeftClick += Btn_LeftClick;
+
+            //    XNALabel lbl = new XNALabel(WindowManager);
+            //    lbl.Name = "lbl" + c.ININame;
+            //    lbl.ClientRectangle = new Rectangle(12, btn.Y + 2, 0, 0);
+            //    lbl.Text = c.GUIName;
+
+            //    AddChild(btn);
+            //    AddChild(lbl);
+
+            //    installationButtons.Add(btn);
+
+            //    componentIndex++;
+            //}
+
+            //Updater.FileIdentifiersUpdated += Updater_FileIdentifiersUpdated;
+        }
+        public static bool AreKeyDataCollectionsEqual(KeyDataCollection collection1, KeyDataCollection collection2)
+        {
+            Dictionary<string, string> dict1 = collection1.ToDictionary(keyData => keyData.KeyName, keyData => keyData.Value);
+            Dictionary<string, string> dict2 = collection2.ToDictionary(keyData => keyData.KeyName, keyData => keyData.Value);
+
+            return dict1.SequenceEqual(dict2);
+        }
+
+        private async void GetComponentsDataAsync()
+        {
+            string baseUrl = "http://ra2wx.online/RU/Components/";
+            string filePath = Path.Combine(ProgramConstants.GamePath, "Components");
+
+            var client = new HttpClient();
+            try
             {
-                string buttonText = "Not Available".L10N("UI:DTAConfig:NotAvailable");
+                var content = await client.GetStringAsync(baseUrl + "Components");
+            
+            Encoding fileEncoding = Encoding.GetEncoding("GBK");
+            // 将内容写入临时文件
+            File.WriteAllText(filePath, content, fileEncoding);
 
-                if (SafePath.GetFile(ProgramConstants.GamePath, c.LocalPath).Exists)
+            var parser = new FileIniDataParser();
+            IniData urldata = parser.ReadFile(filePath, fileEncoding); // 指定文件的实际编码方式
+            IniData localdata = parser.ReadFile(Path.Combine(ProgramConstants.GamePath, "Resources", "components"), fileEncoding);
+
+            int componentIndex = 0;
+           
+            foreach (SectionData section in urldata.Sections)
+            {
+                string buttonText = "Not Available";
+                string name = section.Keys["name"];
+
+                if (!string.IsNullOrEmpty(name))
                 {
-                    buttonText = "Uninstall".L10N("UI:DTAConfig:ButtonUninstall");
-                    
-                    if (c.LocalIdentifier != c.RemoteIdentifier)
-                        buttonText = "Update".L10N("UI:DTAConfig:ButtonUpdate");
+                    buttonText = "安装";
                 }
-                else
+
+                foreach (SectionData loaclsection in localdata.Sections)
                 {
-                    if (!string.IsNullOrEmpty(c.RemoteIdentifier))
-                    {
-                        buttonText = "Install".L10N("UI:DTAConfig:ButtonInstall");
+                    if (section.SectionName == loaclsection.SectionName) {
+                        buttonText = "更新";
+                        if(AreKeyDataCollectionsEqual(section.Keys, loaclsection.Keys))
+                        {
+                            buttonText = "卸载";
+                        }
+                        break;
                     }
                 }
 
                 XNAClientButton btn = new XNAClientButton(WindowManager);
-                btn.Name = "btn" + c.ININame;
+                btn.Name = "btn" + name;
                 btn.ClientRectangle = new Rectangle(Width - 145,
                     12 + componentIndex * 35, UIDesignConstants.BUTTON_WIDTH_133, UIDesignConstants.BUTTON_HEIGHT);
                 btn.Text = buttonText;
-                btn.Tag = c;
+                btn.Tag = section;
                 btn.LeftClick += Btn_LeftClick;
 
                 XNALabel lbl = new XNALabel(WindowManager);
-                lbl.Name = "lbl" + c.ININame;
+                lbl.Name = "lbl" + name;
                 lbl.ClientRectangle = new Rectangle(12, btn.Y + 2, 0, 0);
-                lbl.Text = c.GUIName;
+                lbl.Text = name;
 
                 AddChild(btn);
                 AddChild(lbl);
@@ -75,109 +178,181 @@ namespace DTAConfig.OptionPanels
                 installationButtons.Add(btn);
 
                 componentIndex++;
-            }
 
-            Updater.FileIdentifiersUpdated += Updater_FileIdentifiersUpdated;
+            }
+            }
+            catch (Exception ex) { return; }
         }
 
-        private void Updater_FileIdentifiersUpdated()
-            => UpdateInstallationButtons();
 
+        static async Task GetFileList(string url)
+        {
+            HttpClient client = new HttpClient();
+            string html = await client.GetStringAsync(url);
+
+            HtmlDocument doc = new HtmlDocument();
+            doc.LoadHtml(html);
+
+            foreach (HtmlNode link in doc.DocumentNode.SelectNodes("//a[@href]"))
+            {
+                HtmlAttribute att = link.Attributes["href"];
+                Logger.Log(att.Value);
+            }
+        }
         public override void Load()
         {
             base.Load();
 
-            UpdateInstallationButtons();
+            // UpdateInstallationButtons();
         }
 
-        private void UpdateInstallationButtons()
+        private async Task DownloadFilesAsync(XNAClientButton button)
         {
-            if (Updater.CustomComponents == null)
-                return;
+            string baseUrl = "http://ra2wx.online/RU/Components/";
+           
+            XNAProgressBar progressBar = new XNAProgressBar(WindowManager);
+            progressBar.Name = nameof(progressBar);
+            progressBar.Maximum = 100;
+            progressBar.ClientRectangle = button.ClientRectangle;
+            progressBar.Value = 0;
 
-            int componentIndex = 0;
+            AddChild(progressBar);
 
-            foreach (CustomComponent c in Updater.CustomComponents)
+
+            string componentName = ((SectionData)button.Tag).SectionName;
+
+
+            iniData.Sections.AddSection(componentName);
+            iniData[componentName].AddKey("name", ((SectionData)button.Tag).Keys["name"]);
+
+            foreach (KeyData keyData in ((SectionData)button.Tag).Keys)
             {
-                if (!c.Initialized || c.IsBeingDownloaded)
-                {
-                    installationButtons[componentIndex].AllowClick = false;
-                    componentIndex++;
+                if (keyData.KeyName == "name")
                     continue;
+
+                string downloadUrl = Path.Combine(baseUrl, ((SectionData)button.Tag).SectionName, keyData.KeyName);
+                string downloadPath = Path.Combine(ProgramConstants.GamePath, keyData.KeyName);
+
+                string directory = Path.GetDirectoryName(downloadPath);
+                if (!Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
                 }
 
-                string buttonText = "Not Available".L10N("UI:DTAConfig:NotAvailable");
-                bool buttonEnabled = false;
+                //   Logger.Log(downloadUrl);
+                //   Logger.Log(downloadPath);
 
-                if (SafePath.GetFile(ProgramConstants.GamePath, c.LocalPath).Exists)
+                using (WebClient webClient = new WebClient())
                 {
-                    buttonText = "Uninstall".L10N("UI:DTAConfig:Uninstall");
-                    buttonEnabled = true;
 
-                    if (c.LocalIdentifier != c.RemoteIdentifier)
-                        buttonText = "Update".L10N("UI:DTAConfig:Update") + $" ({GetSizeString(c.RemoteSize)})";
-                }
-                else
-                {
-                    if (!string.IsNullOrEmpty(c.RemoteIdentifier))
+                    webClient.DownloadProgressChanged += (s, evt) =>
                     {
-                        buttonText = "Install".L10N("UI:DTAConfig:Install") + $" ({GetSizeString(c.RemoteSize)})";
-                        buttonEnabled = true;
-                    }
+                        progressBar.Value = evt.ProgressPercentage;
+                    };
+                    
+                    await webClient.DownloadFileTaskAsync(new Uri(downloadUrl), downloadPath);
                 }
-
-                installationButtons[componentIndex].Text = buttonText;
-                installationButtons[componentIndex].AllowClick = buttonEnabled;
-
-                componentIndex++;
+                i = 1;
+                iniData[componentName].AddKey(keyData.KeyName, keyData.Value);
             }
+            progressBar.Visible = false;
+            button.Visible = true;
         }
 
-        private void Btn_LeftClick(object sender, EventArgs e)
+            private async void Btn_LeftClick(object sender, EventArgs e)
         {
-            var btn = (XNAClientButton)sender;
+            XNAClientButton button = (XNAClientButton)sender;
 
-            var cc = (CustomComponent)btn.Tag;
 
-            if (cc.IsBeingDownloaded)
-                return;
+            
+         
 
-            FileInfo localFileInfo = SafePath.GetFile(ProgramConstants.GamePath, cc.LocalPath);
+            
 
-            if (localFileInfo.Exists)
+
+           
+           
+            if (button.Text == "安装")
             {
-                if (cc.LocalIdentifier == cc.RemoteIdentifier)
+                button.Visible = false;
+                await DownloadFilesAsync(button);
+                // 更新按钮文本
+                button.Text = "卸载";
+                
+            }
+            else if (button.Text == "卸载")
+            {
+                try
                 {
-                    localFileInfo.Delete();
-                    btn.Text = "Install".L10N("UI:DTAConfig:Install") + $" ({GetSizeString(cc.RemoteSize)})";
+                    foreach (KeyData keyData in ((SectionData)button.Tag).Keys)
+                    {
+                        if (keyData.KeyName == "name")
+                            continue;
+                        File.Delete(Path.Combine(ProgramConstants.GamePath, keyData.KeyName));
+                    }
+
+                    iniData.Sections.RemoveSection(((SectionData)button.Tag).SectionName);
+                    button.Text = "安装";
+                }
+                catch {
                     return;
                 }
-
-                btn.AllowClick = false;
-
-                cc.DownloadFinished += cc_DownloadFinished;
-                cc.DownloadProgressChanged += cc_DownloadProgressChanged;
-                cc.DownloadComponent();
             }
             else
             {
-                var msgBox = new XNAMessageBox(WindowManager, "Confirmation Required".L10N("UI:DTAConfig:UpdateConfirmRequiredTitle"),
-                    string.Format(("To enable {0} the Client will download the necessary files to your game directory." +
-                    Environment.NewLine + Environment.NewLine + "This will take an additional {1} of disk space (size of the download is {2}), and the download may last" +
-                    Environment.NewLine +
-                    "from a few minutes to multiple hours depending on your Internet connection speed." +
-                    Environment.NewLine + Environment.NewLine +
-                    "You will not be able to play during the download. Do you want to continue?").L10N("UI:DTAConfig:UpdateConfirmRequiredText"),
-                    cc.GUIName, GetSizeString(cc.RemoteSize), GetSizeString(cc.Archived ? cc.RemoteArchiveSize : cc.RemoteSize)
-                    ), XNAMessageBoxButtons.YesNo);
-
-                msgBox.Tag = btn;
-                msgBox.Show();
-                msgBox.YesClickedAction = MsgBox_YesClicked;
+                button.Text = "卸载";
+                button.OnLeftClick();
+                button.Text = "安装";
+                button.OnLeftClick();
             }
+            iniParser.WriteFile(componentNamePath, iniData);
         }
+  
 
-        private void MsgBox_YesClicked(XNAMessageBox messageBox)
+            //var btn = (XNAClientButton)sender;
+
+            //var cc = (CustomComponent)btn.Tag;
+
+            //if (cc.IsBeingDownloaded)
+            //    return;
+
+            //FileInfo localFileInfo = SafePath.GetFile(ProgramConstants.GamePath, cc.LocalPath);
+
+            //if (localFileInfo.Exists)
+            //{
+            //    if (cc.LocalIdentifier == cc.RemoteIdentifier)
+            //    {
+            //        localFileInfo.Delete();
+            //        btn.Text = "Install".L10N("UI:DTAConfig:Install") + $" ({GetSizeString(cc.RemoteSize)})";
+            //        return;
+            //    }
+
+            //    btn.AllowClick = false;
+
+            //    cc.DownloadFinished += cc_DownloadFinished;
+            //    cc.DownloadProgressChanged += cc_DownloadProgressChanged;
+            //    cc.DownloadComponent();
+            //}
+            //else
+            //{
+            //    var msgBox = new XNAMessageBox(WindowManager, "Confirmation Required".L10N("UI:DTAConfig:UpdateConfirmRequiredTitle"),
+            //        string.Format(("To enable {0} the Client will download the necessary files to your game directory." +
+            //        Environment.NewLine + Environment.NewLine + "This will take an additional {1} of disk space (size of the download is {2}), and the download may last" +
+            //        Environment.NewLine +
+            //        "from a few minutes to multiple hours depending on your Internet connection speed." +
+            //        Environment.NewLine + Environment.NewLine +
+            //        "You will not be able to play during the download. Do you want to continue?").L10N("UI:DTAConfig:UpdateConfirmRequiredText"),
+            //        cc.GUIName, GetSizeString(cc.RemoteSize), GetSizeString(cc.Archived ? cc.RemoteArchiveSize : cc.RemoteSize)
+            //        ), XNAMessageBoxButtons.YesNo);
+
+            //    msgBox.Tag = btn;
+            //    msgBox.Show();
+            //    msgBox.YesClickedAction = MsgBox_YesClicked;
+            //}
+
+
+
+            private void MsgBox_YesClicked(XNAMessageBox messageBox)
         {
             var btn = (XNAClientButton)messageBox.Tag;
             btn.AllowClick = false;
@@ -265,6 +440,13 @@ namespace DTAConfig.OptionPanels
             }
         }
 
+        public override bool Save()
+        {
+         //   CampaignSelector campaignSelector = new CampaignSelector();
+         
+            return true;
+        }
+
         public void CancelAllDownloads()
         {
             Logger.Log("Cancelling all custom component downloads.");
@@ -296,6 +478,11 @@ namespace DTAConfig.OptionPanels
             {
                 return (size / 1048576) + " MB";
             }
+        }
+
+        public static explicit operator ComponentsPanel(bool v)
+        {
+            throw new NotImplementedException();
         }
     }
 }

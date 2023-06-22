@@ -1,17 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using Rampastring.XNAUI;
 using ClientCore;
 using ClientCore.Statistics;
-using DTAClient.DXGUI.Generic;
-using DTAClient.Domain.Multiplayer;
 using ClientGUI;
-using Rampastring.Tools;
-using System.IO;
 using DTAClient.Domain;
-using Microsoft.Xna.Framework;
+using DTAClient.Domain.Multiplayer;
+using DTAClient.DXGUI.Generic;
 using Localization;
+using Microsoft.Xna.Framework;
+using Rampastring.Tools;
+using Rampastring.XNAUI;
 
 namespace DTAClient.DXGUI.Multiplayer.GameLobby
 {
@@ -107,7 +107,8 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             int totalPlayerCount = Players.Count(p => p.SideId < ddPlayerSides[0].Items.Count - 1)
                 + AIPlayers.Count;
 
-            if (GameMode == null){
+            if (GameMode == null)
+            {
                 return "Please choose a map!".L10N("UI:Main:GameModeNull");
             }
 
@@ -162,7 +163,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             }
 
             //¼ì²é¹ú¼Ò
-            foreach(PlayerInfo pInfo in Players)
+            foreach (PlayerInfo pInfo in Players)
             {
 
                 if (pInfo.SideId >= ddPlayerSides[0].Items.Count)

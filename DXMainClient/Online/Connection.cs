@@ -1,7 +1,4 @@
-﻿using ClientCore;
-using Localization;
-using Rampastring.Tools;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,6 +8,9 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using ClientCore;
+using Localization;
+using Rampastring.Tools;
 
 namespace DTAClient.Online
 {
@@ -167,11 +167,12 @@ namespace DTAClient.Online
 
             foreach (Server server in sortedServerList)
             {
+              //  Console.WriteLine(server.Name);
                 try
                 {
                     for (int i = 0; i < server.Ports.Length; i++)
                     {
-                        connectionManager.OnAttemptedServerChanged(server.Name);
+ 
 
                         TcpClient client = new TcpClient(AddressFamily.InterNetwork);
                         var result = client.BeginConnect(server.Host, server.Ports[i], null, null);

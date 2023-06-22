@@ -28,7 +28,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
         }
 
         /// <summary>
-        /// Apply map code from an arbitrary INI file to a map INI file.
+        /// Apply MapCode from an arbitrary INI file to a map INI file.
         /// </summary>
         /// <param name="mapIni">The map INI file.</param>
         /// <param name="mapCodeIni">The INI file to apply to map INI file.</param>

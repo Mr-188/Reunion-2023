@@ -154,7 +154,7 @@ namespace ClientCore
 
         #endregion
 
-        #region Game options
+        #region GameOptions
 
         public string Sides => gameOptions_ini.GetStringValue(GENERAL, nameof(Sides), "GDI,Nod,Allies,Soviet");
 
@@ -176,7 +176,7 @@ namespace ClientCore
 
         public int VoiceCount => clientDefinitionsIni.GetSectionKeys("Voice").Count;
 
-        public int LanguageCount => clientDefinitionsIni.GetSectionKeys("Language")==null?0:clientDefinitionsIni.GetSectionKeys("Language").Count;
+        public int LanguageCount => clientDefinitionsIni.GetSectionKeys("Language") == null ? 0:clientDefinitionsIni.GetSectionKeys("Language").Count;
 
         public string LocalGame => clientDefinitionsIni.GetStringValue(SETTINGS, "LocalGame", "DTA");
 
@@ -219,6 +219,8 @@ namespace ClientCore
         public string ManualDownloadURL => clientDefinitionsIni.GetStringValue(SETTINGS, "ManualDownloadURL", string.Empty);
 
         public string FinalSunIniPath => SafePath.CombineFilePath(clientDefinitionsIni.GetStringValue(SETTINGS, "FSIniPath", SafePath.CombineFilePath("FinalSun", "FinalSun.ini")));
+
+        public string Mod_AiIniPath => SafePath.CombineFilePath(clientDefinitionsIni.GetStringValue(SETTINGS, "Mod&Ai", string.Empty));
 
         public int MaxNameLength => clientDefinitionsIni.GetIntValue(SETTINGS, "MaxNameLength", 16);
 

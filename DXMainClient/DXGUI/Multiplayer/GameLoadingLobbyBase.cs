@@ -1,4 +1,7 @@
-﻿using ClientCore;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using ClientCore;
 using ClientCore.Statistics;
 using ClientGUI;
 using DTAClient.Domain;
@@ -8,9 +11,6 @@ using Microsoft.Xna.Framework;
 using Rampastring.Tools;
 using Rampastring.XNAUI;
 using Rampastring.XNAUI.XNAControls;
-using System;
-using System.Collections.Generic;
-using System.IO;
 
 namespace DTAClient.DXGUI.Multiplayer
 {
@@ -76,7 +76,7 @@ namespace DTAClient.DXGUI.Multiplayer
         public override void Initialize()
         {
 
-           
+
             Name = "GameLoadingLobby";
             ClientRectangle = new Rectangle(0, 0, 590, 510);
             BackgroundTexture = AssetLoader.LoadTexture("loadmpsavebg.png");

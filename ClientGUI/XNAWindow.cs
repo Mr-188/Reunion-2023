@@ -3,6 +3,7 @@ using Rampastring.Tools;
 using System;
 using System.Collections.Generic;
 using Rampastring.XNAUI;
+using Microsoft.Xna.Framework.Input;
 
 namespace ClientGUI
 {
@@ -12,12 +13,14 @@ namespace ClientGUI
     /// </summary>
     public class XNAWindow : XNAWindowBase
     {
-        #if WINFORMS
-        private IMENativeWindow _nativeWnd;
-        #endif
+        
         private const string GENERIC_WINDOW_INI = "GenericWindow.ini";
         private const string GENERIC_WINDOW_SECTION = "GenericWindow";
         private const string EXTRA_CONTROLS = "ExtraControls";
+
+        #if WINFORMS
+        private IMENativeWindow _nativeWnd;
+        #endif
 
         public XNAWindow(WindowManager windowManager) : base(windowManager)
         {
@@ -26,9 +29,8 @@ namespace ClientGUI
             _nativeWnd.CandidatesReceived += (s, e) => { if (CandidatesReceived != null) CandidatesReceived(s, e); };
             _nativeWnd.CompositionReceived += (s, e) => { if (CompositionReceived != null) CompositionReceived(s, e); };
             _nativeWnd.ResultReceived += (s, e) => { if (ResultReceived != null) ResultReceived(s, e); };
-
             _nativeWnd.EnableIME();
-            #endif
+#endif
         }
 
         /// <summary>
@@ -46,7 +48,7 @@ namespace ClientGUI
         /// </summary>
         public event EventHandler<IMEResultEventArgs> ResultReceived;
 
-
+        private int secretCodeIndex = 0;
 
         /// <summary>
         /// The INI file that was used for theming this window.
@@ -60,6 +62,7 @@ namespace ClientGUI
                 return 1.0f;
             }
         }
+
 
         protected virtual void SetAttributesFromIni()
         {

@@ -420,6 +420,14 @@ namespace ClientGUI
                 CompositionReceived(this, EventArgs.Empty);
         }
 
+        public bool IsComposing
+        {
+            get
+            {
+                return !string.IsNullOrEmpty(CompositionString);
+            }
+        }
+
         private void CharEvent(int wParam)
         {
             if (ResultReceived != null)

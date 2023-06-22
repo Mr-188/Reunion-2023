@@ -1,8 +1,8 @@
-﻿using ClientCore;
-using Rampastring.Tools;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ClientCore;
+using Rampastring.Tools;
 
 namespace DTAClient.Domain.Multiplayer
 {
@@ -56,7 +56,7 @@ namespace DTAClient.Domain.Multiplayer
 
         public void AddCheckBoxValue(string checkBoxName, bool value)
         {
-          
+
             checkBoxValues.Add(checkBoxName, value);
         }
 

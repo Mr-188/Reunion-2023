@@ -1,3 +1,10 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading;
 using ClientCore;
 using DTAClient.Domain;
 using DTAClient.Domain.LAN;
@@ -10,13 +17,6 @@ using Localization;
 using Microsoft.Xna.Framework;
 using Rampastring.Tools;
 using Rampastring.XNAUI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading;
 
 
 namespace DTAClient.DXGUI.Multiplayer.GameLobby
@@ -971,9 +971,9 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
 
             if (parts.Length != CheckBoxes.Count + DropDowns.Count + GAME_OPTION_SPECIAL_FLAG_COUNT)
             {
-                AddNotice(("The game host has sent an invalid game options message! " +
+                AddNotice(("The game host has sent an invalid GameOptions message! " +
                     "The game host's game version might be different from yours.").L10N("UI:Main:HostGameOptionInvalid"));
-                Logger.Log("Invalid game options message from host: " + data);
+                Logger.Log("Invalid GameOptions message from host: " + data);
                 return;
             }
 

@@ -1,11 +1,11 @@
-﻿using DTAClient.Domain.Multiplayer.CnCNet;
-using System;
+﻿using System;
+using DTAClient.Domain.Multiplayer.CnCNet;
 
 namespace DTAClient.DXGUI.Multiplayer.CnCNet
 {
     class GameCreationEventArgs : EventArgs
     {
-        public GameCreationEventArgs(string roomName, int maxPlayers, 
+        public GameCreationEventArgs(string roomName, int maxPlayers,
             string password, CnCNetTunnel tunnel)
         {
             GameRoomName = roomName;

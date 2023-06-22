@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.Net;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace DTAClient.Domain.Multiplayer.LAN
 {

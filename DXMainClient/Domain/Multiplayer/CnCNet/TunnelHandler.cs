@@ -1,15 +1,15 @@
-﻿using ClientCore;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Text;
+using System.Threading.Tasks;
+using ClientCore;
 using DTAClient.Online;
 using Microsoft.Xna.Framework;
 using Rampastring.Tools;
 using Rampastring.XNAUI;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using System.Linq;
 
 namespace DTAClient.Domain.Multiplayer.CnCNet
 {
@@ -200,7 +200,7 @@ namespace DTAClient.Domain.Multiplayer.CnCNet
                     if (tunnel == null)
                         continue;
 
-                    if (tunnel.RequiresPassword)
+                    if (tunnel.RequiresPassword && tunnel.Name != "[CN]Alliance and Hegemony")
                         continue;
 
                     if (tunnel.Version != SUPPORTED_TUNNEL_VERSION)

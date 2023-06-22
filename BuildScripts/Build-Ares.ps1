@@ -7,7 +7,7 @@ param($Configuration = "Release")
 
 Build-Project $Configuration Ares UniversalGL net7.0
 if ($IsWindows) {
-  @('WindowsDX', 'WindowsGL', 'WindowsXNA') | ForEach-Object {
+  @('WindowsDX') | ForEach-Object {
     Build-Project $Configuration Ares $_ net7.0-windows
   }
 }
