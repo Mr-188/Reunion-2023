@@ -340,12 +340,13 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Extended.VideoPlayback">
-      <HintPath>..\..\..\..\Downloads\Compressed\MonoGame.Extended2-master\MonoGame.Extended2-master\Sources\MonoGame.Extended.VideoPlayback\bin\Release\net6.0\MonoGame.Extended.VideoPlayback.dll</HintPath>
+      <HintPath>..\..\..\..\Downloads\Compressed\MonoGame.Extended2-master\Sources\MonoGame.Extended.VideoPlayback\bin\Debug\net6.0\MonoGame.Extended.VideoPlayback.dll</HintPath>
     </Reference>
     <Reference Include="MonoGame.Extended2">
-      <HintPath>..\..\..\..\Downloads\Compressed\MonoGame.Extended2-master\MonoGame.Extended2-master\Sources\MonoGame.Extended.VideoPlayback\bin\Release\net6.0\MonoGame.Extended2.dll</HintPath>
+      <HintPath>..\..\..\..\Downloads\Compressed\MonoGame.Extended2-master\Sources\MonoGame.Extended.VideoPlayback\bin\Debug\net6.0\MonoGame.Extended2.dll</HintPath>
     </Reference>
   </ItemGroup>
+
   <Import Project="$(MSBuildThisFileDirectory)..\build\WinForms.props" />
   <Import Project="$(MSBuildThisFileDirectory)..\build\AfterPublish.targets" />
   <Import Project="$(MSBuildThisFileDirectory)..\build\CopyResources.targets" />

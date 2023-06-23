@@ -83,11 +83,7 @@ namespace DTAClient.DXGUI.Generic
             ClientRectangle = new Rectangle(0, 0, 1280, 768);
             Name = "LoadingScreen";
 
-          //  Console.WriteLine(SetDllDirectory(ProgramConstants.GamePath+ "Resources/"));
-
-            //FFmpegBinariesHelper.RegisterFFmpegBinaries(ProgramConstants.GamePath);
-            
-            //Environment.SetEnvironmentVariable("PATH", ProgramConstants.GamePath);
+ 
             if (!UserINISettings.Instance.video_wallpaper || RuntimeInformation.ProcessArchitecture.ToString() == "X64")
             {
 
@@ -139,16 +135,11 @@ namespace DTAClient.DXGUI.Generic
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             if (UserINISettings.Instance.video_wallpaper && RuntimeInformation.ProcessArchitecture.ToString() != "X64")
             {
-                // Create a new SpriteBatch, which can be used to draw textures.
-
-
-                // TODO: use this.Content to load your game content here
-
-                // _helpTexture = TextureLoader.LoadTexture(GraphicsDevice, "Content/HelpTexture.png");
-                // 在你的代码中的适当位置调用这个方法，指定DLL文件的目录
-                //SetDllDirectory("D:\\File\\Documents\\My_File\\xna\\DXMainClient\\bin\\Debug\\Ares\\WindowsDX\\net7.0-windows\\runtimes\\win-x64");
-                _video = VideoHelper.LoadFromFile("Resources/a.mp4");
-                // _video += VideoEnded;
+                string path = $"Resources/{UserINISettings.Instance.ClientTheme}loading.mp4";
+                if (!File.Exists(path))
+                    path = "Resources/loading.mp4";
+                _video = VideoHelper.LoadFromFile(path);
+             
 
                 _videoPlayer.Play(_video);
             }

@@ -32,19 +32,20 @@ namespace DTAClient
         /// </summary>
         public void Execute()
         {
-            string themePath = ClientConfiguration.Instance.GetThemePath(UserINISettings.Instance.ClientTheme);
+            string themePath = UserINISettings.Instance.ClientTheme;
+            
             // string language = ClientConfiguration.Instance.GetLanguagePath(UserINISettings.Instance.Language);
 
             if (themePath == null)
             {
-                themePath = ClientConfiguration.Instance.GetThemeInfoFromIndex(0)[1];
+                themePath = ClientConfiguration.Instance.GetThemeInfoFromIndex(1)[1];
             }
-
+            
             //  if (language == null)
             //    {
             //     language = ClientConfiguration.Instance.GetLanguageInfoFromIndex(0)[1];
             //    }
-
+            //
             ProgramConstants.RESOURCES_DIR = SafePath.CombineDirectoryPath(ProgramConstants.BASE_RESOURCE_PATH, themePath);
 
             DirectoryInfo resourcesDirectory = SafePath.GetDirectory(ProgramConstants.GetResourcePath());

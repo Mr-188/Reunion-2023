@@ -306,6 +306,8 @@ namespace DTAClient.DXGUI.Generic
             lblUpdateStatus.LeftClick += LblUpdateStatus_LeftClick;
             lblUpdateStatus.ClientRectangle = new Rectangle(0, 0, UIDesignConstants.BUTTON_WIDTH_160, 20);
 
+            
+
             AddChild(btnNewCampaign);
             AddChild(btnLoadGame);
             AddChild(btnSkirmish);
@@ -567,51 +569,25 @@ namespace DTAClient.DXGUI.Generic
             string md = string.Empty;
             string contry = string.Empty;
 
-            int j = new Random().Next(0, 10000);
-            while (Directory.Exists($"INI/GameOptions/Game/{j.ToString()}/"))
-            {
-                j = new Random().Next(0, 10000);
-            }
-            
-
-            int i = new Random().Next(0, 10000);
-            while (iniFile.KeyExists("Battles", i.ToString()))
-            {
-                i = new Random().Next(0, 10000);
-            }
-            iniFile.SetStringValue("Battles", j.ToString(), j.ToString());
-            iniFile.SetStringValue(j.ToString(), "Description", "—— 第三方任务 ——");
-
-
-
-
-
+           
             //string value = csf["LoadMsg:All01md"];
             //Console.WriteLine($"Value for key '{"LoadMsg:All01md"}': {value}");
 
             if (alls.Length != 0)
             {
                 md = "md";
-                contry = "ALL";
+               
             }
             else if (sovs.Length != 0)
             {
                 md = "md";
-                contry = "SOV";
+               
             }
             else
             {
                 alls = Directory.GetFiles("./", "all*.map");
                 sovs = Directory.GetFiles("./", "sov*.map");
-                if (alls.Length != 0)
-                {
-
-                    contry = "ALL";
-                }
-                else
-                {
-                    contry = "SOV";
-                }
+                
             }
             bool goodcsf = true;
             JObject csf = new JObject();
@@ -625,36 +601,53 @@ namespace DTAClient.DXGUI.Generic
                 Logger.Log("csf解析失败");
                 goodcsf = false;
             }
-            if (File.Exists($"{ProgramConstants.GamePath}rules{md}.ini"))
-                File.Move($"{ProgramConstants.GamePath}rules{md}.ini", $"INI/GameOptions/Game/{j}/rules{md}.ini");
-            if (File.Exists($"{ProgramConstants.GamePath}art{md}.ini"))
+
+            int j = new Random().Next(0, 10000);
+            while (Directory.Exists($"INI/GameOptions/{(string.IsNullOrEmpty(md) ? "Game" : "Mission")}/{j.ToString()}/"))
             {
-                File.Move($"{ProgramConstants.GamePath}art{md}.ini", $"INI/GameOptions/Game/{j}/art{md}.ini");
+                j = new Random().Next(0, 10000);
             }
+
+
+            int i = new Random().Next(0, 10000);
+            while (iniFile.KeyExists("Battles", i.ToString()))
+            {
+                i = new Random().Next(0, 10000);
+            }
+            iniFile.SetStringValue("Battles", j.ToString(), j.ToString());
+            iniFile.SetStringValue(j.ToString(), "Description", "—— 第三方任务 ——");
+
+            if (File.Exists($"{ProgramConstants.GamePath}rules{md}.ini") || File.Exists($"{ProgramConstants.GamePath}art{md}.ini"))
+                mod = true;
+
             else
             {
                 mod = false;
             }
 
+            Directory.CreateDirectory($"INI/GameOptions/{(mod? "Game" : "Mission")}/{j}");
+           
+            
+
             List<string> mission = new List<string>();
             foreach (var file in alls)
             {
-                if (!IsTaskPackage(file))
-                    continue;
+                //if (!IsTaskPackage(file))
+                //    continue;
                 mission.Add(file);
             }
                 foreach (var file in sovs)
             {
-                if (!IsTaskPackage(file))
-                    continue;
+                //if (!IsTaskPackage(file))
+                //    continue;
                 mission.Add(file);
             }
 
                     int Count = 0;
             foreach (var file in mission)
             {
-                
 
+                contry = Path.GetFileName(file).ToUpper().Substring(0, 3);
                 Count = Count + 1;
                 i = new Random().Next(0, 10000);
                 while (iniFile.KeyExists("Battles", i.ToString()))
@@ -664,21 +657,29 @@ namespace DTAClient.DXGUI.Generic
                 iniFile.SetStringValue("Battles", i.ToString(), i.ToString());
                 iniFile.SetStringValue(i.ToString(), "Scenario", Path.GetFileName(file).ToUpper());
                 iniFile.SetStringValue(i.ToString(), "BuildOffAlly", "yes");
-                iniFile.SetStringValue(i.ToString(), "SideName", contry == "ALL" ? "Allied" : "Soviet");
-                iniFile.SetStringValue(i.ToString(), "Mod", md != string.Empty ? "YR" : "RA2");
+                
+               
+                iniFile.SetStringValue(i.ToString(), "Mod", mod? j.ToString() : md != string.Empty ? "YR" : "RA2");
                 iniFile.SetStringValue(i.ToString(), "Description", "第" + Count.ToString() + "关");
                 //Console.WriteLine($"LoadMsg:All{Path.GetFileName(file).Substring(3, 2)}md");
-                if(goodcsf)
-                iniFile.SetStringValue(i.ToString(), "LongDescription", csf.SelectToken($"BRIEF:{contry}{Path.GetFileName(file).Substring(3, 2)}{(md != string.Empty ? "MD" : "")}").ToString().Replace("\n", "@"));
+                
+                if(contry == "ALL")
+                    iniFile.SetStringValue(i.ToString(), "SideName","Allied");
+                else if (contry == "SOV")
+                    iniFile.SetStringValue(i.ToString(), "SideName","Soviet");
+
+                if (goodcsf && (contry == "ALL" || contry == "SOV"))
+                    iniFile.SetStringValue(i.ToString(), "LongDescription", csf.SelectToken($"BRIEF:{contry}{Path.GetFileName(file).Substring(3, 2)}{(md != string.Empty ? "MD" : "")}").ToString().Replace("\n", "@"));
+                
                 if (!mod)
                 {
-                    Directory.CreateDirectory($"INI/GameOptions/Mission/{j.ToString()}");
+                    
                     iniFile.SetStringValue(i.ToString(), "Attached", j.ToString());
                     File.Move(file, $"INI/GameOptions/Mission/{j}/{Path.GetFileName(file)}");
                 }
                 else
                 {
-                    Directory.CreateDirectory($"INI/GameOptions/Game/{j.ToString()}");
+                    
                     File.Move(file, $"INI/GameOptions/Game/{j}/{Path.GetFileName(file)}");
                 }
 
@@ -724,15 +725,19 @@ namespace DTAClient.DXGUI.Generic
                 else
                     File.Move($"{ProgramConstants.GamePath}ra2{md}.csf", $"INI/GameOptions/Mission/{j}/stringtable00.csf");
 
-
+            if (File.Exists($"{ProgramConstants.GamePath}rules{md}.ini"))
+                File.Move($"{ProgramConstants.GamePath}rules{md}.ini", $"INI/GameOptions/Game/{j}/rules{md}.ini");
+            if (File.Exists($"{ProgramConstants.GamePath}art{md}.ini"))
+                File.Move($"{ProgramConstants.GamePath}art{md}.ini", $"INI/GameOptions/Game/{j}/art{md}.ini");
             if (File.Exists($"{ProgramConstants.GamePath}mission{md}.csf"))
                 File.Move($"{ProgramConstants.GamePath}mission{md}.csf", $"INI/GameOptions/Game/{j}/missionmd.ini");
             if (File.Exists($"{ProgramConstants.GamePath}battle{md}.ini"))
                 File.Move($"{ProgramConstants.GamePath}battle{md}.ini", $"INI/GameOptions/Game/{j}/battlemd.ini");
             if (File.Exists($"{ProgramConstants.GamePath}mapsel{md}.ini"))
                 File.Move($"{ProgramConstants.GamePath}mapsel{md}.ini", $"INI/GameOptions/Game/{j}/mapselmd.ini");
-
-            if(mod)
+            if (File.Exists($"{ProgramConstants.GamePath}ai{md}.ini"))
+                File.Move($"{ProgramConstants.GamePath}ai{md}.ini", $"INI/GameOptions/Game/{j}/aimd.ini");
+            if (mod)
             Mix.PackToMix($"{ProgramConstants.GamePath}INI/GameOptions/Game/{j}", $"{ProgramConstants.GamePath}INI/GameOptions/Game/expandmd97.mix");
             else
                 Mix.PackToMix($"{ProgramConstants.GamePath}INI/GameOptions/Mission/{j}", $"{ProgramConstants.GamePath}INI/GameOptions/Mission/expandmd95.mix");
@@ -745,21 +750,15 @@ namespace DTAClient.DXGUI.Generic
             foreach (System.IO.DirectoryInfo subDirectory in directory.GetDirectories()) subDirectory.Delete(true);
             if (mod)
             {
-                Directory.CreateDirectory($"INI/GameOptions/Game/{j}");
+               
                 File.Move($"{ProgramConstants.GamePath}INI/GameOptions/Game/expandmd97.mix", $"{ProgramConstants.GamePath}INI/GameOptions/Game/{j}/expandmd97.mix");
             }
             else
             {
-                Directory.CreateDirectory($"INI/GameOptions/Mission/{j}");
+                
                 File.Move($"{ProgramConstants.GamePath}INI/GameOptions/Mission/expandmd95.mix", $"{ProgramConstants.GamePath}INI/GameOptions/Mission/{j}/expandmd95.mix");
             }
-            if (mod)
-            {
-                if(string.IsNullOrEmpty(md))
-                    File.Copy($"{ProgramConstants.GamePath}INI/GameOptions/Game/RA2_Main/expandmd94.mix", $"{ProgramConstants.GamePath}INI/GameOptions/Game/{j}/expandmd94.mix");
-                else
-                    File.Copy($"{ProgramConstants.GamePath}INI/GameOptions/Game/YR_Main/expandmd94.mix", $"{ProgramConstants.GamePath}INI/GameOptions/Game/{j}/expandmd94.mix");
-            }
+            
 
             innerPanel.reload();
         }
@@ -836,14 +835,14 @@ namespace DTAClient.DXGUI.Generic
                 firstRunMessageBox.YesClickedAction = FirstRunMessageBox_YesClicked;
                 firstRunMessageBox.NoClickedAction = FirstRunMessageBox_NoClicked;
 
-                if (File.Exists("Client/rules_custom.ini"))
-                {
-                    File.Create("Client/rules_custom.ini");
-                }
-                if (File.Exists("Client/rules_art.ini"))
-                {
-                    File.Create("Client/rules_art.ini");
-                }
+                //if (File.Exists("Client/rules_custom.ini"))
+                //{
+                //    File.Create("Client/rules_custom.ini");
+                //}
+                //if (File.Exists("Client/rules_art.ini"))
+                //{
+                //    File.Create("Client/rules_art.ini");
+                //}
 
                 string FA2Path = ProgramConstants.GamePath + ClientConfiguration.Instance.MapEditorExePath;
                 if (!File.Exists(FA2Path))

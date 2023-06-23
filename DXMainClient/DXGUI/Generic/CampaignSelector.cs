@@ -593,28 +593,65 @@ namespace DTAClient.DXGUI.Generic
             {
                 if (oldMain != newMain)
                 {
-                    if(oldMain!=string.Empty)
-                    DelFile(GetDeleteFile("INI/GameOptions/Game/" + oldMain));
+                    if (oldMain != string.Empty)
+                    {
+                        try
+                        {
+                            Console.WriteLine("44444");
+                            DelFile(GetDeleteFile("INI/GameOptions/Game/" + oldMain));
+                        }
+                        catch (Exception e)
+                        {
+                            if (File.Exists("expandmd94.mix"))
+                                File.Delete("expandmd94.mix");
+                        }
+                    }
+
                     if (newMain != string.Empty)
                         CopyDirectory("INI/GameOptions/Game/" + newMain, "./");
+
                 }
 
                 //如果和前一次使用的游戏不一样
                 if (oldGame != newGame)
                 {
-                    DelFile(GetDeleteFile(oldGame));
+                    try
+                    {
+                        DelFile(GetDeleteFile(oldGame));
+                    }
+                    catch (Exception e)
+                    {
+                        if(File.Exists("expandmd97.mix"))
+                        File.Delete("expandmd97.mix");
+                    }
                     CopyDirectory(newGame, "./");
                 }
 
                 if (oldAi != newAi)
                 {
-                    DelFile(GetDeleteFile(oldAi));
+                    try
+                    {
+                        DelFile(GetDeleteFile(oldAi));
+                    }
+                    catch (Exception e)
+                    {
+                        if (File.Exists("expandmd98.mix"))
+                            File.Delete("expandmd98.mix");
+                    }
                     CopyDirectory(newAi, "./");
                 }
 
                 if (oldAttached != newAttached)
                 {
-                    DelFile(GetDeleteFile(oldAttached));
+                    try
+                    {
+                        DelFile(GetDeleteFile(oldAttached));
+                    }
+                    catch (Exception e)
+                    {
+                        if (File.Exists("expandmd95.mix"))
+                            File.Delete("expandmd95.mix");
+                    }
                     CopyDirectory(newAttached, "./");
                 }
             }

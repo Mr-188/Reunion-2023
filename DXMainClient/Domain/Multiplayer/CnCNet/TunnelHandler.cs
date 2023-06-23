@@ -75,14 +75,22 @@ namespace DTAClient.Domain.Multiplayer.CnCNet
         private void ConnectionManager_ConnectionLost(object sender, Online.EventArguments.ConnectionLostEventArgs e) => Enabled = false;
 
         private void ConnectionManager_Disconnected(object sender, EventArgs e) => Enabled = false;
-
+        private List<CnCNetTunnel> tunnels2 = new List<CnCNetTunnel>();
         private void RefreshTunnelsAsync()
         {
+            List<CnCNetTunnel> tunnels = new List<CnCNetTunnel>() { CnCNetTunnel.Parse("60.247.152.72:50000;China;CN;[CN]Alliance and Hegemony;1;0;100;0;0;0;2;0") };
+
+
+
             Task.Factory.StartNew(() =>
             {
-                List<CnCNetTunnel> tunnels = RefreshTunnels();
-                wm.AddCallback(new Action<List<CnCNetTunnel>>(HandleRefreshedTunnels), tunnels);
+                tunnels2 = RefreshTunnels();
+
+
             });
+            tunnels.AddRange(tunnels2);
+
+            wm.AddCallback(new Action<List<CnCNetTunnel>>(HandleRefreshedTunnels), tunnels);
         }
 
         private void HandleRefreshedTunnels(List<CnCNetTunnel> tunnels)
@@ -200,7 +208,7 @@ namespace DTAClient.Domain.Multiplayer.CnCNet
                     if (tunnel == null)
                         continue;
 
-                    if (tunnel.RequiresPassword && tunnel.Name != "[CN]Alliance and Hegemony")
+                    if (tunnel.RequiresPassword)
                         continue;
 
                     if (tunnel.Version != SUPPORTED_TUNNEL_VERSION)
