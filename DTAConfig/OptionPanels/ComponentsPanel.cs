@@ -23,6 +23,8 @@ using System.Linq;
 using Newtonsoft.Json.Linq;
 using ClientCore.CnCNet5;
 using Localization.Tools;
+using Microsoft.Xna.Framework.Input;
+using System.Xml.Linq;
 
 namespace DTAConfig.OptionPanels
 {
@@ -39,12 +41,14 @@ namespace DTAConfig.OptionPanels
 
         bool downloadCancelled = false;
 
-        private string baseUrl = "http://ra2wx.online/RU/Components/";
+        private string baseUrl = "http://127.0.0.1:8080/Components/";
 
         string componentNamePath = Path.Combine(ProgramConstants.GamePath, "Resources", "components");
 
         FileIniDataParser iniParser;
         IniData iniData;
+
+        private List<XNAClientButton> buttons = new List<XNAClientButton>();
         public override void Initialize()
         {
             base.Initialize();
@@ -57,13 +61,8 @@ namespace DTAConfig.OptionPanels
            iniParser = new FileIniDataParser();
            iniData = iniParser.ReadFile(componentNamePath);
 
-
-
             GetComponentsDataAsync();
            
-
-
-            
         }
         public static bool AreKeyDataCollectionsEqual(KeyDataCollection collection1, KeyDataCollection collection2)
         {
@@ -116,13 +115,14 @@ namespace DTAConfig.OptionPanels
                 }
 
                 XNAClientButton btn = new XNAClientButton(WindowManager);
-                btn.Name = "btn" + name;
+                btn.Name = name;
                 btn.ClientRectangle = new Rectangle(Width - 145,
                     12 + componentIndex * 35, UIDesignConstants.BUTTON_WIDTH_133, UIDesignConstants.BUTTON_HEIGHT);
                 btn.Text = buttonText;
                 btn.Tag = section;
                 btn.LeftClick += Btn_LeftClick;
 
+                buttons.Add(btn);
                 XNALabel lbl = new XNALabel(WindowManager);
                 lbl.Name = "lbl" + name;
                 lbl.ClientRectangle = new Rectangle(12, btn.Y + 2, 0, 0);
@@ -164,8 +164,8 @@ namespace DTAConfig.OptionPanels
 
         private async Task DownloadFilesAsync(XNAClientButton button)
         {
-        
-           
+
+            button.Visible = false;
             XNAProgressBar progressBar = new XNAProgressBar(WindowManager);
             progressBar.Name = nameof(progressBar);
             progressBar.Maximum = 100;
@@ -179,25 +179,34 @@ namespace DTAConfig.OptionPanels
 
 
             iniData.Sections.AddSection(componentName);
-            iniData[componentName].AddKey("name", ((SectionData)button.Tag).Keys["name"]);
+            
             string downloadUrl = string.Empty;
             string downloadPath = string.Empty;
             bool Special = false;
             foreach (KeyData keyData in ((SectionData)button.Tag).Keys)
             {
                 
-                if (keyData.KeyName == "name")
-                    continue;
+                iniData[componentName].AddKey(keyData.KeyName, keyData.Value);
 
+                if (keyData.KeyName == "name")
+                {
+                   // iniData[componentName].AddKey("name", ((SectionData)button.Tag).Keys["name"]);
+                    continue;
+                }
+                if (keyData.KeyName == "Repel")
+                {
+                   
+                    continue;
+                }
                 if (keyData.KeyName == "Special")
                 {
                     Special = true;
-                    iniData[componentName].AddKey("Special", keyData.Value);
+                    //iniData[componentName].AddKey("Special", keyData.Value);
                     continue;
                 }
                 if(keyData.KeyName == "Unload")
                 {
-                    iniData[componentName].AddKey("Unload", keyData.Value);
+                   // iniData[componentName].AddKey("Unload", keyData.Value);
                     continue;
                 }
                 if (Special)
@@ -247,52 +256,70 @@ namespace DTAConfig.OptionPanels
 
             progressBar.Visible = false;
             button.Visible = true;
+            button.Text = "卸载";
         }
 
             private async void Btn_LeftClick(object sender, EventArgs e)
         {
             XNAClientButton button = (XNAClientButton)sender;
 
-            bool Special = false;
+            
+            bool canDownload = false;
             if (button.Text == "安装")
             {
-                button.Visible = false;
-                await DownloadFilesAsync(button);
-                // 更新按钮文本
-                button.Text = "卸载";
+                List<XNAClientButton> repellist = new List<XNAClientButton>();
+             
+
+                if (((SectionData)button.Tag).Keys.ContainsKey("Repel"))
+                {
+                    foreach (string name in ((SectionData)button.Tag).Keys["Repel"].Split(','))
+                    {
+                        if (buttons.FindIndex(b => ((SectionData)b.Tag).SectionName == name && (b.Text == "卸载"||!b.Visible)) != -1)
+                        {
+                            var repelButton = buttons.Find((b => ((SectionData)b.Tag).SectionName == name));
+                            repellist.Add(repelButton);
+                        
+                        }
+                    }
+                    if (repellist.Count != 0)
+                    {
+                        TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
+                       
+                        XNAMessageBox xNAMessageBox = new XNAMessageBox(WindowManager,
+                                   "信息",
+                                   $"这个组件和以下组件不兼容：\n\n{string.Join("\n", repellist.Select(button => button.Name))}\n\n如果安装将会卸载以上组件。",
+                                   XNAMessageBoxButtons.OKCancel);
+
+                    
+                        xNAMessageBox.Show();
+
+                        xNAMessageBox.OKClickedAction += (e) => {
+                            foreach (XNAClientButton button3 in repellist)
+                            {
+                                unload(button3);
+                                tcs.SetResult(true);
+                            }
+                        };
+                        xNAMessageBox.CancelClickedAction += (e) => { return; };
+                        await tcs.Task;
+                    }
+                }
+              
+                    try
+                    {
+                        await DownloadFilesAsync(button);
+                    }
+                    catch (Exception ex)
+                    {
+                        XNAMessageBox.Show(WindowManager, "错误", $"下载时出错{ex}");
+                    }
                 
+               
+ 
             }
             else if (button.Text == "卸载")
             {
-                try
-                {
-                    foreach (KeyData keyData in ((SectionData)button.Tag).Keys)
-                    {
-                        if (keyData.KeyName == "name")
-                            continue;
-                    if (keyData.KeyName == "Special")
-                    {
-                        Special = true;
-                        continue;
-                    }
-                        if ((keyData.KeyName == "Unload"))
-                            continue;
-                    if(!Special)
-                        File.Delete(Path.Combine(ProgramConstants.GamePath, keyData.KeyName));
-                    }
-                    if(Special)
-                {
-                    foreach (string fiename in ((SectionData)button.Tag).Keys["Unload"].Split(','))
-                        File.Delete(fiename);
-
-                }
-
-                    iniData.Sections.RemoveSection(((SectionData)button.Tag).SectionName);
-                    button.Text = "安装";
-            }
-                catch {
-               return;
-            }
+                unload(button);
         }
             else
             {
@@ -304,47 +331,45 @@ namespace DTAConfig.OptionPanels
             iniParser.WriteFile(componentNamePath, iniData);
         }
   
+        private async void  message_ok(XNAMessageBox messageBox)
+        {
+            
+           
+        }
+        private void unload(XNAClientButton button)
+        {
+            try
+            {
+                bool Special = false;
+                foreach (KeyData keyData in ((SectionData)button.Tag).Keys)
+                {
+                    if (keyData.KeyName == "name")
+                        continue;
+                    if (keyData.KeyName == "Special")
+                    {
+                        Special = true;
+                        break;
+                    }
+                    if ((keyData.KeyName == "Unload"))
+                        continue;
+                    if (!Special)
+                        File.Delete(Path.Combine(ProgramConstants.GamePath, keyData.KeyName));
+                }
+                if (Special)
+                {
+                    foreach (string fiename in ((SectionData)button.Tag).Keys["Unload"].Split(','))
+                        File.Delete(fiename);
 
-            //var btn = (XNAClientButton)sender;
+                }
 
-            //var cc = (CustomComponent)btn.Tag;
-
-            //if (cc.IsBeingDownloaded)
-            //    return;
-
-            //FileInfo localFileInfo = SafePath.GetFile(ProgramConstants.GamePath, cc.LocalPath);
-
-            //if (localFileInfo.Exists)
-            //{
-            //    if (cc.LocalIdentifier == cc.RemoteIdentifier)
-            //    {
-            //        localFileInfo.Delete();
-            //        btn.Text = "Install".L10N("UI:DTAConfig:Install") + $" ({GetSizeString(cc.RemoteSize)})";
-            //        return;
-            //    }
-
-            //    btn.AllowClick = false;
-
-            //    cc.DownloadFinished += cc_DownloadFinished;
-            //    cc.DownloadProgressChanged += cc_DownloadProgressChanged;
-            //    cc.DownloadComponent();
-            //}
-            //else
-            //{
-            //    var msgBox = new XNAMessageBox(WindowManager, "Confirmation Required".L10N("UI:DTAConfig:UpdateConfirmRequiredTitle"),
-            //        string.Format(("To enable {0} the Client will download the necessary files to your game directory." +
-            //        Environment.NewLine + Environment.NewLine + "This will take an additional {1} of disk space (size of the download is {2}), and the download may last" +
-            //        Environment.NewLine +
-            //        "from a few minutes to multiple hours depending on your Internet connection speed." +
-            //        Environment.NewLine + Environment.NewLine +
-            //        "You will not be able to play during the download. Do you want to continue?").L10N("UI:DTAConfig:UpdateConfirmRequiredText"),
-            //        cc.GUIName, GetSizeString(cc.RemoteSize), GetSizeString(cc.Archived ? cc.RemoteArchiveSize : cc.RemoteSize)
-            //        ), XNAMessageBoxButtons.YesNo);
-
-            //    msgBox.Tag = btn;
-            //    msgBox.Show();
-            //    msgBox.YesClickedAction = MsgBox_YesClicked;
-            //}
+                iniData.Sections.RemoveSection(((SectionData)button.Tag).SectionName);
+                button.Text = "安装";
+            }
+            catch
+            {
+                return;
+            }
+        }
 
 
 
