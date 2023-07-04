@@ -336,7 +336,10 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+   <ProjectReference Include="..\ClientCore\ClientCore.csproj" />
+   <ProjectReference Include="..\ClientGUI\ClientGUI.csproj" />
    <ProjectReference Include="..\DTAConfig\DTAConfig.csproj" />
+   <ProjectReference Include="..\Localization\Localization.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Extended.VideoPlayback">

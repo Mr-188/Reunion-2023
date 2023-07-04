@@ -9,7 +9,6 @@ using DTAClient.Domain;
 using Localization;
 using Microsoft.Xna.Framework;
 using Rampastring.Tools;
-using Rampastring.Tools.INIProperties;
 using Rampastring.XNAUI;
 using Rampastring.XNAUI.XNAControls;
 //using SharpDX.DXGI;
@@ -158,8 +157,8 @@ namespace DTAClient.DXGUI.Generic
             trbDifficultySelector.ButtonTexture = AssetLoader.LoadTextureUncached(
                 "trackbarButton_difficulty.png");
 
-           
-            
+
+
 
             lbGameMod = new XNALabel(WindowManager);
             lbGameMod.Name = "lbGameMod";
@@ -326,7 +325,7 @@ namespace DTAClient.DXGUI.Generic
             //lbCampaignList.Items.RemoveAll(i => (string)i.Tag == Missions[lbCampaignList.SelectedIndex].Attached);
 
             //底层删除
-          //  Console.WriteLine(lbCampaignList.SelectedItem.Tag);
+            //  Console.WriteLine(lbCampaignList.SelectedItem.Tag);
             string path = @"INI/";
 
             var files = Directory.GetFiles(path, "Battle*.ini");
@@ -391,7 +390,7 @@ namespace DTAClient.DXGUI.Generic
         private void Dddifficulty_SelectedIndexChanged(object sender, EventArgs e)
         {
             ReadMissionList();
-           
+
 
         }
 
@@ -418,14 +417,14 @@ namespace DTAClient.DXGUI.Generic
                 {
                     XNADropDownItem item = new XNADropDownItem();
                     item.Text = Mod[s][1];
-                    item.Tag = new string[]{Mod[s][0],Mod[s][2], Mod[s][3]};
+                    item.Tag = new string[] { Mod[s][0], Mod[s][2], Mod[s][3] };
 
-                    if (ddGameMod.Items.Find(i => i.Text == item.Text && i.Tag == item.Tag) ==null)
+                    if (ddGameMod.Items.Find(i => i.Text == item.Text && i.Tag == item.Tag) == null)
                         ddGameMod.AddItem(item);
 
-                    if (ModParent.ContainsKey(s)&&ModParent[s].Count!=0)
-                        
-                        for(int i=0; i < ModParent[s].Count;i++) 
+                    if (ModParent.ContainsKey(s) && ModParent[s].Count != 0)
+
+                        for (int i = 0; i < ModParent[s].Count; i++)
                         {
                             XNADropDownItem item1 = new XNADropDownItem();
                             item1.Text = ModParent[s][i][1];
@@ -435,8 +434,8 @@ namespace DTAClient.DXGUI.Generic
                                 ddGameMod.AddItem(item1);
                         }
 
-                   
-                    
+
+
                 }
             }
 
@@ -552,7 +551,7 @@ namespace DTAClient.DXGUI.Generic
 
             return false;
         }
-       
+
         /// <summary>
         /// Called when the user wants to proceed to the mission despite having
         /// being called a cheater.
@@ -578,8 +577,8 @@ namespace DTAClient.DXGUI.Generic
             IniFile spawnReader = new IniFile(SafePath.CombineFilePath(ProgramConstants.GamePath, "spawn.ini"));
 
             string oldMain = spawnReader.GetStringValue("Settings", "Main", string.Empty);
-          
-        
+
+
             string newMain = ((object[])ddGameMod.SelectedItem.Tag)[2].ToString();
 
             string oldGame = spawnReader.GetStringValue("Settings", "Game", string.Empty);
@@ -621,8 +620,8 @@ namespace DTAClient.DXGUI.Generic
                     }
                     catch (Exception e)
                     {
-                        if(File.Exists("expandmd97.mix"))
-                        File.Delete("expandmd97.mix");
+                        if (File.Exists("expandmd97.mix"))
+                            File.Delete("expandmd97.mix");
                     }
                     CopyDirectory(newGame, "./");
                 }
@@ -692,7 +691,7 @@ namespace DTAClient.DXGUI.Generic
             spawnStreamWriter.WriteLine("AI=" + newAi);
 
             spawnStreamWriter.WriteLine("Attached=" + newAttached);
-          
+
             spawnStreamWriter.WriteLine("CampaignID=" + mission.Index);
             spawnStreamWriter.WriteLine("GameSpeed=" + UserINISettings.Instance.GameSpeed);
             spawnStreamWriter.WriteLine("Firestorm=" + mission.RequiredAddon);
@@ -806,7 +805,7 @@ namespace DTAClient.DXGUI.Generic
                 {
                     modKeys.Add(modkey);
                     string modSection = mod_aiINI.GetStringValue("Game", modkey, "NOT FOUND");
-                    if(Mod.ContainsKey(modSection)) { continue; }
+                    if (Mod.ContainsKey(modSection)) { continue; }
                     //键为mod注册名，值为数组:mod名，mod文件路径，mod继承自哪个
                     Mod.Add(modSection, new string[] {
                         modSection,

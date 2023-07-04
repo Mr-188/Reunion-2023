@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Rampastring.Tools;
 
 namespace ClientCore.Statistics
 {
@@ -22,7 +21,7 @@ namespace ClientCore.Statistics
                 reader.Read(versionBuffer, 0, versionBuffer.Length);
 
                 String s = new String(versionBuffer);
-                
+
                 return s;
 
             }

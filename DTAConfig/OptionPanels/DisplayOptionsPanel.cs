@@ -159,8 +159,8 @@ namespace DTAConfig.OptionPanels
             chkBorderlessWindowedMode.Text = "Borderless Windowed Mode".L10N("UI:DTAConfig:BorderlessWindowedMode");
             chkBorderlessWindowedMode.AllowChecking = false;
 
-           
-            
+
+
 
             chkBackBufferInVRAM = new XNAClientCheckBox(WindowManager);
             chkBackBufferInVRAM.Name = "chkBackBufferInVRAM";
@@ -186,7 +186,7 @@ namespace DTAConfig.OptionPanels
             ddClientResolution.AllowDropDown = false;
             ddClientResolution.PreferredItemLabel = "(recommended)".L10N("UI:DTAConfig:Recommended");
 
-           // ddClientResolution.Enabled = false;
+            // ddClientResolution.Enabled = false;
 
             int width = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
             int height = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
@@ -315,7 +315,7 @@ namespace DTAConfig.OptionPanels
 
             int languageCount = ClientConfiguration.Instance.LanguageCount;
 
-            
+
             for (int i = 0; i < languageCount; i++)
             {
                 XNADropDownItem item1 = new XNADropDownItem();
@@ -330,22 +330,26 @@ namespace DTAConfig.OptionPanels
                 ddLanguage.Visible = false;
             }
 
-                int VoiceCount = ClientConfiguration.Instance.VoiceCount;
+            int VoiceCount = ClientConfiguration.Instance.VoiceCount;
             for (int i = 0; i < VoiceCount; i++)
             {
                 XNADropDownItem item1 = new XNADropDownItem();
                 item1.Text = ClientConfiguration.Instance.GetVoiceInfoFromIndex(i)[0].L10N("UI:Voice:" + ClientConfiguration.Instance.GetVoiceInfoFromIndex(i)[0]);
                 item1.Tag = ClientConfiguration.Instance.GetVoiceInfoFromIndex(i)[0];
-                ddVoice.AddItem(item1);
+                if(Directory.Exists(ClientConfiguration.Instance.GetVoiceInfoFromIndex(i)[1]))
+                    ddVoice.AddItem(item1);
             }
 
             int themeCount = ClientConfiguration.Instance.ThemeCount;
-            for (int i = 0; i < themeCount; i++) {
+            for (int i = 0; i < themeCount; i++)
+            {
                 XNADropDownItem item1 = new XNADropDownItem();
                 item1.Text = ClientConfiguration.Instance.GetThemeInfoFromIndex(i)[0].L10N("UI:Themes:" + ClientConfiguration.Instance.GetThemeInfoFromIndex(i)[0]);
                 item1.Tag = ClientConfiguration.Instance.GetThemeInfoFromIndex(i)[1];
-               // Console.WriteLine(item1.Tag.ToString());
-                ddClientTheme.AddItem(item1);
+                // Console.WriteLine(item1.Tag.ToString());
+
+                if(Directory.Exists("Resources\\"+ClientConfiguration.Instance.GetThemeInfoFromIndex(i)[1]))
+                    ddClientTheme.AddItem(item1);
             }
 #if TS
             lblCompatibilityFixes = new XNALabel(WindowManager);
@@ -416,7 +420,7 @@ namespace DTAConfig.OptionPanels
             AddChild(ddDetailLevel);
             AddChild(lblIngameResolution);
             AddChild(ddIngameResolution);
-            AddChild(lblLanguage); 
+            AddChild(lblLanguage);
             AddChild(ddLanguage);
             AddChild(lblVoice);
             AddChild(ddVoice);
@@ -431,17 +435,19 @@ namespace DTAConfig.OptionPanels
         {
             if (ddStart.SelectedIndex == 0)
                 Process.Start("explorer", $"{ProgramConstants.GamePath}Resources\\{ddClientTheme.SelectedItem.Tag}Wallpaper\\");
+            else if(File.Exists($"{ProgramConstants.GamePath}Resources\\{UserINISettings.Instance.ClientTheme}loading.mp4"))
+                Process.Start("explorer", $"/select,{ProgramConstants.GamePath}Resources\\{UserINISettings.Instance.ClientTheme}loading.mp4");
             else
-                Process.Start("explorer", $"/select,{ProgramConstants.GamePath}Resources\\a.mp4");
+                Process.Start("explorer", $"/select,{ProgramConstants.GamePath}Resources\\loading.mp4");
         }
 
         private void DdStart_SelectedChanged(object sender, EventArgs e)
         {
-               if(ddStart.SelectedIndex!=0)
+            if (ddStart.SelectedIndex != 0)
             {
                 chkRandom_wallpaper.Enabled = false;
             }
-              else
+            else
                 chkRandom_wallpaper.Enabled = true;
         }
 
@@ -876,12 +882,12 @@ namespace DTAConfig.OptionPanels
                     File.Copy(file, pFilePath, true);
                 }
                 string[] folders = System.IO.Directory.GetDirectories(sourceDirPath);
-                                foreach (string folder in folders)
-                                     {
-                                       string name = System.IO.Path.GetFileName(folder);
-                                        string dest = System.IO.Path.Combine(saveDirPath, name);
-                                    CopyDirectory(folder, dest);//构建目标路径,递归复制文件
-                                    }
+                foreach (string folder in folders)
+                {
+                    string name = System.IO.Path.GetFileName(folder);
+                    string dest = System.IO.Path.Combine(saveDirPath, name);
+                    CopyDirectory(folder, dest);//构建目标路径,递归复制文件
+                }
             }
         }
 
@@ -922,7 +928,7 @@ namespace DTAConfig.OptionPanels
             IniSettings.ClientResolutionX.Value = clientRes[0];
             IniSettings.ClientResolutionY.Value = clientRes[1];
 
-            IniSettings.video_wallpaper.Value = ddStart.SelectedIndex == 0? false: true;
+            IniSettings.video_wallpaper.Value = ddStart.SelectedIndex == 0 ? false : true;
 
             if (IniSettings.BorderlessWindowedClient.Value != chkBorderlessClient.Checked)
                 restartRequired = true;
@@ -966,26 +972,26 @@ namespace DTAConfig.OptionPanels
 
             if (IniSettings.Voice != (string)ddVoice.SelectedItem.Tag)
             {
-              
+
                 File.Delete(ProgramConstants.GamePath + "audiomd.mix");
                 File.Delete(ProgramConstants.GamePath + "audio.mix");
                 File.Delete(ProgramConstants.GamePath + "expandmd51.mix");
                 File.Delete(ProgramConstants.GamePath + "expandmd50.mix");
                 CopyDirectory(voice, "./");
-              
+
             }
 
             if (IniSettings.ClientTheme != (string)ddClientTheme.SelectedItem.Tag)
             {
-         
+
                 restartRequired = true;
             }
-            
 
-            
+
+
             IniSettings.Voice.Value = (string)ddVoice.SelectedItem.Tag;
             IniSettings.ClientTheme.Value = (string)ddClientTheme.SelectedItem.Tag;
-    
+
             //随机壁纸
             IniSettings.Random_wallpaper.Value = chkRandom_wallpaper.Checked;
 

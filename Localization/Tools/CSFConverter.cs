@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Localization.Tools;
 public class CSFConverter
 {
-    public static JObject Csf(string csfName,string jsonName)
+    public static JObject Csf(string csfName, string jsonName)
     {
         Dictionary<string, string> keyValues = new Dictionary<string, string>();
 
@@ -29,7 +25,7 @@ public class CSFConverter
         process.WaitForExit();
 
         // 处理输出结果或进行其他操作
-       /// Console.WriteLine(output);
+        /// Console.WriteLine(output);
 
         string jsonContent = File.ReadAllText(jsonName);
 
@@ -37,9 +33,9 @@ public class CSFConverter
         JObject json = JObject.Parse(jsonContent);
 
 
-       // keyValues.Add("LoadMsg:All01md", json.SelectToken("LoadMsg:All01md").ToString());
+        // keyValues.Add("LoadMsg:All01md", json.SelectToken("LoadMsg:All01md").ToString());
 
-       
+
 
         return json;
     }

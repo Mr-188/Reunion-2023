@@ -1,17 +1,16 @@
-﻿using Localization;
+﻿using System;
 using ClientCore;
 using ClientCore.CnCNet5;
 using ClientGUI;
+using ClientUpdater;
+using DTAClient.DXGUI.Generic;
 using DTAConfig.OptionPanels;
+using Localization;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using Rampastring.Tools;
 using Rampastring.XNAUI;
 using Rampastring.XNAUI.XNAControls;
-using System;
-using ClientUpdater;
-using DTAClient.DXGUI.Generic;
-using System.Linq;
-using Microsoft.Xna.Framework.Input;
 
 namespace DTAConfig
 {
@@ -86,7 +85,7 @@ namespace DTAConfig
             var btnThank = new XNAClientButton(WindowManager);
             btnThank.Name = "btnThank";
             btnThank.ClientRectangle = new Rectangle((btnSave.X + btnCancel.X) / 2, btnSave.Y, UIDesignConstants.BUTTON_WIDTH_92, UIDesignConstants.BUTTON_HEIGHT);
-            btnThank.Text = "Thanks".L10N("UI:DTAConfig:ButtonThanks"); 
+            btnThank.Text = "Thanks".L10N("UI:DTAConfig:ButtonThanks");
             btnThank.LeftClick += btnThank_LeftClick;
 
             thankWindow = new ThankWindow(WindowManager);
@@ -114,7 +113,7 @@ namespace DTAConfig
             if (ClientConfiguration.Instance.ModMode || Updater.UpdateMirrors == null || Updater.UpdateMirrors.Count < 1)
             {
                 tabControl.MakeUnselectable(5);
-               // tabControl.MakeUnselectable(6);
+                // tabControl.MakeUnselectable(6);
             }
             //else if (Updater.CustomComponents == null || Updater.CustomComponents.Count < 1)
             //     tabControl.MakeUnselectable(6);
@@ -237,7 +236,7 @@ namespace DTAConfig
             }
         }
 
-            private void SaveSettings()
+        private void SaveSettings()
         {
             if (RefreshOptionPanels())
                 return;
@@ -249,7 +248,7 @@ namespace DTAConfig
                 foreach (var panel in optionsPanels)
                     restartRequired = panel.Save() || restartRequired;
 
-                
+
                 UserINISettings.Instance.SaveSettings();
             }
             catch (Exception ex)

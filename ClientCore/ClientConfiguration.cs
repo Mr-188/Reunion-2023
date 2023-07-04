@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Rampastring.Tools;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
+using Rampastring.Tools;
 
 namespace ClientCore
 {
@@ -96,7 +95,7 @@ namespace ClientCore
 
         public string AltUIBackgroundColor => DTACnCNetClient_ini.GetStringValue(GENERAL, "AltUIBackgroundColor", "196,196,196");
 
-        public string WindowBorderColor => DTACnCNetClient_ini.GetStringValue(GENERAL, "WindowBorderColor", "128,128,128"); 
+        public string WindowBorderColor => DTACnCNetClient_ini.GetStringValue(GENERAL, "WindowBorderColor", "128,128,128");
 
         public string PanelBorderColor => DTACnCNetClient_ini.GetStringValue(GENERAL, "PanelBorderColor", "255,255,255");
 
@@ -176,7 +175,7 @@ namespace ClientCore
 
         public int VoiceCount => clientDefinitionsIni.GetSectionKeys("Voice").Count;
 
-        public int LanguageCount => clientDefinitionsIni.GetSectionKeys("Language") == null ? 0:clientDefinitionsIni.GetSectionKeys("Language").Count;
+        public int LanguageCount => clientDefinitionsIni.GetSectionKeys("Language") == null ? 0 : clientDefinitionsIni.GetSectionKeys("Language").Count;
 
         public string LocalGame => clientDefinitionsIni.GetStringValue(SETTINGS, "LocalGame", "DTA");
 

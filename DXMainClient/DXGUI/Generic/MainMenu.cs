@@ -15,8 +15,6 @@ using DTAClient.DXGUI.Multiplayer.CnCNet;
 using DTAClient.DXGUI.Multiplayer.GameLobby;
 using DTAClient.Online;
 using DTAConfig;
-using IniParser.Model;
-using IniParser;
 using Localization;
 using Localization.Tools;
 using Microsoft.Xna.Framework;
@@ -26,7 +24,6 @@ using Newtonsoft.Json.Linq;
 using Rampastring.Tools;
 using Rampastring.XNAUI;
 using Rampastring.XNAUI.XNAControls;
-using System.Drawing.Design;
 //using System.Windows.Forms;
 //using Accord.Statistics.Kernels;
 
@@ -254,7 +251,7 @@ namespace DTAClient.DXGUI.Generic
             btnMapEditor.LeftClick += BtnMapEditor_LeftClick;
             btnMapEditor.Text = "Map Editor".L10N("UI:Main:MapEditor");
 
-           // btnMapEditor.Visible = false; //暂时禁用地编
+            // btnMapEditor.Visible = false; //暂时禁用地编
 
             btnStatistics = new XNAClientButton(WindowManager);
             btnStatistics.Name = nameof(btnStatistics);
@@ -306,7 +303,7 @@ namespace DTAClient.DXGUI.Generic
             lblUpdateStatus.LeftClick += LblUpdateStatus_LeftClick;
             lblUpdateStatus.ClientRectangle = new Rectangle(0, 0, UIDesignConstants.BUTTON_WIDTH_160, 20);
 
-            
+
 
             AddChild(btnNewCampaign);
             AddChild(btnLoadGame);
@@ -332,9 +329,6 @@ namespace DTAClient.DXGUI.Generic
                 Updater.FileIdentifiersUpdated += Updater_FileIdentifiersUpdated;
                 Updater.OnCustomComponentsOutdated += Updater_OnCustomComponentsOutdated;
             }
-
-
-
 
             base.Initialize(); // Read control attributes from INI
 
@@ -525,7 +519,7 @@ namespace DTAClient.DXGUI.Generic
                 "在游戏中躲在高架桥下可以躲避核弹轰炸。",
                 "海豚也可以解除蜘蛛。"
             };
-            // 在这里实现您的秘密功能
+
             XNAMessageBox.Show(WindowManager, "你知道吗", strings[new Random().Next(strings.Count)]);
         }
 
@@ -533,234 +527,271 @@ namespace DTAClient.DXGUI.Generic
         {
             XNAMessageBox messageBox;
 
-            string directoryPath = "./";
-            string[] mapFiles = Directory.GetFiles(directoryPath, "*.map");
+            if (File.Exists("mapsmd03.mix"))
+                Mix.UnPackMix(ProgramConstants.GamePath, $"{ProgramConstants.GamePath}mapsmd03.mix");
+            if (File.Exists("maps01.mix"))
+                Mix.UnPackMix(ProgramConstants.GamePath, $"{ProgramConstants.GamePath}mapsmd01.mix");
+            if (File.Exists("maps02.mix"))
+                Mix.UnPackMix(ProgramConstants.GamePath, $"{ProgramConstants.GamePath}maps02.mix");
 
-            foreach (string mapFile in mapFiles)
+            string directoryPath = "./";
+            var alls = Directory.GetFiles("./", "all*.map");
+            var sovs = Directory.GetFiles("./", "sov*.map");
+
+            if (alls.Length + sovs.Length != 0)
             {
-                if (IsTaskPackage(mapFile))
-                {
-                    // 提示用户加载任务包
-                    messageBox = new XNAMessageBox(WindowManager, "检测到可能存在的任务包", "你需要加载此任务包吗？", XNAMessageBoxButtons.YesNo);
-                    messageBox.Show();
-                    messageBox.YesClickedAction += CheckCampaign_YesClicked;
-                    return;
-                }
+                // 提示用户加载任务包
+                messageBox = new XNAMessageBox(WindowManager, "检测到可能存在的任务包", "你需要加载此任务包吗？", XNAMessageBoxButtons.YesNo);
+                messageBox.Show();
+                messageBox.YesClickedAction += CheckCampaign_YesClicked;
+                return;
             }
+
         }
 
-    private bool IsTaskPackage(string mapFilePath)
+        private bool IsTaskPackage(string mapFilePath)
         {
-            IniFile ini = new IniFile(mapFilePath);
-            if(ini.GetIntValue("Basic", "MultiplayerOnly", 1)==0)
+            try
             {
-                return true;
+                IniFile ini = new IniFile(mapFilePath);
+                if (ini.GetIntValue("Basic", "MultiplayerOnly", 1) == 0)
+                {
+                    return true;
+                }
             }
-
+            catch
+            {
+                return false;
+            }
             return false;
         }
         private void CheckCampaign_YesClicked(XNAMessageBox messageBox)
         {
-            var alls = Directory.GetFiles("./", "all*md.map");
-            var sovs = Directory.GetFiles("./", "sov*md.map");
-            var mod = true;
-            IniFile iniFile = new IniFile("INI/Battle.ini");
 
-            string md = string.Empty;
-            string contry = string.Empty;
-
-           
-            //string value = csf["LoadMsg:All01md"];
-            //Console.WriteLine($"Value for key '{"LoadMsg:All01md"}': {value}");
-
-            if (alls.Length != 0)
-            {
-                md = "md";
-               
-            }
-            else if (sovs.Length != 0)
-            {
-                md = "md";
-               
-            }
-            else
-            {
-                alls = Directory.GetFiles("./", "all*.map");
-                sovs = Directory.GetFiles("./", "sov*.map");
-                
-            }
-            bool goodcsf = true;
-            JObject csf = new JObject();
             try
             {
-                csf = CSFConverter.Csf($"{ProgramConstants.GamePath}ra2{md}.csf", $"{ProgramConstants.GamePath}Resources\\ra2{md}.json");
 
-            }
-            catch(Exception ex)
-            {
-                Logger.Log("csf解析失败");
-                goodcsf = false;
-            }
-
-            int j = new Random().Next(0, 10000);
-            while (Directory.Exists($"INI/GameOptions/{(string.IsNullOrEmpty(md) ? "Game" : "Mission")}/{j.ToString()}/"))
-            {
-                j = new Random().Next(0, 10000);
-            }
+                var alls = Directory.GetFiles("./", "all*md.map");
+                var sovs = Directory.GetFiles("./", "sov*md.map");
+                var mod = true;
 
 
-            int i = new Random().Next(0, 10000);
-            while (iniFile.KeyExists("Battles", i.ToString()))
-            {
-                i = new Random().Next(0, 10000);
-            }
-            iniFile.SetStringValue("Battles", j.ToString(), j.ToString());
-            iniFile.SetStringValue(j.ToString(), "Description", "—— 第三方任务 ——");
+                string md = string.Empty;
+                string contry = string.Empty;
 
-            if (File.Exists($"{ProgramConstants.GamePath}rules{md}.ini") || File.Exists($"{ProgramConstants.GamePath}art{md}.ini"))
-                mod = true;
 
-            else
-            {
-                mod = false;
-            }
+                //string value = csf["LoadMsg:All01md"];
+                //Console.WriteLine($"Value for key '{"LoadMsg:All01md"}': {value}");
 
-            Directory.CreateDirectory($"INI/GameOptions/{(mod? "Game" : "Mission")}/{j}");
-           
-            
+                if (alls.Length != 0)
+                {
+                    md = "md";
 
-            List<string> mission = new List<string>();
-            foreach (var file in alls)
-            {
-                //if (!IsTaskPackage(file))
-                //    continue;
-                mission.Add(file);
-            }
-                foreach (var file in sovs)
-            {
-                //if (!IsTaskPackage(file))
-                //    continue;
-                mission.Add(file);
-            }
+                }
+                else if (sovs.Length != 0)
+                {
+                    md = "md";
 
-                    int Count = 0;
-            foreach (var file in mission)
-            {
+                }
+                else
+                {
+                    alls = Directory.GetFiles("./", "all*.map");
+                    sovs = Directory.GetFiles("./", "sov*.map");
 
-                contry = Path.GetFileName(file).ToUpper().Substring(0, 3);
-                Count = Count + 1;
-                i = new Random().Next(0, 10000);
+                }
+                bool goodcsf = true;
+                JObject csf = new JObject();
+                try
+                {
+                    if (File.Exists($"{ProgramConstants.GamePath}ra2{md}.csf"))
+                        csf = CSFConverter.Csf($"{ProgramConstants.GamePath}ra2{md}.csf", $"{ProgramConstants.GamePath}Resources\\ra2{md}.json");
+                    else
+                        goodcsf = false;
+
+
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log("csf解析失败");
+                    goodcsf = false;
+                }
+
+                if (File.Exists($"{ProgramConstants.GamePath}rules{md}.ini") || File.Exists($"{ProgramConstants.GamePath}art{md}.ini"))
+                    mod = true;
+
+                else
+                {
+                    mod = false;
+                }
+
+                int j = new Random().Next(0, 10000);
+
+                while (Directory.Exists($"INI/GameOptions/{(mod ? "Game" : "Mission")}/{j.ToString()}/"))
+                {
+                    j = new Random().Next(0, 10000);
+                }
+
+                IniFile iniFile = new IniFile($"INI/Battle{j}.ini");
+
+                int i = new Random().Next(0, 10000);
+
                 while (iniFile.KeyExists("Battles", i.ToString()))
                 {
                     i = new Random().Next(0, 10000);
                 }
-                iniFile.SetStringValue("Battles", i.ToString(), i.ToString());
-                iniFile.SetStringValue(i.ToString(), "Scenario", Path.GetFileName(file).ToUpper());
-                iniFile.SetStringValue(i.ToString(), "BuildOffAlly", "yes");
-                
-               
-                iniFile.SetStringValue(i.ToString(), "Mod", mod? j.ToString() : md != string.Empty ? "YR" : "RA2");
-                iniFile.SetStringValue(i.ToString(), "Description", "第" + Count.ToString() + "关");
-                //Console.WriteLine($"LoadMsg:All{Path.GetFileName(file).Substring(3, 2)}md");
-                
-                if(contry == "ALL")
-                    iniFile.SetStringValue(i.ToString(), "SideName","Allied");
-                else if (contry == "SOV")
-                    iniFile.SetStringValue(i.ToString(), "SideName","Soviet");
 
-                if (goodcsf && (contry == "ALL" || contry == "SOV"))
-                    iniFile.SetStringValue(i.ToString(), "LongDescription", csf.SelectToken($"BRIEF:{contry}{Path.GetFileName(file).Substring(3, 2)}{(md != string.Empty ? "MD" : "")}").ToString().Replace("\n", "@"));
-                
+
+
+                iniFile.SetStringValue("Battles", j.ToString(), j.ToString());
+                iniFile.SetStringValue(j.ToString(), "Description", "—— 第三方任务 ——");
+
+
+
+                Directory.CreateDirectory($"INI/GameOptions/{(mod ? "Game" : "Mission")}/{j}");
+
+
+
+                List<string> mission = new List<string>();
+                foreach (var file in alls)
+                {
+                    //if (!IsTaskPackage(file))
+                    //    continue;
+                    mission.Add(file);
+                }
+                foreach (var file in sovs)
+                {
+                    //if (!IsTaskPackage(file))
+                    //    continue;
+                    mission.Add(file);
+                }
+
+                int Count = 0;
+                foreach (var file in mission)
+                {
+
+                    contry = Path.GetFileName(file).ToUpper().Substring(0, 3);
+                    Count = Count + 1;
+                    i = new Random().Next(0, 10000);
+                    while (iniFile.KeyExists("Battles", i.ToString()))
+                    {
+                        i = new Random().Next(0, 10000);
+                    }
+                    iniFile.SetStringValue("Battles", i.ToString(), i.ToString());
+                    iniFile.SetStringValue(i.ToString(), "Scenario", Path.GetFileName(file).ToUpper());
+                    iniFile.SetStringValue(i.ToString(), "BuildOffAlly", "yes");
+
+
+                    iniFile.SetStringValue(i.ToString(), "Mod", mod ? j.ToString() : md != string.Empty ? "YR" : "RA2");
+                    iniFile.SetStringValue(i.ToString(), "Description", "第" + Count.ToString() + "关");
+                    //Console.WriteLine($"LoadMsg:All{Path.GetFileName(file).Substring(3, 2)}md");
+
+                    if (contry == "ALL")
+                        iniFile.SetStringValue(i.ToString(), "SideName", "Allied");
+                    else if (contry == "SOV")
+                        iniFile.SetStringValue(i.ToString(), "SideName", "Soviet");
+
+                    if (goodcsf && (contry == "ALL" || contry == "SOV"))
+                        iniFile.SetStringValue(i.ToString(), "LongDescription", csf.SelectToken($"BRIEF:{contry}{Path.GetFileName(file).Substring(3, 2)}{(md != string.Empty ? "MD" : "")}").ToString().Replace("\n", "@"));
+
+                    if (!mod)
+                    {
+
+                        iniFile.SetStringValue(i.ToString(), "Attached", j.ToString());
+                        File.Move(file, $"INI/GameOptions/Mission/{j}/{Path.GetFileName(file)}");
+                    }
+                    else
+                    {
+
+                        File.Move(file, $"INI/GameOptions/Game/{j}/{Path.GetFileName(file)}");
+                    }
+
+                    var lpal = Directory.GetFiles("./", "l*.pal");
+                    var lshp = Directory.GetFiles("./", "l*.shp");
+
+                    if (lpal.Length != 0)
+                    {
+                        foreach (var pal in lpal)
+                        {
+                            File.Move(pal, $"INI/GameOptions/{(mod ? "Game" : "Mission")}/{j}/{Path.GetFileName(pal)}");
+                        }
+                    }
+
+                    if (lshp.Length != 0)
+                    {
+                        foreach (var shp in lshp)
+                        {
+                            File.Move(shp, $"INI/GameOptions/{(mod ? "Game" : "Mission")}/{j}/{Path.GetFileName(shp)}");
+                        }
+                    }
+                }
+                // File.Create($"INI/Mod&AI{j}.ini");
+                IniFile modINI;
+
+
+                if (mod)
+                {
+                    modINI = new IniFile($"INI/Mod&AI{j}.ini");
+                    modINI.SetStringValue("Game", j.ToString(), j.ToString());
+                    modINI.SetStringValue(section: j.ToString(), key: "Visible", value: "False");
+
+                    if (md == string.Empty)
+                        modINI.SetStringValue(section: j.ToString(), key: "Main", value: "RA2_Main");
+                    else
+                        modINI.SetStringValue(section: j.ToString(), key: "Main", value: "YR_Main");
+                    modINI.WriteIniFile();
+                }
+
+
+                iniFile.WriteIniFile();
+
+                if (File.Exists($"{ProgramConstants.GamePath}ra2{md}.csf"))
+                    if (mod)
+                        File.Move($"{ProgramConstants.GamePath}ra2{md}.csf", $"INI/GameOptions/Game/{j}/stringtable00.csf");
+                    else
+                        File.Move($"{ProgramConstants.GamePath}ra2{md}.csf", $"INI/GameOptions/Mission/{j}/stringtable00.csf");
+
+                if (File.Exists($"{ProgramConstants.GamePath}rules{md}.ini"))
+                    File.Move($"{ProgramConstants.GamePath}rules{md}.ini", $"INI/GameOptions/Game/{j}/rules{md}.ini");
+                if (File.Exists($"{ProgramConstants.GamePath}art{md}.ini"))
+                    File.Move($"{ProgramConstants.GamePath}art{md}.ini", $"INI/GameOptions/Game/{j}/art{md}.ini");
+                if (File.Exists($"{ProgramConstants.GamePath}mission{md}.csf"))
+                    File.Move($"{ProgramConstants.GamePath}mission{md}.csf", $"INI/GameOptions/Game/{j}/missionmd.ini");
+                if (File.Exists($"{ProgramConstants.GamePath}battle{md}.ini"))
+                    File.Move($"{ProgramConstants.GamePath}battle{md}.ini", $"INI/GameOptions/Game/{j}/battlemd.ini");
+                if (File.Exists($"{ProgramConstants.GamePath}mapsel{md}.ini"))
+                    File.Move($"{ProgramConstants.GamePath}mapsel{md}.ini", $"INI/GameOptions/Game/{j}/mapselmd.ini");
+                if (File.Exists($"{ProgramConstants.GamePath}ai{md}.ini"))
+                    File.Move($"{ProgramConstants.GamePath}ai{md}.ini", $"INI/GameOptions/Game/{j}/aimd.ini");
+                if (mod)
+                    Mix.PackToMix($"{ProgramConstants.GamePath}INI/GameOptions/Game/{j}", $"{ProgramConstants.GamePath}INI/GameOptions/Game/expandmd97.mix");
+                else
+                    Mix.PackToMix($"{ProgramConstants.GamePath}INI/GameOptions/Mission/{j}", $"{ProgramConstants.GamePath}INI/GameOptions/Mission/expandmd95.mix");
+
+                DirectoryInfo directory = new System.IO.DirectoryInfo($"INI/GameOptions/Game/{j}");
                 if (!mod)
+                    directory = new System.IO.DirectoryInfo($"INI/GameOptions/Mission/{j}");
+
+                foreach (System.IO.FileInfo file in directory.GetFiles()) file.Delete();
+                foreach (System.IO.DirectoryInfo subDirectory in directory.GetDirectories()) subDirectory.Delete(true);
+                if (mod)
                 {
-                    
-                    iniFile.SetStringValue(i.ToString(), "Attached", j.ToString());
-                    File.Move(file, $"INI/GameOptions/Mission/{j}/{Path.GetFileName(file)}");
+
+                    File.Move($"{ProgramConstants.GamePath}INI/GameOptions/Game/expandmd97.mix", $"{ProgramConstants.GamePath}INI/GameOptions/Game/{j}/expandmd97.mix");
                 }
                 else
                 {
-                    
-                    File.Move(file, $"INI/GameOptions/Game/{j}/{Path.GetFileName(file)}");
+
+                    File.Move($"{ProgramConstants.GamePath}INI/GameOptions/Mission/expandmd95.mix", $"{ProgramConstants.GamePath}INI/GameOptions/Mission/{j}/expandmd95.mix");
                 }
 
-                var lpal = Directory.GetFiles("./", "l*.pal");
-                var lshp = Directory.GetFiles("./", "l*.shp");
 
-                if (lpal.Length != 0)
-                {
-                    foreach (var pal in lpal)
-                    {
-                        File.Move(pal, $"INI/GameOptions/Game/{j}/{Path.GetFileName(pal)}");
-                    }
-                }
-
-                if (lshp.Length != 0)
-                {
-                    foreach (var shp in lshp)
-                    {
-                        File.Move(shp, $"INI/GameOptions/Game/{j}/{Path.GetFileName(shp)}");
-                    }
-                }
+                innerPanel.reload();
             }
-
-            IniFile modINI = new IniFile("INI/Mod&AI.ini");
-            modINI.SetStringValue("Game", j.ToString(), j.ToString());
-
-            if (mod)
+            catch (Exception ex)
             {
-                modINI.SetStringValue(section: j.ToString(), key: "Visible", value: "False");
+                XNAMessageBox.Show(WindowManager, "导入失败", "导入时出错，你可以把这个任务包发给作者看看是怎么回事。");
+                return;
             }
-            if(md==string.Empty)
-                modINI.SetStringValue(section: j.ToString(), key: "Main", value: "RA2_Main");
-            else
-                modINI.SetStringValue(section: j.ToString(), key: "Main", value: "YR_Main");
-
-
-            modINI.WriteIniFile();
-            iniFile.WriteIniFile();
-
-            if (File.Exists($"{ProgramConstants.GamePath}ra2{md}.csf"))
-                if(mod)
-                File.Move($"{ProgramConstants.GamePath}ra2{md}.csf", $"INI/GameOptions/Game/{j}/stringtable00.csf");
-                else
-                    File.Move($"{ProgramConstants.GamePath}ra2{md}.csf", $"INI/GameOptions/Mission/{j}/stringtable00.csf");
-
-            if (File.Exists($"{ProgramConstants.GamePath}rules{md}.ini"))
-                File.Move($"{ProgramConstants.GamePath}rules{md}.ini", $"INI/GameOptions/Game/{j}/rules{md}.ini");
-            if (File.Exists($"{ProgramConstants.GamePath}art{md}.ini"))
-                File.Move($"{ProgramConstants.GamePath}art{md}.ini", $"INI/GameOptions/Game/{j}/art{md}.ini");
-            if (File.Exists($"{ProgramConstants.GamePath}mission{md}.csf"))
-                File.Move($"{ProgramConstants.GamePath}mission{md}.csf", $"INI/GameOptions/Game/{j}/missionmd.ini");
-            if (File.Exists($"{ProgramConstants.GamePath}battle{md}.ini"))
-                File.Move($"{ProgramConstants.GamePath}battle{md}.ini", $"INI/GameOptions/Game/{j}/battlemd.ini");
-            if (File.Exists($"{ProgramConstants.GamePath}mapsel{md}.ini"))
-                File.Move($"{ProgramConstants.GamePath}mapsel{md}.ini", $"INI/GameOptions/Game/{j}/mapselmd.ini");
-            if (File.Exists($"{ProgramConstants.GamePath}ai{md}.ini"))
-                File.Move($"{ProgramConstants.GamePath}ai{md}.ini", $"INI/GameOptions/Game/{j}/aimd.ini");
-            if (mod)
-            Mix.PackToMix($"{ProgramConstants.GamePath}INI/GameOptions/Game/{j}", $"{ProgramConstants.GamePath}INI/GameOptions/Game/expandmd97.mix");
-            else
-                Mix.PackToMix($"{ProgramConstants.GamePath}INI/GameOptions/Mission/{j}", $"{ProgramConstants.GamePath}INI/GameOptions/Mission/expandmd95.mix");
-
-            DirectoryInfo directory = new System.IO.DirectoryInfo($"INI/GameOptions/Game/{j}");
-            if (!mod)
-                directory = new System.IO.DirectoryInfo($"INI/GameOptions/Mission/{j}");
-
-            foreach (System.IO.FileInfo file in directory.GetFiles()) file.Delete();
-            foreach (System.IO.DirectoryInfo subDirectory in directory.GetDirectories()) subDirectory.Delete(true);
-            if (mod)
-            {
-               
-                File.Move($"{ProgramConstants.GamePath}INI/GameOptions/Game/expandmd97.mix", $"{ProgramConstants.GamePath}INI/GameOptions/Game/{j}/expandmd97.mix");
-            }
-            else
-            {
-                
-                File.Move($"{ProgramConstants.GamePath}INI/GameOptions/Mission/expandmd95.mix", $"{ProgramConstants.GamePath}INI/GameOptions/Mission/{j}/expandmd95.mix");
-            }
-            
-
-            innerPanel.reload();
         }
 
         /// <summary>
@@ -835,14 +866,30 @@ namespace DTAClient.DXGUI.Generic
                 firstRunMessageBox.YesClickedAction = FirstRunMessageBox_YesClicked;
                 firstRunMessageBox.NoClickedAction = FirstRunMessageBox_NoClicked;
 
-                //if (File.Exists("Client/rules_custom.ini"))
-                //{
-                //    File.Create("Client/rules_custom.ini");
-                //}
-                //if (File.Exists("Client/rules_art.ini"))
-                //{
-                //    File.Create("Client/rules_art.ini");
-                //}
+                if (!File.Exists("Client/custom_rules_all.ini"))
+                {
+                    File.Create("Client/custom_rules_all.ini");
+                }
+                if (!File.Exists("Client/custom_rules_ra2.ini"))
+                {
+                    File.Create("Client/custom_rules_ra2.ini");
+                }
+                if (!File.Exists("Client/custom_rules_yr.ini"))
+                {
+                    File.Create("Client/custom_rules_yr.ini");
+                }
+                if (!File.Exists("Client/custom_art_all.ini"))
+                {
+                    File.Create("Client/custom_art_all.ini");
+                }
+                if (!File.Exists("Client/custom_art_ra2.ini"))
+                {
+                    File.Create("Client/custom_art_ra2.ini");
+                }
+                if (!File.Exists("Client/custom_art_yr.ini"))
+                {
+                    File.Create("Client/custom_art_yr.ini");
+                }
 
                 string FA2Path = ProgramConstants.GamePath + ClientConfiguration.Instance.MapEditorExePath;
                 if (!File.Exists(FA2Path))
@@ -1077,398 +1124,398 @@ namespace DTAClient.DXGUI.Generic
             innerPanel.Show(innerPanel.UpdateWindow);
             lblUpdateStatus.Text = "Force updating...".L10N("UI:Main:ForceUpdating");
         }
-    
 
-    /// <summary>
-    /// Starts a check for updates.
-    /// </summary>
-    private void CheckForUpdates()
-    {
-        if (Updater.UpdateMirrors.Count < 1)
-            return;
 
-        Updater.CheckForUpdates();
-        lblUpdateStatus.Enabled = false;
-        lblUpdateStatus.Text = "Checking for " +
-            "updates...".L10N("UI:Main:CheckingForUpdate");
-        lastUpdateCheckTime = DateTime.Now;
-    }
-
-    private void Updater_FileIdentifiersUpdated()
-        => WindowManager.AddCallback(new Action(HandleFileIdentifierUpdate), null);
-
-    /// <summary>
-    /// Used for displaying the result of an update check in the UI.
-    /// </summary>
-    private void HandleFileIdentifierUpdate()
-    {
-        if (UpdateInProgress)
+        /// <summary>
+        /// Starts a check for updates.
+        /// </summary>
+        private void CheckForUpdates()
         {
-            return;
+            if (Updater.UpdateMirrors.Count < 1)
+                return;
+
+            Updater.CheckForUpdates();
+            lblUpdateStatus.Enabled = false;
+            lblUpdateStatus.Text = "Checking for " +
+                "updates...".L10N("UI:Main:CheckingForUpdate");
+            lastUpdateCheckTime = DateTime.Now;
         }
 
-        if (Updater.VersionState == VersionState.UPTODATE)
-        {
-            lblUpdateStatus.Text = string.Format("{0} is up to date.".L10N("UI:Main:GameUpToDate"), MainClientConstants.GAME_NAME_LONG);
-            lblUpdateStatus.Enabled = true;
-            lblUpdateStatus.DrawUnderline = false;
-        }
-        else if (Updater.VersionState == VersionState.OUTDATED && Updater.ManualUpdateRequired)
-        {
-            lblUpdateStatus.Text = "An update is available. Manual download & installation required.".L10N("UI:Main:UpdateAvailableManualDownloadRequired");
-            lblUpdateStatus.Enabled = true;
-            lblUpdateStatus.DrawUnderline = false;
-            innerPanel.ManualUpdateQueryWindow.SetInfo(Updater.ServerGameVersion, Updater.ManualDownloadURL);
+        private void Updater_FileIdentifiersUpdated()
+            => WindowManager.AddCallback(new Action(HandleFileIdentifierUpdate), null);
 
-            if (!string.IsNullOrEmpty(Updater.ManualDownloadURL))
-                innerPanel.Show(innerPanel.ManualUpdateQueryWindow);
-        }
-        else if (Updater.VersionState == VersionState.OUTDATED)
+        /// <summary>
+        /// Used for displaying the result of an update check in the UI.
+        /// </summary>
+        private void HandleFileIdentifierUpdate()
         {
-            lblUpdateStatus.Text = "An update is available.".L10N("UI:Main:UpdateAvailable");
-            innerPanel.UpdateQueryWindow.SetInfo(Updater.ServerGameVersion, Updater.UpdateSizeInKb);
-            innerPanel.Show(innerPanel.UpdateQueryWindow);
+            if (UpdateInProgress)
+            {
+                return;
+            }
+
+            if (Updater.VersionState == VersionState.UPTODATE)
+            {
+                lblUpdateStatus.Text = string.Format("{0} is up to date.".L10N("UI:Main:GameUpToDate"), MainClientConstants.GAME_NAME_LONG);
+                lblUpdateStatus.Enabled = true;
+                lblUpdateStatus.DrawUnderline = false;
+            }
+            else if (Updater.VersionState == VersionState.OUTDATED && Updater.ManualUpdateRequired)
+            {
+                lblUpdateStatus.Text = "An update is available. Manual download & installation required.".L10N("UI:Main:UpdateAvailableManualDownloadRequired");
+                lblUpdateStatus.Enabled = true;
+                lblUpdateStatus.DrawUnderline = false;
+                innerPanel.ManualUpdateQueryWindow.SetInfo(Updater.ServerGameVersion, Updater.ManualDownloadURL);
+
+                if (!string.IsNullOrEmpty(Updater.ManualDownloadURL))
+                    innerPanel.Show(innerPanel.ManualUpdateQueryWindow);
+            }
+            else if (Updater.VersionState == VersionState.OUTDATED)
+            {
+                lblUpdateStatus.Text = "An update is available.".L10N("UI:Main:UpdateAvailable");
+                innerPanel.UpdateQueryWindow.SetInfo(Updater.ServerGameVersion, Updater.UpdateSizeInKb);
+                innerPanel.Show(innerPanel.UpdateQueryWindow);
+            }
+            else if (Updater.VersionState == VersionState.UNKNOWN)
+            {
+                lblUpdateStatus.Text = "Checking for updates failed! Click to retry.".L10N("UI:Main:CheckUpdateFailedClickToRetry");
+                lblUpdateStatus.Enabled = true;
+                lblUpdateStatus.DrawUnderline = true;
+            }
         }
-        else if (Updater.VersionState == VersionState.UNKNOWN)
+
+        /// <summary>
+        /// Asks the user if they'd like to update their custom components.
+        /// Handles an event raised by the updater when it has detected
+        /// that the custom components are out of date.
+        /// </summary>
+        private void Updater_OnCustomComponentsOutdated()
         {
-            lblUpdateStatus.Text = "Checking for updates failed! Click to retry.".L10N("UI:Main:CheckUpdateFailedClickToRetry");
+            if (innerPanel.UpdateQueryWindow.Visible)
+                return;
+
+            if (UpdateInProgress)
+                return;
+
+            if ((firstRunMessageBox != null && firstRunMessageBox.Visible) || optionsWindow.Enabled)
+            {
+                // If the custom components are out of date on the first run
+                // or the options window is already open, don't show the dialog
+                customComponentDialogQueued = true;
+                return;
+            }
+
+            customComponentDialogQueued = false;
+
+            XNAMessageBox ccMsgBox = XNAMessageBox.ShowYesNoDialog(WindowManager,
+                "Custom Component Updates Available".L10N("UI:Main:CustomUpdateAvailableTitle"),
+                ("Updates for custom components are available. Do you want to open" + Environment.NewLine +
+                "the Options menu where you can update the custom components?").L10N("UI:Main:CustomUpdateAvailableText"));
+            ccMsgBox.YesClickedAction = CCMsgBox_YesClicked;
+        }
+
+        private void CCMsgBox_YesClicked(XNAMessageBox messageBox)
+        {
+            optionsWindow.Open();
+            optionsWindow.SwitchToCustomComponentsPanel();
+        }
+
+        /// <summary>
+        /// Called when the user has declined an update.
+        /// </summary>
+        private void UpdateQueryWindow_UpdateDeclined(object sender, EventArgs e)
+        {
+            UpdateQueryWindow uqw = (UpdateQueryWindow)sender;
+            innerPanel.Hide();
+            lblUpdateStatus.Text = "An update is available, click to install.".L10N("UI:Main:UpdateAvailableClickToInstall");
             lblUpdateStatus.Enabled = true;
             lblUpdateStatus.DrawUnderline = true;
         }
-    }
 
-    /// <summary>
-    /// Asks the user if they'd like to update their custom components.
-    /// Handles an event raised by the updater when it has detected
-    /// that the custom components are out of date.
-    /// </summary>
-    private void Updater_OnCustomComponentsOutdated()
-    {
-        if (innerPanel.UpdateQueryWindow.Visible)
-            return;
-
-        if (UpdateInProgress)
-            return;
-
-        if ((firstRunMessageBox != null && firstRunMessageBox.Visible) || optionsWindow.Enabled)
+        /// <summary>
+        /// Called when the user has accepted an update.
+        /// </summary>
+        private void UpdateQueryWindow_UpdateAccepted(object sender, EventArgs e)
         {
-            // If the custom components are out of date on the first run
-            // or the options window is already open, don't show the dialog
-            customComponentDialogQueued = true;
-            return;
+            innerPanel.Hide();
+            innerPanel.UpdateWindow.SetData(Updater.ServerGameVersion);
+            innerPanel.Show(innerPanel.UpdateWindow);
+            lblUpdateStatus.Text = "Updating...".L10N("UI:Main:Updating");
+            UpdateInProgress = true;
+            Updater.StartUpdate();
         }
 
-        customComponentDialogQueued = false;
+        private void ManualUpdateQueryWindow_Closed(object sender, EventArgs e)
+            => innerPanel.Hide();
 
-        XNAMessageBox ccMsgBox = XNAMessageBox.ShowYesNoDialog(WindowManager,
-            "Custom Component Updates Available".L10N("UI:Main:CustomUpdateAvailableTitle"),
-            ("Updates for custom components are available. Do you want to open" + Environment.NewLine +
-            "the Options menu where you can update the custom components?").L10N("UI:Main:CustomUpdateAvailableText"));
-        ccMsgBox.YesClickedAction = CCMsgBox_YesClicked;
-    }
+        #endregion
 
-    private void CCMsgBox_YesClicked(XNAMessageBox messageBox)
-    {
-        optionsWindow.Open();
-        optionsWindow.SwitchToCustomComponentsPanel();
-    }
+        private void BtnOptions_LeftClick(object sender, EventArgs e)
+            => optionsWindow.Open();
 
-    /// <summary>
-    /// Called when the user has declined an update.
-    /// </summary>
-    private void UpdateQueryWindow_UpdateDeclined(object sender, EventArgs e)
-    {
-        UpdateQueryWindow uqw = (UpdateQueryWindow)sender;
-        innerPanel.Hide();
-        lblUpdateStatus.Text = "An update is available, click to install.".L10N("UI:Main:UpdateAvailableClickToInstall");
-        lblUpdateStatus.Enabled = true;
-        lblUpdateStatus.DrawUnderline = true;
-    }
-
-    /// <summary>
-    /// Called when the user has accepted an update.
-    /// </summary>
-    private void UpdateQueryWindow_UpdateAccepted(object sender, EventArgs e)
-    {
-        innerPanel.Hide();
-        innerPanel.UpdateWindow.SetData(Updater.ServerGameVersion);
-        innerPanel.Show(innerPanel.UpdateWindow);
-        lblUpdateStatus.Text = "Updating...".L10N("UI:Main:Updating");
-        UpdateInProgress = true;
-        Updater.StartUpdate();
-    }
-
-    private void ManualUpdateQueryWindow_Closed(object sender, EventArgs e)
-        => innerPanel.Hide();
-
-    #endregion
-
-    private void BtnOptions_LeftClick(object sender, EventArgs e)
-        => optionsWindow.Open();
-
-    private void BtnNewCampaign_LeftClick(object sender, EventArgs e)
-    {
-        innerPanel.Show(innerPanel.CampaignSelector);
-        innerPanel.reload();
-        optionsWindow.tabControl.MakeSelectable(4);
-    }
-
-    private void BtnLoadGame_LeftClick(object sender, EventArgs e)
-    => innerPanel.Show(innerPanel.GameLoadingWindow);
-
-    private void BtnLan_LeftClick(object sender, EventArgs e)
-    {
-        foreach (string[] skin in UserINISettings.Instance.GetAIISkin())
+        private void BtnNewCampaign_LeftClick(object sender, EventArgs e)
         {
-            if (skin[3] != "0")
+            innerPanel.Show(innerPanel.CampaignSelector);
+            innerPanel.reload();
+            optionsWindow.tabControl.MakeSelectable(4);
+        }
+
+        private void BtnLoadGame_LeftClick(object sender, EventArgs e)
+        => innerPanel.Show(innerPanel.GameLoadingWindow);
+
+        private void BtnLan_LeftClick(object sender, EventArgs e)
+        {
+            foreach (string[] skin in UserINISettings.Instance.GetAIISkin())
             {
-                XNAMessageBox messageBox = new XNAMessageBox(WindowManager, "警告", "联机时禁止使用皮肤，请将皮肤还原成默认", XNAMessageBoxButtons.OK);
-                messageBox.Show();
+                if (skin[3] != "0")
+                {
+                    XNAMessageBox messageBox = new XNAMessageBox(WindowManager, "警告", "联机时禁止使用皮肤，请将皮肤还原成默认", XNAMessageBoxButtons.OK);
+                    messageBox.Show();
+                    return;
+                }
+            }
+
+            optionsWindow.tabControl.MakeUnselectable(4);
+            lanLobby.Open();
+
+            if (UserINISettings.Instance.StopMusicOnMenu)
+                MusicOff();
+
+            if (connectionManager.IsConnected)
+                connectionManager.Disconnect();
+
+            topBar.SetLanMode(true);
+        }
+
+        private void BtnCnCNet_LeftClick(object sender, EventArgs e) => topBar.SwitchToSecondary();
+
+        private void BtnSkirmish_LeftClick(object sender, EventArgs e)
+        {
+            skirmishLobby.Open();
+            optionsWindow.tabControl.MakeSelectable(4);
+            if (UserINISettings.Instance.StopMusicOnMenu)
+                MusicOff();
+        }
+
+        private void BtnMapEditor_LeftClick(object sender, EventArgs e) => LaunchMapEditor();
+
+        private void BtnStatistics_LeftClick(object sender, EventArgs e) =>
+            innerPanel.Show(innerPanel.StatisticsWindow);
+
+        private void BtnCredits_LeftClick(object sender, EventArgs e)
+        {
+            ProcessLauncher.StartShellProcess(MainClientConstants.CREDITS_URL);
+        }
+
+        private void BtnExtras_LeftClick(object sender, EventArgs e) =>
+            innerPanel.Show(innerPanel.ExtrasWindow);
+
+        private void BtnExit_LeftClick(object sender, EventArgs e)
+        {
+#if WINFORMS
+            WindowManager.HideWindow();
+#endif
+            FadeMusicExit();
+        }
+
+        private void SharedUILogic_GameProcessExited() =>
+            AddCallback(new Action(HandleGameProcessExited), null);
+
+        private void HandleGameProcessExited()
+        {
+            innerPanel.GameLoadingWindow.ListSaves();
+            innerPanel.Hide();
+
+            // If music is disabled on menus, check if the main menu is the top-most
+            // window of the top bar and only play music if it is
+            // LAN has the top bar disabled, so to detect the LAN game lobby
+            // we'll check whether the top bar is enabled
+            if (!UserINISettings.Instance.StopMusicOnMenu ||
+                (topBar.Enabled && topBar.LastSwitchType == SwitchType.PRIMARY &&
+                topBar.GetTopMostPrimarySwitchable() == this))
+                PlayMusic();
+        }
+
+        /// <summary>
+        /// Switches to the main menu and performs a check for updates.
+        /// </summary>
+        private void CncnetLobby_UpdateCheck(object sender, EventArgs e)
+        {
+            CheckForUpdates();
+            topBar.SwitchToPrimary();
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            if (isMusicFading)
+                FadeMusic(gameTime);
+
+            base.Update(gameTime);
+
+        }
+
+        public override void Draw(GameTime gameTime)
+        {
+            lock (locker)
+            {
+                base.Draw(gameTime);
+            }
+        }
+
+        /// <summary>
+        /// Attempts to start playing the menu music.
+        /// </summary>
+        private void PlayMusic()
+        {
+            if (!isMediaPlayerAvailable)
+                return; // SharpDX fails at music playback on Vista
+
+            if (themeSong != null && UserINISettings.Instance.PlayMainMenuMusic)
+            {
+                isMusicFading = false;
+                MediaPlayer.IsRepeating = true;
+                MediaPlayer.Volume = (float)UserINISettings.Instance.ClientVolume;
+
+                try
+                {
+                    MediaPlayer.Play(themeSong);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    Logger.Log("Playing main menu music failed! " + ex.Message);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Lowers the volume of the menu music, or stops playing it if the
+        /// volume is unaudibly low.
+        /// </summary>
+        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+        private void FadeMusic(GameTime gameTime)
+        {
+            if (!isMediaPlayerAvailable || !isMusicFading || themeSong == null)
+                return;
+
+            // Fade during 1 second
+            float step = SoundPlayer.Volume * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (MediaPlayer.Volume > step)
+                MediaPlayer.Volume -= step;
+            else
+            {
+                MediaPlayer.Stop();
+                isMusicFading = false;
+            }
+        }
+
+        /// <summary>
+        /// Exits the client. Quickly fades the music if it's playing.
+        /// </summary>
+        private void FadeMusicExit()
+        {
+            if (!isMediaPlayerAvailable || themeSong == null)
+            {
+                ExitClient();
                 return;
             }
+
+            float step = MEDIA_PLAYER_VOLUME_EXIT_FADE_STEP * (float)UserINISettings.Instance.ClientVolume;
+
+            if (MediaPlayer.Volume > step)
+            {
+                MediaPlayer.Volume -= step;
+                AddCallback(new Action(FadeMusicExit), null);
+            }
+            else
+            {
+                MediaPlayer.Stop();
+                ExitClient();
+            }
         }
 
-        optionsWindow.tabControl.MakeUnselectable(4);
-        lanLobby.Open();
-
-        if (UserINISettings.Instance.StopMusicOnMenu)
-            MusicOff();
-
-        if (connectionManager.IsConnected)
-            connectionManager.Disconnect();
-
-        topBar.SetLanMode(true);
-    }
-
-    private void BtnCnCNet_LeftClick(object sender, EventArgs e) => topBar.SwitchToSecondary();
-
-    private void BtnSkirmish_LeftClick(object sender, EventArgs e)
-    {
-        skirmishLobby.Open();
-        optionsWindow.tabControl.MakeSelectable(4);
-        if (UserINISettings.Instance.StopMusicOnMenu)
-            MusicOff();
-    }
-
-    private void BtnMapEditor_LeftClick(object sender, EventArgs e) => LaunchMapEditor();
-
-    private void BtnStatistics_LeftClick(object sender, EventArgs e) =>
-        innerPanel.Show(innerPanel.StatisticsWindow);
-
-    private void BtnCredits_LeftClick(object sender, EventArgs e)
-    {
-        ProcessLauncher.StartShellProcess(MainClientConstants.CREDITS_URL);
-    }
-
-    private void BtnExtras_LeftClick(object sender, EventArgs e) =>
-        innerPanel.Show(innerPanel.ExtrasWindow);
-
-    private void BtnExit_LeftClick(object sender, EventArgs e)
-    {
-#if WINFORMS
-        WindowManager.HideWindow();
+        private void ExitClient()
+        {
+            Logger.Log("Exiting.");
+            WindowManager.CloseGame();
+#if !XNA
+            Thread.Sleep(1000);
+            Environment.Exit(0);
 #endif
-        FadeMusicExit();
-    }
-
-    private void SharedUILogic_GameProcessExited() =>
-        AddCallback(new Action(HandleGameProcessExited), null);
-
-    private void HandleGameProcessExited()
-    {
-        innerPanel.GameLoadingWindow.ListSaves();
-        innerPanel.Hide();
-
-        // If music is disabled on menus, check if the main menu is the top-most
-        // window of the top bar and only play music if it is
-        // LAN has the top bar disabled, so to detect the LAN game lobby
-        // we'll check whether the top bar is enabled
-        if (!UserINISettings.Instance.StopMusicOnMenu ||
-            (topBar.Enabled && topBar.LastSwitchType == SwitchType.PRIMARY &&
-            topBar.GetTopMostPrimarySwitchable() == this))
-            PlayMusic();
-    }
-
-    /// <summary>
-    /// Switches to the main menu and performs a check for updates.
-    /// </summary>
-    private void CncnetLobby_UpdateCheck(object sender, EventArgs e)
-    {
-        CheckForUpdates();
-        topBar.SwitchToPrimary();
-    }
-
-    public override void Update(GameTime gameTime)
-    {
-        if (isMusicFading)
-            FadeMusic(gameTime);
-
-        base.Update(gameTime);
-
-    }
-
-    public override void Draw(GameTime gameTime)
-    {
-        lock (locker)
-        {
-            base.Draw(gameTime);
         }
-    }
 
-    /// <summary>
-    /// Attempts to start playing the menu music.
-    /// </summary>
-    private void PlayMusic()
-    {
-        if (!isMediaPlayerAvailable)
-            return; // SharpDX fails at music playback on Vista
-
-        if (themeSong != null && UserINISettings.Instance.PlayMainMenuMusic)
+        public void SwitchOn()
         {
-            isMusicFading = false;
-            MediaPlayer.IsRepeating = true;
-            MediaPlayer.Volume = (float)UserINISettings.Instance.ClientVolume;
+            if (UserINISettings.Instance.StopMusicOnMenu)
+                PlayMusic();
 
+            if (!ClientConfiguration.Instance.ModMode && UserINISettings.Instance.CheckForUpdates)
+            {
+                // Re-check for updates
+
+                if ((DateTime.Now - lastUpdateCheckTime) > TimeSpan.FromSeconds(UPDATE_RE_CHECK_THRESHOLD))
+                    CheckForUpdates();
+            }
+        }
+
+        public void SwitchOff()
+        {
+            if (UserINISettings.Instance.StopMusicOnMenu)
+                MusicOff();
+        }
+
+        private void MusicOff()
+        {
             try
             {
-                MediaPlayer.Play(themeSong);
+                if (isMediaPlayerAvailable &&
+                    MediaPlayer.State == MediaState.Playing)
+                {
+                    isMusicFading = true;
+                }
             }
-            catch (InvalidOperationException ex)
+            catch (Exception ex)
             {
-                Logger.Log("Playing main menu music failed! " + ex.Message);
+                Logger.Log("Turning music off failed! Message: " + ex.Message);
             }
         }
-    }
 
-    /// <summary>
-    /// Lowers the volume of the menu music, or stops playing it if the
-    /// volume is unaudibly low.
-    /// </summary>
-    /// <param name="gameTime">Provides a snapshot of timing values.</param>
-    private void FadeMusic(GameTime gameTime)
-    {
-        if (!isMediaPlayerAvailable || !isMusicFading || themeSong == null)
-            return;
-
-        // Fade during 1 second
-        float step = SoundPlayer.Volume * (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-        if (MediaPlayer.Volume > step)
-            MediaPlayer.Volume -= step;
-        else
+        /// <summary>
+        /// Checks if media player is available currently.
+        /// It is not available on Windows Vista or other systems without the appropriate media player components.
+        /// </summary>
+        /// <returns>True if media player is available, false otherwise.</returns>
+        private bool IsMediaPlayerAvailable()
         {
-            MediaPlayer.Stop();
-            isMusicFading = false;
-        }
-    }
-
-    /// <summary>
-    /// Exits the client. Quickly fades the music if it's playing.
-    /// </summary>
-    private void FadeMusicExit()
-    {
-        if (!isMediaPlayerAvailable || themeSong == null)
-        {
-            ExitClient();
-            return;
-        }
-
-        float step = MEDIA_PLAYER_VOLUME_EXIT_FADE_STEP * (float)UserINISettings.Instance.ClientVolume;
-
-        if (MediaPlayer.Volume > step)
-        {
-            MediaPlayer.Volume -= step;
-            AddCallback(new Action(FadeMusicExit), null);
-        }
-        else
-        {
-            MediaPlayer.Stop();
-            ExitClient();
-        }
-    }
-
-    private void ExitClient()
-    {
-        Logger.Log("Exiting.");
-        WindowManager.CloseGame();
-#if !XNA
-        Thread.Sleep(1000);
-        Environment.Exit(0);
-#endif
-    }
-
-    public void SwitchOn()
-    {
-        if (UserINISettings.Instance.StopMusicOnMenu)
-            PlayMusic();
-
-        if (!ClientConfiguration.Instance.ModMode && UserINISettings.Instance.CheckForUpdates)
-        {
-            // Re-check for updates
-
-            if ((DateTime.Now - lastUpdateCheckTime) > TimeSpan.FromSeconds(UPDATE_RE_CHECK_THRESHOLD))
-                CheckForUpdates();
-        }
-    }
-
-    public void SwitchOff()
-    {
-        if (UserINISettings.Instance.StopMusicOnMenu)
-            MusicOff();
-    }
-
-    private void MusicOff()
-    {
-        try
-        {
-            if (isMediaPlayerAvailable &&
-                MediaPlayer.State == MediaState.Playing)
+            try
             {
-                isMusicFading = true;
+                MediaState state = MediaPlayer.State;
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.Log("Error encountered when checking media player availability. Error message: " + e.Message);
+                return false;
             }
         }
-        catch (Exception ex)
+
+        private void LaunchMapEditor()
         {
-            Logger.Log("Turning music off failed! Message: " + ex.Message);
+            OSVersion osVersion = ClientConfiguration.Instance.GetOperatingSystemVersion();
+            Process mapEditorProcess = new Process();
+
+            string strCmdText = string.Format("/c cd /d {0} && FinalAlert2SP.exe", ProgramConstants.GamePath + "Resources/FinalAlert2SP");
+
+            mapEditorProcess.StartInfo.FileName = "cmd.exe";
+            mapEditorProcess.StartInfo.Arguments = strCmdText;
+            mapEditorProcess.StartInfo.UseShellExecute = false;   //是否使用操作系统shell启动 
+            mapEditorProcess.StartInfo.CreateNoWindow = true;   //是否在新窗口中启动该进程的值 (不显示程序窗口)
+            mapEditorProcess.Start();
+            mapEditorProcess.WaitForExit();  //等待程序执行完退出进程
+            mapEditorProcess.Close();
         }
+
+        public string GetSwitchName() => "Main Menu".L10N("UI:Main:MainMenu");
+
     }
-
-    /// <summary>
-    /// Checks if media player is available currently.
-    /// It is not available on Windows Vista or other systems without the appropriate media player components.
-    /// </summary>
-    /// <returns>True if media player is available, false otherwise.</returns>
-    private bool IsMediaPlayerAvailable()
-    {
-        try
-        {
-            MediaState state = MediaPlayer.State;
-            return true;
-        }
-        catch (Exception e)
-        {
-            Logger.Log("Error encountered when checking media player availability. Error message: " + e.Message);
-            return false;
-        }
-    }
-
-    private void LaunchMapEditor()
-    {
-        OSVersion osVersion = ClientConfiguration.Instance.GetOperatingSystemVersion();
-        Process mapEditorProcess = new Process();
-
-        string strCmdText = string.Format("/c cd /d {0} && FinalAlert2SP.exe", ProgramConstants.GamePath + "Resources/FinalAlert2SP");
-
-        mapEditorProcess.StartInfo.FileName = "cmd.exe";
-        mapEditorProcess.StartInfo.Arguments = strCmdText;
-        mapEditorProcess.StartInfo.UseShellExecute = false;   //是否使用操作系统shell启动 
-        mapEditorProcess.StartInfo.CreateNoWindow = true;   //是否在新窗口中启动该进程的值 (不显示程序窗口)
-        mapEditorProcess.Start();
-        mapEditorProcess.WaitForExit();  //等待程序执行完退出进程
-        mapEditorProcess.Close();
-    }
-
-    public string GetSwitchName() => "Main Menu".L10N("UI:Main:MainMenu");
-
-}
 }

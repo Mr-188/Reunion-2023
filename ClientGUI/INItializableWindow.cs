@@ -1,13 +1,13 @@
-﻿using ClientCore;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using ClientCore;
 using Localization;
 using Microsoft.Xna.Framework;
 using Rampastring.Tools;
 using Rampastring.XNAUI;
 using Rampastring.XNAUI.XNAControls;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 
 namespace ClientGUI
@@ -89,7 +89,7 @@ namespace ClientGUI
 
         public override void Initialize()
         {
-           
+
 
             if (_initialized)
                 throw new InvalidOperationException("INItializableWindow cannot be initialized twice.");
@@ -173,17 +173,18 @@ namespace ClientGUI
                 if (kvp.Key.StartsWith("$CC"))
                 {
                     var child = CreateChildControl(control, kvp.Value);
-                    
+
                     ReadINIForControl(child);
                     child.Initialize();
                 }
 
                 //指定父组件
-                else if (kvp.Key == "$Parent") {
+                else if (kvp.Key == "$Parent")
+                {
 
-                   
+
                     control.Parent.RemoveChild(control);
-      
+
                     FindChild<XNAPanel>(kvp.Value).AddChild(control);
 
                 }
@@ -209,7 +210,7 @@ namespace ClientGUI
                     // TODO refactor these to be more object-oriented
                     ((XNALabel)control).TextAnchor = (LabelTextAnchorInfo)Enum.Parse(typeof(LabelTextAnchorInfo), kvp.Value);
                 }
-             
+
                 else if (kvp.Key == "$AnchorPoint" && control is XNALabel)
                 {
                     string[] parts = kvp.Value.Split(',');
@@ -231,7 +232,7 @@ namespace ClientGUI
                 {
                     control.ParseAttributeFromINI(ConfigIni, kvp.Key, kvp.Value);
                 }
-               
+
             }
         }
 

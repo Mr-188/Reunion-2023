@@ -1,15 +1,15 @@
-﻿using Rampastring.XNAUI.XNAControls;
+﻿using Rampastring.Tools;
 using Rampastring.XNAUI;
-using Rampastring.Tools;
+using Rampastring.XNAUI.XNAControls;
 
 namespace ClientGUI
 {
     public class XNAClientButton : XNAButton
     {
         private string _toolTipText { get; set; }
-        
+
         private ToolTip _toolTip { get; set; }
-        
+
         public XNAClientButton(WindowManager windowManager) : base(windowManager)
         {
             FontIndex = 1;
@@ -33,7 +33,7 @@ namespace ClientGUI
 
             if (Width == 0)
                 Width = IdleTexture.Width;
-            
+
             _toolTip = new ToolTip(WindowManager, this);
             SetToolTipText(_toolTipText);
         }

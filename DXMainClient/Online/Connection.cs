@@ -167,12 +167,12 @@ namespace DTAClient.Online
 
             foreach (Server server in sortedServerList)
             {
-              //  Console.WriteLine(server.Name);
+                //  Console.WriteLine(server.Name);
                 try
                 {
                     for (int i = 0; i < server.Ports.Length; i++)
                     {
- 
+
 
                         TcpClient client = new TcpClient(AddressFamily.InterNetwork);
                         var result = client.BeginConnect(server.Host, server.Ports[i], null, null);

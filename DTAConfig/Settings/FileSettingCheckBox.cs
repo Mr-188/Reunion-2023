@@ -1,10 +1,9 @@
-using ClientCore;
-using ClientGUI;
-using Rampastring.Tools;
-using Rampastring.XNAUI;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using ClientCore;
+using Rampastring.Tools;
+using Rampastring.XNAUI;
 
 namespace DTAConfig.Settings
 {

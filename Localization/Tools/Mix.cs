@@ -1,18 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Nodes;
-using System.Threading.Tasks;
-using Rampastring.Tools;
-using static System.Net.Mime.MediaTypeNames;
+using System.IO;
 
 namespace Localization.Tools;
 public static class Mix
 {
     //将目录打包成mix
-    public static void PackToMix(string path,string MixName)
+    public static void PackToMix(string path, string MixName)
     {
         string command = $" pack -game ra2 -mix \"{MixName}\" -dir \"{path}\"";
 
@@ -26,7 +20,29 @@ public static class Mix
         string output = process.StandardOutput.ReadToEnd();
 
         process.WaitForExit();
-    //    Console.WriteLine(output);
+        //    Console.WriteLine(output);
+    }
+
+    public static void UnPackMix(string path, string MixName)
+    {
+        string command = $" unpack -game ra2 -mix \"{MixName}\" -dir \"Resources/MissionCashe\"";
+
+        Console.WriteLine(command);
+
+        Process process = new Process();
+        process.StartInfo.FileName = "Resources\\ccmixar.exe";
+        process.StartInfo.Arguments = command;
+        process.StartInfo.UseShellExecute = false;
+        process.StartInfo.RedirectStandardOutput = true;
+        process.StartInfo.CreateNoWindow = true;
+        process.Start();
+
+        process.WaitForExit();
+
+        foreach (string file in Directory.GetFiles($"Resources/MissionCashe/"))
+            File.Move(file, $"{path}{Path.GetFileName(file)}", true);
+        File.Delete(MixName);
+        //    Console.WriteLine(output);
     }
 
     //public static void UnpackToMix(string path,string MixName)

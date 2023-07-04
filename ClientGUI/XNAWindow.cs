@@ -1,9 +1,8 @@
-﻿using ClientCore;
-using Rampastring.Tools;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using ClientCore;
+using Rampastring.Tools;
 using Rampastring.XNAUI;
-using Microsoft.Xna.Framework.Input;
 
 namespace ClientGUI
 {
@@ -13,18 +12,18 @@ namespace ClientGUI
     /// </summary>
     public class XNAWindow : XNAWindowBase
     {
-        
+
         private const string GENERIC_WINDOW_INI = "GenericWindow.ini";
         private const string GENERIC_WINDOW_SECTION = "GenericWindow";
         private const string EXTRA_CONTROLS = "ExtraControls";
 
-        #if WINFORMS
+#if WINFORMS
         private IMENativeWindow _nativeWnd;
-        #endif
+#endif
 
         public XNAWindow(WindowManager windowManager) : base(windowManager)
         {
-            #if WINFORMS
+#if WINFORMS
             _nativeWnd = new IMENativeWindow(windowManager.GetWindowHandle());
             _nativeWnd.CandidatesReceived += (s, e) => { if (CandidatesReceived != null) CandidatesReceived(s, e); };
             _nativeWnd.CompositionReceived += (s, e) => { if (CompositionReceived != null) CompositionReceived(s, e); };

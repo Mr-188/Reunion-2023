@@ -1,8 +1,8 @@
+using System;
 using ClientCore;
 using Microsoft.Xna.Framework;
 using Rampastring.XNAUI;
 using Rampastring.XNAUI.XNAControls;
-using System;
 
 namespace ClientGUI
 {
@@ -67,7 +67,7 @@ namespace ClientGUI
         private XNAControl masterControl;
 
         private TimeSpan cursorTime = TimeSpan.Zero;
-        
+
 
         private void MasterControl_MouseEnter(object sender, EventArgs e)
         {

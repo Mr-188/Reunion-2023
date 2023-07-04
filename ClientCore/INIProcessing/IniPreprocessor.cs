@@ -1,6 +1,6 @@
-﻿using Rampastring.Tools;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
+using Rampastring.Tools;
 
 namespace ClientCore.INIProcessing
 {

@@ -1,10 +1,14 @@
 ﻿using ClientGUI;
 using DTAClient.Domain;
-using Localization;
 using Microsoft.Xna.Framework;
 using Rampastring.XNAUI;
 using Rampastring.XNAUI.XNAControls;
 using System;
+using Localization;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Net;
 #if WINFORMS
 using System.Runtime.InteropServices;
 #endif
@@ -109,6 +113,7 @@ namespace DTAClient.DXGUI.Generic
             prgTotal.Maximum = 100;
             prgTotal.ClientRectangle = new Rectangle(12, 190, prgCurrentFile.Width, prgCurrentFile.Height);
             //prgTotal.BorderColor = UISettings.WindowBorderColor;
+            //prgTotal.BorderColor = UISettings.WindowBorderColor
 
             lblUpdaterStatus = new XNALabel(WindowManager);
             lblUpdaterStatus.Name = "lblUpdaterStatus";
@@ -146,6 +151,8 @@ namespace DTAClient.DXGUI.Generic
             tbp = new TaskbarProgress();
 #endif
         }
+
+      
 
         private void Updater_FileIdentifiersUpdated()
         {
@@ -293,9 +300,7 @@ namespace DTAClient.DXGUI.Generic
 
         public void SetData(string newGameVersion)
         {
-            lblDescription.Text = string.Format(("Please wait while {0} is updated to version {1}." + Environment.NewLine +
-                "This window will automatically close once the update is complete." + Environment.NewLine + Environment.NewLine +
-                "The client may also restart after the update has been downloaded.").L10N("UI:Main:UpdateVersionPleaseWait"), MainClientConstants.GAME_NAME_SHORT, newGameVersion);
+            lblDescription.Text = string.Format(("Please wait while {0} is updated to version {1}.\nThis window will automatically close once the update is complete.\n\nThe client may also restart after the update has been downloaded.").L10N("UI:Main:UpdateVersionPleaseWait"), MainClientConstants.GAME_NAME_SHORT, newGameVersion);
             lblUpdaterStatus.Text = "Preparing".L10N("UI:Main:StatusPreparing");
         }
 

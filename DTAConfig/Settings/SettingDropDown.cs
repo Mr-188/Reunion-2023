@@ -1,8 +1,6 @@
 ﻿using ClientCore;
-using ClientGUI;
 using Rampastring.Tools;
 using Rampastring.XNAUI;
-using Rampastring.XNAUI.XNAControls;
 
 namespace DTAConfig.Settings
 {
@@ -11,7 +9,7 @@ namespace DTAConfig.Settings
     /// </summary>
     public class SettingDropDown : SettingDropDownBase
     {
-        public SettingDropDown(WindowManager windowManager) : base(windowManager) {}
+        public SettingDropDown(WindowManager windowManager) : base(windowManager) { }
 
         public SettingDropDown(WindowManager windowManager, int defaultValue, string settingSection, string settingKey, bool writeItemValue = false, bool restartRequired = false)
             : base(windowManager, defaultValue, settingSection, settingKey, restartRequired)

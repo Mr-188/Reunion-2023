@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Localization;
@@ -35,9 +34,9 @@ namespace DTAClient.Domain
 
             // GUIDescription = GUIDescription.Replace("@", Environment.NewLine);
 
-            
 
-                if (HasChinese(GUIDescription))
+
+            if (HasChinese(GUIDescription))
             {
 
                 string description = string.Empty;
@@ -47,7 +46,7 @@ namespace DTAClient.Domain
                     s1 = s + '@';
                     if (s1.Length > 31)
                     {
-                      
+
                         s1 = InsertFormat(s1, 31, "@");
                     }
                     description += s1;

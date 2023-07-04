@@ -1,5 +1,9 @@
-﻿using ClientCore;
-using ClientCore.CnCNet5;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using ClientCore;
 using ClientCore.Settings;
 using ClientGUI;
 using Localization;
@@ -8,12 +12,6 @@ using Microsoft.Xna.Framework;
 using Rampastring.Tools;
 using Rampastring.XNAUI;
 using Rampastring.XNAUI.XNAControls;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq; 
-using System.Text;
 
 
 
@@ -38,7 +36,7 @@ namespace DTAConfig.OptionPanels
         private XNALabel lblselect;
         private XNALabel lblScreen;
         private XNAClientButton btnDefault;
-        
+
         private List<XNAClientDropDown> DropDown = new List<XNAClientDropDown>();
         private XNALabel lblAllText;
         private bool disableSkinOptionUpdateBroadcast = false;
@@ -56,7 +54,7 @@ namespace DTAConfig.OptionPanels
         public override void Initialize()
         {
             base.Initialize();
-            
+
 
             btnImage = new XNAButton(WindowManager);
             btnImage.ClientRectangle = new Rectangle(250, 80, 400, 250);
@@ -155,7 +153,7 @@ namespace DTAConfig.OptionPanels
             BtnSaveLoadSkinOptions.IdleTexture = AssetLoader.LoadTexture("optionsButton.png");
             BtnSaveLoadSkinOptions.HoverTexture = AssetLoader.LoadTexture("optionsButton_c.png");
             BtnSaveLoadSkinOptions.ClientRectangle = new Rectangle(600, 15, 30, 30);
-            
+
 
             if (BtnSaveLoadSkinOptions != null)
             {
@@ -209,7 +207,7 @@ namespace DTAConfig.OptionPanels
             }
 
             disableSkinOptionUpdateBroadcast = false;
-            
+
             return true;
         }
 
@@ -268,7 +266,7 @@ namespace DTAConfig.OptionPanels
 
             File.WriteAllText("Resources\\SkinRulesmd.ini", ";皮肤Rules" + Environment.NewLine);
             File.WriteAllText("Resources\\SkinArtmd.ini", ";皮肤Art" + Environment.NewLine);
-            if(!Directory.Exists("./Resources/SkinCashe"))
+            if (!Directory.Exists("./Resources/SkinCashe"))
                 Directory.CreateDirectory("./Resources/SkinCashe");
 
             if (File.Exists("./Resources/expandmd96.mix"))
@@ -327,7 +325,7 @@ namespace DTAConfig.OptionPanels
 
             string[] mixFiles = Directory.GetFiles("./Resources/SkinCashe", "*.mix");
 
-            if(mixFiles.Length> 0)
+            if (mixFiles.Length > 0)
             {
                 foreach (string mixFile in mixFiles)
                 {
@@ -335,12 +333,12 @@ namespace DTAConfig.OptionPanels
                     string destinationPath = Path.Combine("./", fileName);
 
                     File.Move(mixFile, destinationPath);
-                  //  Console.WriteLine($"已将文件 {fileName} 移动到目标目录。");
+                    //  Console.WriteLine($"已将文件 {fileName} 移动到目标目录。");
                 }
             }
 
             Mix.PackToMix("./Resources/SkinCashe", "./Resources/expandmd96.mix");
-          
+
             if (File.Exists("./expandmd96.mix"))
                 File.Delete("./expandmd96.mix");
 
@@ -396,10 +394,10 @@ namespace DTAConfig.OptionPanels
                     {
                         if (deleteFile[i] != "")
                         {
-                            if(deleteFile[i].EndsWith(".mix", StringComparison.OrdinalIgnoreCase))
+                            if (deleteFile[i].EndsWith(".mix", StringComparison.OrdinalIgnoreCase))
                                 File.Delete(deleteFile[i]);
                             else
-                                        File.Delete("Resources\\SkinCashe\\"+deleteFile[i]);
+                                File.Delete("Resources\\SkinCashe\\" + deleteFile[i]);
                         }
                     }
                     catch
@@ -449,7 +447,7 @@ namespace DTAConfig.OptionPanels
         {
             if (NameBox.SelectedItem == null)
             {
-                
+
                 return;
             }
             //  List<string> file = new List<string>();

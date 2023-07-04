@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Rampastring.Tools;
 
 namespace ClientCore.Statistics
@@ -29,7 +29,7 @@ namespace ClientCore.Statistics
 
         public override void ReadStatistics(string gamePath)
         {
-            
+
 
             FileInfo scoreFileInfo = SafePath.GetFile(gamePath, SCORE_FILE_PATH);
 
@@ -59,7 +59,7 @@ namespace ClientCore.Statistics
 
                 SaveDatabase();
             }
-            
+
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace ClientCore.Statistics
         /// <returns>A bool that determines whether the database should be re-saved.</returns>
         private bool ReadFile(string filePath)
         {
-            
+
 
             bool returnValue = false;
 
@@ -80,7 +80,7 @@ namespace ClientCore.Statistics
                 if (databaseVersion == null)
                     return false; // No score database exists
 
-             //   databaseVersion = "1.06";
+                //   databaseVersion = "1.06";
 
                 switch (databaseVersion)
                 {
@@ -128,7 +128,7 @@ namespace ClientCore.Statistics
             {
                 using (FileStream fs = File.OpenRead(filePath))
                 {
-                   
+
                     fs.Position = 4; // Skip version
                     byte[] readBuffer = new byte[128];
                     fs.Read(readBuffer, 0, 4); // First 4 bytes following the version mean the amount of games
@@ -261,7 +261,7 @@ namespace ClientCore.Statistics
                         if (ms.Players.Find(p => p.IsLocalPlayer && !p.IsAI) == null)
                             continue;
 
-                        
+
                         Statistics.Add(ms);
                     }
                 }
@@ -306,7 +306,7 @@ namespace ClientCore.Statistics
                 return;
             }
 
-        
+
 
             if (addMatch)
             {

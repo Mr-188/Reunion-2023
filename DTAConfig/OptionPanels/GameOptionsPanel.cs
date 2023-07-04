@@ -1,15 +1,15 @@
-﻿using ClientCore;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text.RegularExpressions;
+using ClientCore;
 using ClientCore.CnCNet5;
 using ClientGUI;
-using Localization;
 using DTAConfig.Settings;
+using Localization;
 using Microsoft.Xna.Framework;
 using Rampastring.XNAUI;
 using Rampastring.XNAUI.XNAControls;
-using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
 //using static System.Windows.Forms.VisualStyles.VisualStyleElement.Menu;
 
 namespace DTAConfig.OptionPanels
@@ -92,7 +92,7 @@ namespace DTAConfig.OptionPanels
             //选择游戏
             var lblGameMod = new XNALabel(WindowManager);
             lblGameMod.Name = "lblGameMod";
-            lblGameMod.ClientRectangle = new Rectangle(400,chkScrollCoasting.Y,0,0);
+            lblGameMod.ClientRectangle = new Rectangle(400, chkScrollCoasting.Y, 0, 0);
             lblGameMod.Text = "Mod:".L10N("UI:DTAConfig:Mod");
 
             chkStartCap = new XNAClientCheckBox(WindowManager);
@@ -192,7 +192,7 @@ namespace DTAConfig.OptionPanels
             var btnRecover = new XNAClientButton(WindowManager);
             btnRecover.Name = "btnRecover";
             btnRecover.ClientRectangle = new Rectangle(lblPlayerName.X, lblNotice.Bottom + 72, UIDesignConstants.BUTTON_WIDTH_160, UIDesignConstants.BUTTON_HEIGHT);
-            btnRecover.Text = "清理游戏文件";
+            btnRecover.Text = "清理游戏文件缓存";
             btnRecover.SetToolTipText("如果游戏出现问题，可以点击这个按钮尝试修复。");
             btnRecover.LeftClick += BtnRecover_LeftClick;
 
@@ -207,13 +207,13 @@ namespace DTAConfig.OptionPanels
             AddChild(lblNotice);
             AddChild(btnConfigureHotkeys);
             AddChild(btnRecover);
-           // AddChild(lblGameMod);
+            // AddChild(lblGameMod);
             AddChild(chkStartCap);
         }
-        
-             private void BtnRecover_LeftClick(object sender, EventArgs e)
+
+        private void BtnRecover_LeftClick(object sender, EventArgs e)
         {
-            XNAMessageBox xNAMessageBox = new XNAMessageBox(WindowManager, "清理确认", "你确定要清理文件吗？", XNAMessageBoxButtons.YesNo);
+            XNAMessageBox xNAMessageBox = new XNAMessageBox(WindowManager, "清理确认", "你确定要清理文件缓存吗？", XNAMessageBoxButtons.YesNo);
             xNAMessageBox.Show();
             xNAMessageBox.YesClickedAction += (e) => Recover();
         }
@@ -222,22 +222,31 @@ namespace DTAConfig.OptionPanels
         {
             try
             {
+
                 File.Delete("expandmd94.mix");
                 File.Delete("expandmd95.mix");
                 File.Delete("expandmd96.mix");
                 File.Delete("expandmd97.mix");
+                File.Delete("expandmd98.mix");
                 File.Delete("movies01.mix");
                 File.Delete("movies02.mix");
                 File.Delete("movmd03.mix");
                 File.Delete("spawn.ini");
                 File.Delete("phobos.dll");
+                File.Delete("Mars.dll");
+                File.Delete("sidec03.mix");
+                File.Delete("aimd.ini");
+                File.Delete("Ai.tlb");
+                File.Delete("spawner.xdp");
+                File.Delete("spawnmap.ini");
+
                 XNAMessageBox.Show(WindowManager, "清理文件", "清理成功！");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 XNAMessageBox.Show(WindowManager, "错误", "清理失败，可能是某个文件被占用了");
             }
-            
+
         }
         private void BtnConfigureHotkeys_LeftClick(object sender, EventArgs e)
         {
@@ -264,7 +273,7 @@ namespace DTAConfig.OptionPanels
         public override void Load()
         {
             base.Load();
-            
+
             int scrollRate = ReverseScrollRate(IniSettings.ScrollRate);
 
             if (scrollRate >= trbScrollRate.MinValue && scrollRate <= trbScrollRate.MaxValue)
@@ -272,7 +281,7 @@ namespace DTAConfig.OptionPanels
                 trbScrollRate.Value = scrollRate;
                 lblScrollRateValue.Text = scrollRate.ToString();
             }
-            
+
             chkStartCap.Checked = UserINISettings.Instance.StartCap;
 
 
@@ -312,8 +321,9 @@ namespace DTAConfig.OptionPanels
             //    DelFile(deleteFile);
             //    CopyDirectory(UserINISettings.Instance.GameModPath.Value.Split(',')[chkStartCap.SelectedIndex],"./");
 
-                IniSettings.StartCap.Value = chkStartCap.Enabled;
-       // }
+            IniSettings.StartCap.Value = chkStartCap.Enabled;
+            // }
+
             return restartRequired;
         }
 

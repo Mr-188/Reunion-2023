@@ -125,7 +125,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
 
 
         protected XNALabel lblMapName;
-        //protected XNALabel lblMapAuthor;
+        protected XNALabel lblMapAuthor;
         protected XNALabel lblGameMode;
         protected XNALabel lblMapSize;
 
@@ -257,7 +257,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             btnLaunchGame.InitStarDisplay(RankTextures);
 
             lblMapName = FindChild<XNALabel>(nameof(lblMapName));
-            //  lblMapAuthor = FindChild<XNALabel>(nameof(lblMapAuthor));
+            lblMapAuthor = FindChild<XNALabel>(nameof(lblMapAuthor));
             lblGameMode = FindChild<XNALabel>(nameof(lblGameMode));
             lblMapSize = FindChild<XNALabel>(nameof(lblMapSize));
 
@@ -2042,10 +2042,10 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
                 }
                 catch (Exception e)
                 {
-                    string errorMessage = "Unable to copy supplemental map file".L10N("Client:Main:SupplementalFileCopyError") + $" {file}";
+                    string errorMessage = "Unable to copy supplemental map file".L10N("UI:Main:SupplementalFileCopyError") + $" {file}";
                     Logger.Log(errorMessage);
                     Logger.Log(e.Message);
-                    XNAMessageBox.Show(WindowManager, "Error".L10N("Client:Main:Error"), errorMessage);
+                    XNAMessageBox.Show(WindowManager, "Error".L10N("UI:Main:Error"), errorMessage);
 
                 }
             }
@@ -2071,10 +2071,10 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
                 }
                 catch (Exception e)
                 {
-                    string errorMessage = "Unable to delete supplemental map file".L10N("Client:Main:SupplementalFileDeleteError") + $" {supplementalMapFilename}";
+                    string errorMessage = "Unable to delete supplemental map file".L10N("UI:Main:SupplementalFileDeleteError") + $" {supplementalMapFilename}";
                     Logger.Log(errorMessage);
                     Logger.Log(e.Message);
-                    XNAMessageBox.Show(WindowManager, "Error".L10N("Client:Main:Error"), errorMessage);
+                    XNAMessageBox.Show(WindowManager, "Error".L10N("UI:Main:Error"), errorMessage);
                 }
             }
         }
@@ -2529,7 +2529,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             if (GameMode == null || Map == null)
             {
                 lblMapName.Text = "Map: Unknown".L10N("UI:Main:MapUnknown");
-                //   lblMapAuthor.Text = "By Unknown Author".L10N("UI:Main:AuthorByUnknown");
+                lblMapAuthor.Text = "By Unknown Author".L10N("UI:Main:AuthorByUnknown");
                 lblGameMode.Text = "Game mode: Unknown".L10N("UI:Main:GameModeUnknown");
                 lblMapSize.Text = "Size: Not available".L10N("UI:Main:MapSizeUnknown");
 
@@ -2539,7 +2539,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             }
 
             lblMapName.Text = "Map:".L10N("UI:Main:Map") + " " + Renderer.GetSafeString(Map.Name, lblMapName.FontIndex);
-            //  lblMapAuthor.Text = "By".L10N("UI:Main:AuthorBy") + " " + Renderer.GetSafeString(Map.Author, lblMapAuthor.FontIndex);
+            lblMapAuthor.Text = "By".L10N("UI:Main:AuthorBy") + " " + Renderer.GetSafeString(Map.Author, lblMapAuthor.FontIndex);
             lblGameMode.Text = "Game mode:".L10N("UI:Main:GameModeLabel") + " " + GameMode.UIName;
             lblMapSize.Text = "Size:".L10N("UI:Main:MapSize") + " " + Map.GetSizeString();
 

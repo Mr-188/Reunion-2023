@@ -57,7 +57,7 @@ namespace ClientGUI
     /// <summary>
     /// Native window class that handles IME.
     /// </summary>
-  #if WINFORMS
+#if WINFORMS
     public sealed class IMENativeWindow : NativeWindow, IDisposable
     {
 
@@ -352,20 +352,8 @@ namespace ClientGUI
                 CandidatesPageStart = cList.dwPageStart;
                 CandidatesPageSize = cList.dwPageSize;
 
-                if (cList.dwCount > 1)
-                {
-                    Candidates = new string[cList.dwCount];
-                    for (int i = 0; i < cList.dwCount; i++)
-                    {
-                        int sOffset = Marshal.ReadInt32(pointer, 24 + 4 * i);
-                        Candidates[i] = Marshal.PtrToStringUni((IntPtr)(pointer.ToInt32() + sOffset));
-                    }
 
-                    if (CandidatesReceived != null)
-                        CandidatesReceived(this, EventArgs.Empty);
-                }
-                else
-                    IMECloseCandidate();
+                IMECloseCandidate();
 
                 Marshal.FreeHGlobal(pointer);
             }

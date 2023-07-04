@@ -1,8 +1,8 @@
-﻿using Rampastring.XNAUI.XNAControls;
-using Rampastring.XNAUI;
-using System;
-using Rampastring.Tools;
+﻿using System;
 using Localization;
+using Rampastring.Tools;
+using Rampastring.XNAUI;
+using Rampastring.XNAUI.XNAControls;
 
 namespace ClientGUI
 {

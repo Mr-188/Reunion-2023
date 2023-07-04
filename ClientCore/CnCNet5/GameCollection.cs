@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using Rampastring.XNAUI;
-using System.Linq;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Rampastring.Tools;
+using Rampastring.XNAUI;
 using SixLabors.ImageSharp;
 
 namespace ClientCore.CnCNet5
@@ -58,7 +58,7 @@ namespace ClientCore.CnCNet5
             // Default supported games.
             CnCNetGame[] defaultGames =
             {
-               
+
             };
 
             // CnCNet chat.

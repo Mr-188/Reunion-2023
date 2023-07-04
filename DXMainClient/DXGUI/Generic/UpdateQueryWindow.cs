@@ -1,6 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Text;
 using ClientCore;
 using ClientGUI;
+using ClientUpdater;
 using Localization;
 using Microsoft.Xna.Framework;
 using Rampastring.XNAUI;
@@ -23,7 +28,7 @@ namespace DTAClient.DXGUI.Generic
 
         private XNALabel lblDescription;
         private XNALabel lblUpdateSize;
-
+        private XNAListBox updaterlog;
         private string changelogUrl;
 
         public override void Initialize()
@@ -31,7 +36,7 @@ namespace DTAClient.DXGUI.Generic
             changelogUrl = ClientConfiguration.Instance.ChangelogURL;
 
             Name = "UpdateQueryWindow";
-            ClientRectangle = new Rectangle(0, 0, 251, 140);
+            ClientRectangle = new Rectangle(0, 0, 251, 350);
             BackgroundTexture = AssetLoader.LoadTexture("updatequerybg.png");
 
             lblDescription = new XNALabel(WindowManager);
@@ -46,19 +51,23 @@ namespace DTAClient.DXGUI.Generic
             lblChangelogLink.Name = nameof(lblChangelogLink);
             lblChangelogLink.LeftClick += LblChangelogLink_LeftClick;
 
+            updaterlog = new XNAListBox(WindowManager);
+            updaterlog.Name = nameof(updaterlog);
+            updaterlog.ClientRectangle = new Rectangle(lblChangelogLink.X, lblChangelogLink.Y + 60, 225, 200);
+            
             lblUpdateSize = new XNALabel(WindowManager);
             lblUpdateSize.ClientRectangle = new Rectangle(12, 80, 0, 0);
             lblUpdateSize.Text = String.Empty;
             lblUpdateSize.Name = nameof(lblUpdateSize);
 
             var btnYes = new XNAClientButton(WindowManager);
-            btnYes.ClientRectangle = new Rectangle(12, 110, 75, 23);
+            btnYes.ClientRectangle = new Rectangle(12, 320, 75, 23);
             btnYes.Text = "Yes".L10N("UI:Main:ButtonYes");
             btnYes.LeftClick += BtnYes_LeftClick;
             btnYes.Name = nameof(btnYes);
 
             var btnNo = new XNAClientButton(WindowManager);
-            btnNo.ClientRectangle = new Rectangle(164, 110, 75, 23);
+            btnNo.ClientRectangle = new Rectangle(164, 320, 75, 23);
             btnNo.Text = "No".L10N("UI:Main:ButtonNo");
             btnNo.LeftClick += BtnNo_LeftClick;
             btnNo.Name = nameof(btnNo);
@@ -68,11 +77,71 @@ namespace DTAClient.DXGUI.Generic
             AddChild(lblUpdateSize);
             AddChild(btnYes);
             AddChild(btnNo);
+            AddChild(updaterlog);
+
+            GetUpdateContents(Updater.VersionState.ToString(),VersionState.UPTODATE.ToString());
 
             base.Initialize();
 
             CenterOnParent();
         }
+
+        public void GetUpdateContents(string currentVersion, string latestVersion)
+        {
+            Dictionary<string, string> updateContents = new Dictionary<string, string>();
+
+            // 读取INI文件
+            string iniFilePath = "updater.ini"; // 替换为你的INI文件路径
+
+            // 下载INI文件
+            string iniFileUrl = "http://8.130.134.157/Updater/updater.ini";
+            string iniContent;
+            using (WebClient client = new WebClient())
+            {
+                try
+                {
+                    iniContent = client.DownloadString(iniFileUrl);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"无法下载INI文件: {ex.Message}");
+                    return;
+                }
+            }
+
+
+            // 解析INI文件内容
+            using (StringReader reader = new StringReader(iniContent))
+            {
+                string line;
+                string currentSection = string.Empty;
+                List<string> currentContent = new List<string>();
+
+                while ((line = reader.ReadLine()) != null)
+                {
+                    line = line.Trim();
+                    if (line.StartsWith("[") && line.EndsWith("]"))
+                    {
+                        if (line.LastIndexOf(currentVersion) == -1)
+                            continue;
+                        else
+                            break;
+                        
+                    }
+
+                    currentSection = line;
+                    updaterlog.AddItem(currentSection);
+                }
+
+             
+            }
+
+            
+
+            
+        }
+
+    
 
         private void LblChangelogLink_LeftClick(object sender, EventArgs e)
         {

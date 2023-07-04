@@ -32,7 +32,7 @@ namespace ClientCore.Settings
 
         public void Add(string value)
         {
-            var values = Get().Concat(new []{value}).ToList();
+            var values = Get().Concat(new[] { value }).ToList();
             Set(values);
         }
 

@@ -65,7 +65,7 @@ namespace DTAClient.Domain.Multiplayer
         {
             //string mpMapsPath = SafePath.CombineFilePath(ProgramConstants.GamePath, ClientConfiguration.Instance.MPMapsIniPath);
 
-           // Logger.Log($"Loading maps from {mpMapsPath}.");
+            // Logger.Log($"Loading maps from {mpMapsPath}.");
 
 
 

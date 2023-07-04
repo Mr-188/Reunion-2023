@@ -1,7 +1,7 @@
-﻿using Rampastring.XNAUI.XNAControls;
-using System;
-using Rampastring.XNAUI;
+﻿using System;
 using Microsoft.Xna.Framework;
+using Rampastring.XNAUI;
+using Rampastring.XNAUI.XNAControls;
 
 namespace ClientGUI
 {
@@ -24,7 +24,7 @@ namespace ClientGUI
             Name = "DarkeningPanel";
 
             SetPositionAndSize();
-            
+
             PanelBackgroundDrawMode = PanelBackgroundImageDrawMode.STRETCHED;
             BackgroundTexture = AssetLoader.CreateTexture(new Color(0, 0, 0, 128), 1, 1);
             DrawBorders = false;

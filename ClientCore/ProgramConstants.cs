@@ -1,9 +1,9 @@
-﻿using Localization;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Reflection;
+using System.Text;
+using Localization;
 using Rampastring.Tools;
 
 namespace ClientCore

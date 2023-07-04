@@ -1,5 +1,4 @@
 ﻿using ClientGUI;
-using Localization;
 using Rampastring.Tools;
 using Rampastring.XNAUI;
 using Rampastring.XNAUI.XNAControls;
@@ -45,7 +44,7 @@ namespace DTAConfig.Settings
         {
             switch (key)
             {
-               
+
                 case "Items":
                     string[] items = value.Split(',');
                     for (int i = 0; i < items.Length; i++)

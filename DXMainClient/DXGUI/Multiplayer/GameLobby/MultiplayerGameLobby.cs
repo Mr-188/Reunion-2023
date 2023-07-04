@@ -9,7 +9,6 @@ using ClientGUI;
 using DTAClient.Domain;
 using DTAClient.Domain.Multiplayer;
 using DTAClient.DXGUI.Generic;
-using DTAClient.Online;
 using Localization;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -282,7 +281,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
 
         protected virtual void HandleLockGameButtonClick()
         {
-            
+
             if (Locked)
                 UnlockGame(true);
             else
@@ -644,7 +643,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             tbChatInput.Name = "tbChatInput_Player";
             MapPreviewBox.Name = "MapPreviewBox";
             lblMapName.Name = "lblMapName";
-            //   lblMapAuthor.Name = "lblMapAuthor";
+            lblMapAuthor.Name = "lblMapAuthor";
             lblGameMode.Name = "lblGameMode";
             lblMapSize.Name = "lblMapSize";
 
@@ -653,7 +652,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             ReadINIForControl(tbChatInput);
             ReadINIForControl(lbGameModeMapList);
             ReadINIForControl(lblMapName);
-            //       ReadINIForControl(lblMapAuthor);
+            ReadINIForControl(lblMapAuthor);
             ReadINIForControl(lblGameMode);
             ReadINIForControl(lblMapSize);
             ReadINIForControl(btnMapSortAlphabetically);
@@ -674,7 +673,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             tbChatInput.Name = "tbChatInput_Host";
             MapPreviewBox.Name = "MapPreviewBox";
             lblMapName.Name = "lblMapName";
-            //      lblMapAuthor.Name = "lblMapAuthor";
+            lblMapAuthor.Name = "lblMapAuthor";
             lblGameMode.Name = "lblGameMode";
             lblMapSize.Name = "lblMapSize";
 
@@ -690,7 +689,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             ReadINIForControl(tbChatInput);
             ReadINIForControl(lbGameModeMapList);
             ReadINIForControl(lblMapName);
-            //    ReadINIForControl(lblMapAuthor);
+            ReadINIForControl(lblMapAuthor);
             ReadINIForControl(lblGameMode);
             ReadINIForControl(lblMapSize);
             ReadINIForControl(btnMapSortAlphabetically);

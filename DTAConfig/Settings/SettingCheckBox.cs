@@ -1,6 +1,4 @@
-﻿using System;
-using ClientCore;
-using ClientGUI;
+﻿using ClientCore;
 using Rampastring.Tools;
 using Rampastring.XNAUI;
 

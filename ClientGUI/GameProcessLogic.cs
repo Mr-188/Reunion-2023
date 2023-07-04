@@ -2,10 +2,10 @@
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
-using ClientCore;
-using Rampastring.Tools;
-using ClientCore.INIProcessing;
 using System.Threading;
+using ClientCore;
+using ClientCore.INIProcessing;
+using Rampastring.Tools;
 using Rampastring.XNAUI;
 
 namespace ClientGUI
@@ -115,7 +115,7 @@ namespace ClientGUI
                     arguments = additionalExecutableName + "-SPAWN";
 
 
-                
+
                 FileInfo gameFileInfo = SafePath.GetFile(ProgramConstants.GamePath, gameExecutableName);
                 var gameProcess = Process.Start(new ProcessStartInfo(gameFileInfo.FullName, arguments));
 

@@ -1,11 +1,11 @@
-﻿using Localization;
+﻿using System;
 using ClientCore;
 using ClientGUI;
+using ClientUpdater;
+using Localization;
 using Microsoft.Xna.Framework;
 using Rampastring.XNAUI;
 using Rampastring.XNAUI.XNAControls;
-using System;
-using ClientUpdater;
 
 namespace DTAConfig.OptionPanels
 {
@@ -140,7 +140,7 @@ namespace DTAConfig.OptionPanels
             {
                 lbUpdateServerList.AddItem(updaterMirror.Name +
                     (!string.IsNullOrEmpty(updaterMirror.Location) ?
-                    $" ({ updaterMirror.Location })" : string.Empty));
+                    $" ({updaterMirror.Location})" : string.Empty));
             }
 
             chkAutoCheck.Checked = IniSettings.CheckForUpdates;

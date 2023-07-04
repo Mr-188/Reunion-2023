@@ -37,7 +37,7 @@ namespace DTAClient.DXGUI.Multiplayer.CnCNet
 
         private XNALabel lblTunnelServer;
         private TunnelListBox lbTunnelList;
-    
+
 
         private XNAClientButton btnCreateGame;
         private XNAClientButton btnCancel;
@@ -103,7 +103,7 @@ namespace DTAClient.DXGUI.Multiplayer.CnCNet
             btnDisplayAdvancedOptions.Text = "Advanced Options".L10N("UI:Main:AdvancedOptions");
             btnDisplayAdvancedOptions.LeftClick += BtnDisplayAdvancedOptions_LeftClick;
 
-           
+
 
             lblTunnelServer = new XNALabel(WindowManager);
             lblTunnelServer.Name = nameof(lblTunnelServer);
@@ -154,7 +154,7 @@ namespace DTAClient.DXGUI.Multiplayer.CnCNet
             AddChild(btnDisplayAdvancedOptions);
             AddChild(lblTunnelServer);
             AddChild(lbTunnelList);
-           
+
             AddChild(btnCreateGame);
             if (!ClientConfiguration.Instance.DisableMultiplayerGameLoading)
                 AddChild(btnLoadMPGame);
@@ -174,7 +174,8 @@ namespace DTAClient.DXGUI.Multiplayer.CnCNet
 
         private void Keyboard_OnKeyPressed(object sender, Rampastring.XNAUI.Input.KeyPressEventArgs e)
         {
-            if (Enabled) {
+            if (Enabled)
+            {
                 if (e.PressedKey == Keys.Escape)
                 {
                     btnCancel.OnLeftClick();
@@ -186,7 +187,7 @@ namespace DTAClient.DXGUI.Multiplayer.CnCNet
             }
         }
 
-       
+
 
         private void LbTunnelList_ListRefreshed(object sender, EventArgs e)
         {
@@ -308,7 +309,7 @@ namespace DTAClient.DXGUI.Multiplayer.CnCNet
             SetAttributesFromIni();
 
             CenterOnParent();
-           
+
         }
 
         public void Refresh()

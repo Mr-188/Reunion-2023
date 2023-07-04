@@ -105,7 +105,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
                             item.Text = itemlabels[i].L10N("UI:GameOption:" + itemlabels[i]);
 
 
-                            item.Tag = new string[3] { items[i], string.Empty,string.Empty };
+                            item.Tag = new string[3] { items[i], string.Empty, string.Empty };
                         }
                         else item.Text = items[i];
                         AddItem(item);
@@ -147,7 +147,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
                         {
                             sessionname = "AI";
                         }
-                        if (Mod_Ai.GetSection(sessionname)== null)
+                        if (Mod_Ai.GetSection(sessionname) == null)
                             continue;
                         var keys = Mod_Ai.GetSection(sessionname).Keys;
                         foreach (KeyValuePair<string, string> name in keys)
@@ -166,8 +166,8 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
 
                             if (Name == "cmbGame")
                             {
-                               
-                              
+
+
                                 Sides.Add(Mod_Ai.GetStringValue(name.Value, "Sides", string.Empty));
 
                                 RandomSelectors.Add(Mod_Ai.GetStringValue(name.Value, "RandomSides", string.Empty));
@@ -197,7 +197,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
 
                             if (items.Length == Mod.Count)
                             {
-                                
+
                                 item.Tag = new string[3] { items[i], Mod[i], Main[i] };
                             }
                             else

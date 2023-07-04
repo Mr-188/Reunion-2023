@@ -33,14 +33,14 @@ namespace DTAClient
         public void Execute()
         {
             string themePath = UserINISettings.Instance.ClientTheme;
-            
+
             // string language = ClientConfiguration.Instance.GetLanguagePath(UserINISettings.Instance.Language);
 
             if (themePath == null)
             {
                 themePath = ClientConfiguration.Instance.GetThemeInfoFromIndex(1)[1];
             }
-            
+
             //  if (language == null)
             //    {
             //     language = ClientConfiguration.Instance.GetLanguageInfoFromIndex(0)[1];

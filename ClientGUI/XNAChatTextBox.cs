@@ -1,8 +1,8 @@
-﻿using Microsoft.Xna.Framework.Input;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework.Input;
 using Rampastring.XNAUI;
 using Rampastring.XNAUI.XNAControls;
-using System;
-using System.Collections.Generic;
 
 namespace ClientGUI
 {

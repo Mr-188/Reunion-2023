@@ -533,7 +533,8 @@ namespace DTAClient.Domain.Multiplayer
                 //if(!basicSection.GetBooleanValue("MultiplayerOnly", false))
                 //    return false;
 
-                Name = basicSection.GetStringValue("Name", "Unnamed map");
+                //Name = basicSection.GetStringValue("Name", "Unnamed map");
+                Name = Path.GetFileNameWithoutExtension(iniFile.FileName);
                 Author = basicSection.GetStringValue("Author", "Unknown author");
 
                 string gameModesString = basicSection.GetStringValue("GameModes", string.Empty);

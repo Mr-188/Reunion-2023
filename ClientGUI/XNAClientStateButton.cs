@@ -33,14 +33,14 @@ namespace ClientGUI
 
             _toolTip = new ToolTip(WindowManager, this);
             SetToolTipText(_toolTipText);
-            
+
             if (Width == 0)
                 Width = IdleTexture.Width;
         }
 
         public void SetState(T state)
         {
-            if(!Enum.IsDefined(typeof(T), state))
+            if (!Enum.IsDefined(typeof(T), state))
                 throw new IndexOutOfRangeException($"{state} not a valid texture value");
 
             _state = state;

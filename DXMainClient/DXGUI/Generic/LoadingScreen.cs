@@ -72,10 +72,6 @@ namespace DTAClient.DXGUI.Generic
 
         private readonly GraphicsDeviceManager _graphics;
 
-
-        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-        private static extern bool SetDllDirectory(string path);
-
         // 在你的代码中的适当位置调用这个方法，指定DLL文件的目录
         //SetDllDirectory("C:\\Path\\To\\Your\\DLLs");
         public override void Initialize()
@@ -83,11 +79,14 @@ namespace DTAClient.DXGUI.Generic
             ClientRectangle = new Rectangle(0, 0, 1280, 768);
             Name = "LoadingScreen";
 
- 
+
             if (!UserINISettings.Instance.video_wallpaper || RuntimeInformation.ProcessArchitecture.ToString() == "X64")
             {
+                string path = $"Resources/{UserINISettings.Instance.ClientTheme}Wallpaper";
+                if (!Directory.Exists(path))
+                    path = $"Resources/Wallpaper";
 
-                string[] Wallpaper = Directory.GetFiles("Resources/" + UserINISettings.Instance.ClientTheme + "Wallpaper");
+                string[] Wallpaper = Directory.GetFiles(path);
 
                 if (UserINISettings.Instance.Random_wallpaper)
                 {
@@ -133,13 +132,13 @@ namespace DTAClient.DXGUI.Generic
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            if (UserINISettings.Instance.video_wallpaper && RuntimeInformation.ProcessArchitecture.ToString() != "X64")
+            if (UserINISettings.Instance.video_wallpaper)
             {
                 string path = $"Resources/{UserINISettings.Instance.ClientTheme}loading.mp4";
                 if (!File.Exists(path))
                     path = "Resources/loading.mp4";
                 _video = VideoHelper.LoadFromFile(path);
-             
+
 
                 _videoPlayer.Play(_video);
             }
@@ -155,7 +154,7 @@ namespace DTAClient.DXGUI.Generic
         public override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            if (UserINISettings.Instance.video_wallpaper && RuntimeInformation.ProcessArchitecture.ToString() != "X64")
+            if (UserINISettings.Instance.video_wallpaper)
             {
                 // TODO: Add your drawing code here
                 var videoTexture = _videoPlayer.GetTexture();
@@ -217,7 +216,7 @@ namespace DTAClient.DXGUI.Generic
             {
                 WindowManager.AddAndInitializeControl(new PrivacyNotification(WindowManager));
             }
-            if (UserINISettings.Instance.video_wallpaper && RuntimeInformation.ProcessArchitecture.ToString() == "x64")
+            if (UserINISettings.Instance.video_wallpaper)
                 UnloadContent();
 
 

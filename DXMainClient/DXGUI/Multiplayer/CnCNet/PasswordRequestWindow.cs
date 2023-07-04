@@ -45,7 +45,7 @@ namespace DTAClient.DXGUI.Multiplayer.CnCNet
             tbPassword.ClientRectangle = new Rectangle(lblDescription.X,
                 lblDescription.Bottom + 12, Width - 24, 21);
 
-             btnOK = new XNAClientButton(WindowManager);
+            btnOK = new XNAClientButton(WindowManager);
             btnOK.Name = "btnOK";
             btnOK.ClientRectangle = new Rectangle(lblDescription.X,
                 ClientRectangle.Bottom - 35, UIDesignConstants.BUTTON_WIDTH_92, UIDesignConstants.BUTTON_HEIGHT);

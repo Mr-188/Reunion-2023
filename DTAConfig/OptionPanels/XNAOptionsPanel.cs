@@ -1,11 +1,11 @@
-﻿using ClientCore;
+﻿using System.Collections.Generic;
+using ClientCore;
 using ClientGUI;
 using DTAConfig.Settings;
 using Microsoft.Xna.Framework;
 using Rampastring.Tools;
 using Rampastring.XNAUI;
 using Rampastring.XNAUI.XNAControls;
-using System.Collections.Generic;
 
 namespace DTAConfig.OptionPanels
 {
@@ -16,7 +16,7 @@ namespace DTAConfig.OptionPanels
     /// </summary>
     internal abstract class XNAOptionsPanel : XNAWindowBase
     {
-        public XNAOptionsPanel(WindowManager windowManager, 
+        public XNAOptionsPanel(WindowManager windowManager,
             UserINISettings iniSettings) : base(windowManager)
         {
             IniSettings = iniSettings;

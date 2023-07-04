@@ -1,8 +1,8 @@
+using System.Collections.Generic;
+using System.IO;
 using ClientCore;
 using Rampastring.Tools;
 using Rampastring.XNAUI;
-using System.Collections.Generic;
-using System.IO;
 
 namespace DTAConfig.Settings
 {
