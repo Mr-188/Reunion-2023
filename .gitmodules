@@ -1,0 +1,6 @@
+[submodule "cncnet-client-updater"]
+	path = cncnet-client-updater
+	url = https://github.com/CnCNet/cncnet-client-updater.git
+[submodule "MonoGame.Extended2"]
+	path = MonoGame.Extended2
+	url = https://github.com/hozuki/MonoGame.Extended2.git
