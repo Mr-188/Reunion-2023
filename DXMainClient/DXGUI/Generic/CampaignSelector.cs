@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using ClientCore;
 using ClientGUI;
 using ClientUpdater;
@@ -52,8 +53,11 @@ namespace DTAClient.DXGUI.Generic
         private XNADropDown ddGameSpeed;
         private XNALabel lbGameMod;
         private XNADropDown ddGameMod;
-
-
+        private CampaignSelectorService campaignSelectorService;
+        private XNALabel lbCampaignGood;
+        private XNALabel lbCampaignBad;
+        private XNAClientButton btnCampaignGood;
+        private XNAClientButton btnCampaignBad;
 
         private CheaterWindow cheaterWindow;
 
@@ -107,6 +111,9 @@ namespace DTAClient.DXGUI.Generic
             lblScreen.Text = "Screen:".L10N("UI:Campaign:Screen");
             lblScreen.ClientRectangle = new Rectangle(10, 35, 0, 0);
 
+            campaignSelectorService = new CampaignSelectorService();
+            campaignSelectorService.ConnectTest();
+
             dddifficulty = new XNADropDown(WindowManager);
             dddifficulty.Name = nameof(dddifficulty);
             dddifficulty.ClientRectangle = new Rectangle(10, 55, 100, 25);
@@ -142,8 +149,8 @@ namespace DTAClient.DXGUI.Generic
             lblDifficultyLevel.FontIndex = 1;
             Vector2 textSize = Renderer.GetTextDimensions(lblDifficultyLevel.Text, lblDifficultyLevel.FontIndex);
             lblDifficultyLevel.ClientRectangle = new Rectangle(
-                tbMissionDescription.X + (tbMissionDescription.Width - (int)textSize.X) / 2,
-                tbMissionDescription.Bottom + 12, (int)textSize.X, (int)textSize.Y);
+                tbMissionDescription.X + (tbMissionDescription.Width - (int)textSize.X),
+                tbMissionDescription.Bottom, (int)textSize.X, (int)textSize.Y);
 
             trbDifficultySelector = new XNATrackbar(WindowManager);
             trbDifficultySelector.Name = "trbDifficultySelector";
@@ -157,8 +164,8 @@ namespace DTAClient.DXGUI.Generic
             trbDifficultySelector.ButtonTexture = AssetLoader.LoadTextureUncached(
                 "trackbarButton_difficulty.png");
 
-
-
+           
+           
 
             lbGameMod = new XNALabel(WindowManager);
             lbGameMod.Name = "lbGameMod";
@@ -207,7 +214,7 @@ namespace DTAClient.DXGUI.Generic
             lblEasy.FontIndex = 1;
             lblEasy.Text = "EASY".L10N("UI:Main:DifficultyEasy");
             lblEasy.ClientRectangle = new Rectangle(trbDifficultySelector.X,
-                trbDifficultySelector.Bottom + 6, 1, 1);
+                trbDifficultySelector.Bottom + 20, 1, 1);
 
             var lblNormal = new XNALabel(WindowManager);
             lblNormal.Name = "lblNormal";
@@ -240,6 +247,38 @@ namespace DTAClient.DXGUI.Generic
             btnCancel.Text = "Cancel".L10N("UI:Main:ButtonCancel");
             btnCancel.LeftClick += BtnCancel_LeftClick;
 
+            btnCampaignGood = new XNAClientButton(WindowManager);
+            btnCampaignGood.Name = nameof(btnCampaignGood);
+            btnCampaignGood.Text = "给个好评";
+            btnCampaignGood.ClientRectangle = new Rectangle(tbMissionDescription.X, ddGameMod.Y -4, 80, 30);
+            btnCampaignGood.IdleTexture = AssetLoader.LoadTexture("75pxbtn.png");
+            btnCampaignGood.HoverTexture = AssetLoader.LoadTexture("75pxbtn_c.png");
+            btnCampaignGood.LeftClick += BtnCampaignGood_LeftClick;
+            btnCampaignGood.Visible = false;
+            
+            btnCampaignBad = new XNAClientButton(WindowManager);
+            btnCampaignBad.Name = nameof(btnCampaignBad);
+            btnCampaignBad.Text = "打个差评";
+            btnCampaignBad.ClientRectangle = new Rectangle(btnCampaignGood.X, btnCampaignGood.Y + 30, 80, 30);
+            btnCampaignBad.IdleTexture = AssetLoader.LoadTexture("75pxbtn.png");
+            btnCampaignBad.HoverTexture = AssetLoader.LoadTexture("75pxbtn_c.png");
+            btnCampaignBad.LeftClick += BtnCampaignBad_LeftClickAsync;
+            btnCampaignBad.Visible = false;
+
+            lbCampaignGood = new XNALabel(WindowManager);
+            lbCampaignGood.Name = nameof(lbCampaignGood);
+           // lbCampaignGood.Text = "好评数";
+            lbCampaignGood.ClientRectangle = new Rectangle(btnCampaignGood.X + 100, ddGameMod.Y + 5, 0, 0);
+            lbCampaignGood.Visible = false;
+
+            lbCampaignBad = new XNALabel(WindowManager);
+            lbCampaignBad.Name = nameof(lbCampaignBad);
+           // lbCampaignBad.Text = "好评数";
+            lbCampaignBad.ClientRectangle = new Rectangle(btnCampaignBad.X + 100, ddGameMod.Y + 35, 0, 0);
+            lbCampaignBad.Visible = false;
+
+            
+
             AddChild(lblSelectCampaign);
             AddChild(lblMissionDescriptionHeader);
             AddChild(lbCampaignList);
@@ -258,6 +297,10 @@ namespace DTAClient.DXGUI.Generic
             AddChild(ddGameMod);
             AddChild(lbGameSpeed);
             AddChild(ddGameSpeed);
+            AddChild(btnCampaignGood);
+            AddChild(btnCampaignBad);
+            AddChild(lbCampaignBad);
+            AddChild(lbCampaignGood);
             // Set control attributes from INI file
             base.Initialize();
 
@@ -293,8 +336,6 @@ namespace DTAClient.DXGUI.Generic
                 ddside.AddItem(item);
             }
 
-
-
             ddside.SelectedIndexChanged += Dddifficulty_SelectedIndexChanged;
             dddifficulty.SelectedIndexChanged += Dddifficulty_SelectedIndexChanged;
 
@@ -309,6 +350,40 @@ namespace DTAClient.DXGUI.Generic
 
         }
 
+        private void BtnCampaignGood_LeftClick(object sender, EventArgs e)
+        {
+            if(!campaignSelectorService.error)
+                ChangeMarkAsync(true);
+        }
+
+        private async Task ChangeMarkAsync(bool good)
+        {
+            
+            string missionName = Missions[lbCampaignList.SelectedIndex].sectionName;
+
+            IniFile ini = new IniFile(ProgramConstants.GamePath+"Client/Campaign.ini");
+            if (!ini.SectionExists(missionName))
+                ini.AddSection(missionName);
+            
+            int mark = ini.GetIntValue(missionName, "Mark", 0);
+            if (mark >= 20)
+                XNAMessageBox.Show(WindowManager, "信息", "这个战役你已经打了很多分啦！");
+            else
+            {
+                
+                campaignSelectorService.UpdateTaskRating(missionName, good);
+                ini.SetIntValue(missionName, "Mark", mark+1);
+                ini.WriteIniFile();
+                updateMark(missionName);
+            }
+        }
+
+        private void BtnCampaignBad_LeftClickAsync(object sender, EventArgs e)
+        {
+            if (!campaignSelectorService.error)
+                ChangeMarkAsync(false);
+        }
+
         protected virtual void DelConf()
         {
             XNAMessageBox messageBox = new XNAMessageBox(WindowManager, "删除确认", "你真的要删除这组任务吗？", XNAMessageBoxButtons.YesNo);
@@ -316,6 +391,13 @@ namespace DTAClient.DXGUI.Generic
             messageBox.YesClickedAction += DelConf_YesClicked;
         }
 
+        private async Task updateMark(string name)
+        {
+            (int goodCount, int badCount) = await campaignSelectorService.GetTaskRatingsAsync(name);
+
+            lbCampaignGood.Text = "好评数: " + goodCount.ToString();
+            lbCampaignBad.Text = "差评数: " + badCount.ToString();
+        }
         private void DelConf_YesClicked(XNAMessageBox messageBox)
         {
             ////表层删除
@@ -335,29 +417,10 @@ namespace DTAClient.DXGUI.Generic
                 IniFile iniFile = new IniFile(file);
                 if (iniFile.KeyExists("Battles", (string)lbCampaignList.SelectedItem.Tag))
                 {
-                    iniFile.SetStringValue("Battles", (string)lbCampaignList.SelectedItem.Tag, string.Empty);
-                    iniFile.RemoveSection((string)lbCampaignList.SelectedItem.Tag);
-                    List<string> sectionsToRemove = new List<string>();
-                    foreach (string section in iniFile.GetSections())
-                    {
-                        if (iniFile.GetStringValue(section, "Attached", string.Empty) == (string)lbCampaignList.SelectedItem.Tag
-                            || iniFile.GetStringValue(section, "Mod", string.Empty).IndexOf((string)lbCampaignList.SelectedItem.Tag) != -1)
-                        {
-                            f = true;
-                            iniFile.RemoveSection(section);
-                            //   iniFile.
-                            iniFile.SetStringValue("Battles", section, string.Empty);
-                        }
-                    }
-
-                    if (f)
-                    {
-
-                        iniFile.WriteIniFile();
-                        break;
-                    }
-
-
+                    int index = file.IndexOf("Battle", StringComparison.OrdinalIgnoreCase);
+                    Console.WriteLine(index);
+                    File.Delete(file);
+                    Directory.Delete($"{ProgramConstants.GamePath}INI\\GameOptions\\Game\\{file.Substring(index)}");
                 }
                 // iniFile.WriteIniFile();
             }
@@ -395,8 +458,10 @@ namespace DTAClient.DXGUI.Generic
         }
 
 
-        private void LbCampaignList_SelectedIndexChanged(object sender, EventArgs e)
+        private async void LbCampaignList_SelectedIndexChanged(object sender, EventArgs e)
         {
+            
+
             if (lbCampaignList.SelectedIndex == -1)
             {
                 tbMissionDescription.Text = string.Empty;
@@ -408,7 +473,25 @@ namespace DTAClient.DXGUI.Generic
 
             Mission mission = Missions[lbCampaignList.SelectedIndex];
 
+            if (!mission.other)
+            {
+                if (!campaignSelectorService.error)
+                {
+                    updateMark(mission.sectionName);
+                    btnCampaignBad.Visible = true;
+                    btnCampaignGood.Visible = true;
+                    lbCampaignBad.Visible = true;
+                    lbCampaignGood.Visible = true;
+                }
+            }
+            else
+            {
+                btnCampaignBad.Visible = false;
+                btnCampaignGood.Visible = false;
+                lbCampaignBad.Visible = false;
+                lbCampaignGood.Visible = false;
 
+            }
             ddGameMod.Items.Clear();
 
             foreach (string s in mission.Mod)
@@ -871,12 +954,21 @@ namespace DTAClient.DXGUI.Generic
                 {
                     item.TextColor = AssetLoader.GetColorFromString(
                         ClientConfiguration.Instance.ListBoxHeaderColor);
+                    
                     item.IsHeader = true;
                     item.Selectable = false;
                 }
                 else
                 {
-                    item.TextColor = lbCampaignList.DefaultItemColor;
+                    //item.TextColor = lbCampaignList.DefaultItemColor;
+                    if(mission.difficulty == "困难")
+                        item.TextColor = Color.Red;
+                    else if (mission.difficulty == "简单")
+                        item.TextColor = Color.Green;
+                    else if (mission.difficulty == "极难")
+                        item.TextColor = Color.Black;
+                    else
+                        item.TextColor = Color.AliceBlue;
                 }
 
                 if (!string.IsNullOrEmpty(mission.IconPath))

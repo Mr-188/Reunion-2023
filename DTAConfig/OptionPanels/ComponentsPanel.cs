@@ -40,7 +40,8 @@ namespace DTAConfig.OptionPanels
 
         //  private string baseUrl = "http://127.0.0.1:8080/Components/";
          //private string baseUrl = "http://ra2wx.online/RU/Components/";
-        private string baseUrl = "http://8.130.134.157/Components/";
+        private string baseUrl = "http://raa2022.top/Components/";
+
         string componentNamePath = Path.Combine(ProgramConstants.GamePath, "Resources", "components");
 
         FileIniDataParser iniParser;
@@ -122,10 +123,12 @@ namespace DTAConfig.OptionPanels
                 {
                     string buttonText = "不可用";
                     string name = section.Keys["name"];
-
+                    Color color = Color.Red;
                     if (!string.IsNullOrEmpty(name))
                     {
+                        
                         buttonText = "未安装";
+                        color = Color.Blue;
                     }
 
                     foreach (SectionData loaclsection in localdata.Sections)
@@ -136,6 +139,7 @@ namespace DTAConfig.OptionPanels
                             if (AreKeyDataCollectionsEqual(section.Keys, loaclsection.Keys))
                             {
                                 buttonText = "已安装";
+                                color = Color.Green;
                             }
                             break;
                         }
@@ -156,6 +160,7 @@ namespace DTAConfig.OptionPanels
                        // ClientRectangle = new Rectangle(Width - 145,
                        // 12 + componentIndex * 35, UIDesignConstants.BUTTON_WIDTH_133, UIDesignConstants.BUTTON_HEIGHT),
                         Text = buttonText,
+                        TextColor = color,
                         Tag = section
                     };
 
@@ -265,6 +270,7 @@ namespace DTAConfig.OptionPanels
             string componentName = button.SectionName;
 
             CompList.GetItem(1, buttons.FindIndex(s => s == button)).Text = "安装中";
+            CompList.GetItem(1, buttons.FindIndex(s => s == button)).TextColor = Color.White;
             iniData.Sections.AddSection(componentName);
 
             string downloadUrl = string.Empty;
@@ -341,6 +347,7 @@ namespace DTAConfig.OptionPanels
             {
                 XNAMessageBox.Show(WindowManager, "错误", $"下载时出错{ex}");
                 CompList.GetItem(1, buttons.FindIndex(s => s == button)).Text = "未安装";
+                CompList.GetItem(1, buttons.FindIndex(s => s == button)).TextColor = Color.Blue;
                 progressBar1.Visible = false;
                 progressBar1.Tag = false;
                 return;
@@ -356,7 +363,9 @@ namespace DTAConfig.OptionPanels
             }
 
             CompList.GetItem(1, buttons.FindIndex(s => s == button)).Text = "已安装";
-
+            CompList.GetItem(1, buttons.FindIndex(s => s == button)).TextColor = Color.Green;
+            if ((SectionData)mainbutton.Tag == button)
+                mainbutton.Text = "卸载";
             progressBar1.Visible = false;
             progressBar1.Tag = false;
         

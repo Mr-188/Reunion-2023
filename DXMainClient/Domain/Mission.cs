@@ -12,6 +12,8 @@ namespace DTAClient.Domain
     /// </summary>
     public class Mission
     {
+       
+
         public Mission(IniFile iniFile, string sectionName, int index)
         {
             this.sectionName = sectionName;
@@ -31,7 +33,7 @@ namespace DTAClient.Domain
             defaultMod = iniFile.GetStringValue(sectionName, "defaultMod", Mod[0]);
             Attached = "INI\\GameOptions\\Mission\\" + iniFile.GetStringValue(sectionName, "Attached", string.Empty);
             difficulty = iniFile.GetStringValue(sectionName, "difficulty", "一般"); //难度筛选用
-
+            other = iniFile.GetBooleanValue(sectionName, "other", false);
             // GUIDescription = GUIDescription.Replace("@", Environment.NewLine);
 
 
@@ -62,6 +64,7 @@ namespace DTAClient.Domain
             return Regex.IsMatch(str, @"[\u4e00-\u9fa5]");
         }
 
+        public bool other { get; set; }
         public int Index { get; }
         public int CD { get; }
         public int Side { get; }

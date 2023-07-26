@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 using ClientCore;
 using ClientGUI;
 using ClientUpdater;
@@ -79,17 +80,15 @@ namespace DTAClient.DXGUI.Generic
             AddChild(btnNo);
             AddChild(updaterlog);
 
-            GetUpdateContents(Updater.VersionState.ToString(),VersionState.UPTODATE.ToString());
-
             base.Initialize();
 
             CenterOnParent();
         }
 
-        public void GetUpdateContents(string currentVersion, string latestVersion)
+        public async Task GetUpdateContentsAsync(string currentVersion, string latestVersion)
         {
             Dictionary<string, string> updateContents = new Dictionary<string, string>();
-
+             
             // 读取INI文件
             string iniFilePath = "updater.ini"; // 替换为你的INI文件路径
 
@@ -100,7 +99,7 @@ namespace DTAClient.DXGUI.Generic
             {
                 try
                 {
-                    iniContent = client.DownloadString(iniFileUrl);
+                    iniContent = await client.DownloadStringTaskAsync(iniFileUrl);
                 }
                 catch (Exception ex)
                 {
@@ -108,7 +107,6 @@ namespace DTAClient.DXGUI.Generic
                     return;
                 }
             }
-
 
             // 解析INI文件内容
             using (StringReader reader = new StringReader(iniContent))
@@ -126,22 +124,16 @@ namespace DTAClient.DXGUI.Generic
                             continue;
                         else
                             break;
-                        
                     }
 
                     currentSection = line;
                     updaterlog.AddItem(currentSection);
                 }
-
-             
             }
-
-            
-
-            
         }
 
-    
+
+
 
         private void LblChangelogLink_LeftClick(object sender, EventArgs e)
         {

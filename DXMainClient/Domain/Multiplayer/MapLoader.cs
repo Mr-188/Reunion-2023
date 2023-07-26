@@ -55,7 +55,8 @@ namespace DTAClient.Domain.Multiplayer
         public async Task LoadMapsAsync()
         {
             Task.Run(LoadMaps);
-            await Task.Delay(5000);
+            if(UserINISettings.Instance.video_wallpaper)
+                await Task.Delay(5000);
         }
 
         /// <summary>

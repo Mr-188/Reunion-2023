@@ -160,8 +160,6 @@ namespace DTAConfig.OptionPanels
             chkBorderlessWindowedMode.AllowChecking = false;
 
 
-
-
             chkBackBufferInVRAM = new XNAClientCheckBox(WindowManager);
             chkBackBufferInVRAM.Name = "chkBackBufferInVRAM";
             chkBackBufferInVRAM.ClientRectangle = new Rectangle(
@@ -235,7 +233,7 @@ namespace DTAConfig.OptionPanels
             chkBorderlessClient.CheckedChanged += ChkBorderlessMenu_CheckedChanged;
             chkBorderlessClient.Checked = true;
             //暂时禁用客户端窗口化
-            chkBorderlessClient.Visible = false;
+            //chkBorderlessClient.Visible = false;
 
             //壁纸or视频
             var lblStart = new XNALabel(WindowManager);

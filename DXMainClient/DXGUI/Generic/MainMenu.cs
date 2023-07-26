@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using ClientCore;
 using ClientGUI;
 using ClientUpdater;
@@ -179,7 +181,7 @@ namespace DTAClient.DXGUI.Generic
         private XNAClientButton btnStatistics;
         private XNAClientButton btnCredits;
         private XNAClientButton btnExtras;
-
+        private XNATextBlock lblannouncement;
         /// <summary>
         /// Initializes the main menu's controls.
         /// </summary>
@@ -297,6 +299,12 @@ namespace DTAClient.DXGUI.Generic
             lblVersion.Name = nameof(lblVersion);
             lblVersion.LeftClick += LblVersion_LeftClick;
 
+            lblannouncement = new XNATextBlock(WindowManager);
+            lblannouncement.Name = nameof(lblannouncement);
+            lblannouncement.ClientRectangle = new Rectangle(880,135,155,120);
+            lblannouncement.TextColor = Color.White;
+            UpdateAnnouncementTextAsync();
+           // lblannouncement.Text = "111111111";
 
             lblUpdateStatus = new XNALinkLabel(WindowManager);
             lblUpdateStatus.Name = nameof(lblUpdateStatus);
@@ -304,7 +312,7 @@ namespace DTAClient.DXGUI.Generic
             lblUpdateStatus.ClientRectangle = new Rectangle(0, 0, UIDesignConstants.BUTTON_WIDTH_160, 20);
 
 
-
+            AddChild(lblannouncement);
             AddChild(btnNewCampaign);
             AddChild(btnLoadGame);
             AddChild(btnSkirmish);
@@ -383,6 +391,36 @@ namespace DTAClient.DXGUI.Generic
             SetButtonHotkeys(true);
 
 
+        }
+
+        private async Task UpdateAnnouncementTextAsync()
+        {
+            try
+            {
+                // 设置要请求的 URL
+                string url = "https://raa2022.top/announcement.txt";
+
+                // 忽略 SSL 证书验证
+                HttpClientHandler httpClientHandler = new HttpClientHandler();
+                httpClientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+
+                // 使用 HttpClient 发起 GET 请求获取文本内容
+                using (HttpClient httpClient = new HttpClient(httpClientHandler))
+                {
+                    HttpResponseMessage response = await httpClient.GetAsync(url);
+                    response.EnsureSuccessStatusCode();
+                    string content = await response.Content.ReadAsStringAsync();
+
+                    // 将获取的文本内容设置给 lblannouncement 控件的 Text 属性
+                    lblannouncement.Text = content;
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                // 请求失败时的异常处理
+                Console.WriteLine("Error: " + ex.Message);
+                lblannouncement.Text = "无法获取公告内容。";
+            }
         }
 
         private void Keyboard_OnKeyPressed(object sender, Rampastring.XNAUI.Input.KeyPressEventArgs e)
@@ -679,7 +717,7 @@ namespace DTAClient.DXGUI.Generic
                     iniFile.SetStringValue("Battles", i.ToString(), i.ToString());
                     iniFile.SetStringValue(i.ToString(), "Scenario", Path.GetFileName(file).ToUpper());
                     iniFile.SetStringValue(i.ToString(), "BuildOffAlly", "yes");
-
+                    iniFile.SetBooleanValue(i.ToString(),"other",true);
 
                     iniFile.SetStringValue(i.ToString(), "Mod", mod ? j.ToString() : md != string.Empty ? "YR" : "RA2");
                     iniFile.SetStringValue(i.ToString(), "Description", "第" + Count.ToString() + "关");
@@ -1133,7 +1171,7 @@ namespace DTAClient.DXGUI.Generic
         {
             if (Updater.UpdateMirrors.Count < 1)
                 return;
-
+            innerPanel.UpdateQueryWindow.GetUpdateContentsAsync(Updater.VersionState.ToString(), VersionState.UPTODATE.ToString());
             Updater.CheckForUpdates();
             lblUpdateStatus.Enabled = false;
             lblUpdateStatus.Text = "Checking for " +
@@ -1226,6 +1264,7 @@ namespace DTAClient.DXGUI.Generic
         private void UpdateQueryWindow_UpdateDeclined(object sender, EventArgs e)
         {
             UpdateQueryWindow uqw = (UpdateQueryWindow)sender;
+            
             innerPanel.Hide();
             lblUpdateStatus.Text = "An update is available, click to install.".L10N("UI:Main:UpdateAvailableClickToInstall");
             lblUpdateStatus.Enabled = true;
