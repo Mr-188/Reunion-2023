@@ -42,7 +42,7 @@ namespace DTAConfig.OptionPanels
          //private string baseUrl = "http://ra2wx.online/RU/Components/";
         private string baseUrl = "http://raa2022.top/Components/";
 
-        string componentNamePath = Path.Combine(ProgramConstants.GamePath, "Resources", "components");
+        string componentNamePath = Path.Combine(ProgramConstants.GamePath, "Resources", "Components.ini");
 
         FileIniDataParser iniParser;
         IniData iniData;
@@ -76,6 +76,7 @@ namespace DTAConfig.OptionPanels
             AddChild(CompList);
 
             iniParser = new FileIniDataParser();
+
             iniData = iniParser.ReadFile(componentNamePath);
 
             mainbutton = new XNAClientButton(WindowManager);

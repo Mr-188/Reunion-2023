@@ -9,6 +9,7 @@
       <ExampleClientSettings Include="$(SolutionDir)\DXMainClient\Resources\Settings.ini" />
       <ExampleClientLinuxRun Include="$(SolutionDir)\DXMainClient\Resources\run.sh" />
       <ExampleClientDefinitions Include="$(SolutionDir)\DXMainClient\Resources\ClientDefinitions.ini" />
+      <ExampleRA2MD Include="$(SolutionDir)\DXMainClient\Resources\RA2MD.ini" />
     </ItemGroup>
     <Copy Condition="! Exists('$(OutputPath)\Resources\ClientDefinitions.ini') " SourceFiles="@(ExampleClientResources)" DestinationFolder="$(OutputPath)\Resources\%(RecursiveDir)" />
     <Copy Condition="! Exists('$(OutputPath)\Resources\ClientDefinitions.ini') " SourceFiles="@(ExampleClientMaps)" DestinationFolder="$(OutputPath)\Maps\%(RecursiveDir)" />
@@ -16,6 +17,7 @@
     <Copy Condition="! Exists('$(OutputPath)\Resources\ClientDefinitions.ini') " SourceFiles="@(ExampleClientMix)" DestinationFolder="$(OutputPath)\MIX\%(RecursiveDir)" />
     <Copy Condition="! Exists('$(OutputPath)\Resources\ClientDefinitions.ini') " SourceFiles="@(ExampleClientSettings)" DestinationFolder="$(OutputPath)" />
     <Copy Condition="! Exists('$(OutputPath)\Resources\ClientDefinitions.ini') " SourceFiles="@(ExampleClientLinuxRun)" DestinationFolder="$(OutputPath)" />
+    <Copy Condition="! Exists('$(OutputPath)\Resources\ClientDefinitions.ini') " SourceFiles="@(ExampleRA2MD)" DestinationFolder="$(OutputPath)" />
     <Copy Condition="! Exists('$(OutputPath)\Resources\ClientDefinitions.ini') " SourceFiles="@(ExampleClientDefinitions)" DestinationFolder="$(OutputPath)\Resources" />
   </Target>
 
