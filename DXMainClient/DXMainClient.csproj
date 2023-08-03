@@ -342,6 +342,7 @@
    <ProjectReference Include="..\Localization\Localization.csproj" />
    <ProjectReference Include="..\MonoGame.Extended2\Sources\MonoGame.Extended.VideoPlayback\MonoGame.Extended.VideoPlayback.csproj" />
    <ProjectReference Include="..\MonoGame.Extended2\Sources\MonoGame.Extended2\MonoGame.Extended2.csproj" />
+   <ProjectReference Include="..\ReunionServer\ReunionShareModel\ReunionShareModel.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="bin\Debug\Ares\Resources\" />
