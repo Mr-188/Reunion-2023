@@ -243,6 +243,15 @@ namespace ClientCore
 
         public string[] GetThemeInfoFromIndex(int themeIndex) => clientDefinitionsIni.GetStringValue("Themes", themeIndex.ToString(), ",").Split(',');
 
+        public string ReunionApiHost =>
+            clientDefinitionsIni.GetStringValue(SETTINGS, "ReunionApiHost",
+#if DEBUG
+                "http://localhost:5000/"
+#else
+                "https://raa2022.top/api/"
+#endif
+                );
+
         /// <summary>
         /// Returns the directory path for a theme, or null if the specified
         /// theme name doesn't exist.
@@ -365,7 +374,7 @@ namespace ClientCore
             => clientDefinitionsIni.GetStringValue(SETTINGS, "SupplementalMapFileExtensions", null)?
                 .Split(',', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
 
-        #endregion
+#endregion
 
         public OSVersion GetOperatingSystemVersion()
         {

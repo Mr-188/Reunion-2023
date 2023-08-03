@@ -7,11 +7,13 @@ using ClientCore;
 using ClientGUI;
 using ClientUpdater;
 using DTAClient.Domain;
+using DTAClient.Online;
 using Localization;
 using Microsoft.Xna.Framework;
 using Rampastring.Tools;
 using Rampastring.XNAUI;
 using Rampastring.XNAUI.XNAControls;
+using ReunionShareModel;
 //using SharpDX.DXGI;
 //using EllipticCurve.Utils;
 
@@ -53,7 +55,6 @@ namespace DTAClient.DXGUI.Generic
         private XNADropDown ddGameSpeed;
         private XNALabel lbGameMod;
         private XNADropDown ddGameMod;
-        private CampaignSelectorService campaignSelectorService;
         private XNALabel lbCampaignGood;
         private XNALabel lbCampaignBad;
         private XNAClientButton btnCampaignGood;
@@ -110,9 +111,6 @@ namespace DTAClient.DXGUI.Generic
             lblScreen.Name = "lblScreen";
             lblScreen.Text = "Screen:".L10N("UI:Campaign:Screen");
             lblScreen.ClientRectangle = new Rectangle(10, 35, 0, 0);
-
-            campaignSelectorService = new CampaignSelectorService();
-            campaignSelectorService.ConnectTest();
 
             dddifficulty = new XNADropDown(WindowManager);
             dddifficulty.Name = nameof(dddifficulty);
@@ -350,10 +348,9 @@ namespace DTAClient.DXGUI.Generic
 
         }
 
-        private void BtnCampaignGood_LeftClick(object sender, EventArgs e)
+        private async void BtnCampaignGood_LeftClick(object sender, EventArgs e)
         {
-            if(!campaignSelectorService.error)
-                ChangeMarkAsync(true);
+            await ChangeMarkAsync(true).ConfigureAwait(false);
         }
 
         private async Task ChangeMarkAsync(bool good)
@@ -370,18 +367,16 @@ namespace DTAClient.DXGUI.Generic
                 XNAMessageBox.Show(WindowManager, "信息", "这个战役你已经打了很多分啦！");
             else
             {
-                
-                campaignSelectorService.UpdateTaskRating(missionName, good);
+                await ReunionApi.SendRequest(new SetCampaignScoreRequest(missionName, good)).ConfigureAwait(false);
                 ini.SetIntValue(missionName, "Mark", mark+1);
                 ini.WriteIniFile();
                 updateMark(missionName);
             }
         }
 
-        private void BtnCampaignBad_LeftClickAsync(object sender, EventArgs e)
+        private async void BtnCampaignBad_LeftClickAsync(object sender, EventArgs e)
         {
-            if (!campaignSelectorService.error)
-                ChangeMarkAsync(false);
+            await ChangeMarkAsync(false).ConfigureAwait(false);
         }
 
         protected virtual void DelConf()
@@ -393,10 +388,10 @@ namespace DTAClient.DXGUI.Generic
 
         private async Task updateMark(string name)
         {
-            (int goodCount, int badCount) = await campaignSelectorService.GetTaskRatingsAsync(name);
+            var response = await ReunionApi.SendRequest(new CampaignScoreRequest(name)).ConfigureAwait(false);
 
-            lbCampaignGood.Text = "好评数: " + goodCount.ToString();
-            lbCampaignBad.Text = "差评数: " + badCount.ToString();
+            lbCampaignGood.Text = "好评数: " + (response?.Good ?? 0);
+            lbCampaignBad.Text = "差评数: " + (response?.Bad ?? 0);
         }
         private void DelConf_YesClicked(XNAMessageBox messageBox)
         {
@@ -475,14 +470,11 @@ namespace DTAClient.DXGUI.Generic
 
             if (!mission.other)
             {
-                if (!campaignSelectorService.error)
-                {
-                    updateMark(mission.sectionName);
-                    btnCampaignBad.Visible = true;
-                    btnCampaignGood.Visible = true;
-                    lbCampaignBad.Visible = true;
-                    lbCampaignGood.Visible = true;
-                }
+                await updateMark(mission.sectionName).ConfigureAwait(false);
+                btnCampaignBad.Visible = true;
+                btnCampaignGood.Visible = true;
+                lbCampaignBad.Visible = true;
+                lbCampaignGood.Visible = true;
             }
             else
             {
@@ -492,6 +484,7 @@ namespace DTAClient.DXGUI.Generic
                 lbCampaignGood.Visible = false;
 
             }
+
             ddGameMod.Items.Clear();
 
             foreach (string s in mission.Mod)

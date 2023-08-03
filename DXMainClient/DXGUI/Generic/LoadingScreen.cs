@@ -86,6 +86,11 @@ namespace DTAClient.DXGUI.Generic
                 if (!Directory.Exists(path))
                     path = $"Resources/Wallpaper";
 
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+
                 string[] Wallpaper = Directory.GetFiles(path);
 
                 if (UserINISettings.Instance.Random_wallpaper)
@@ -96,7 +101,7 @@ namespace DTAClient.DXGUI.Generic
                     BackgroundTexture = AssetLoader.LoadTexture(Wallpaper[i]);
 
                 }
-                else
+                else if (Wallpaper.Length > 0)
                 {
                     BackgroundTexture = AssetLoader.LoadTexture(Wallpaper[0]);
                 }

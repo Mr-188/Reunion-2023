@@ -13,7 +13,7 @@
     <InformationalVersion>2.8.0.0</InformationalVersion>
     <AssemblyName>DXMainClient</AssemblyName>
     <RootNamespace>DTAClient</RootNamespace>
-    <ApplicationIcon>bin\Debug\Ares\Resources\clienticon.ico</ApplicationIcon>
+    <ApplicationIcon>clienticon.ico</ApplicationIcon>
     <ApplicationHighDpiMode Condition="'$(Engine)' != 'UniversalGL'">PerMonitorV2</ApplicationHighDpiMode>
     <AssemblyName Condition="'$(Engine)' == 'WindowsDX'">clientdx</AssemblyName>
     <AssemblyName Condition="'$(Engine)' == 'UniversalGL' Or '$(Engine)' == 'WindowsGL'">clientogl</AssemblyName>
@@ -319,7 +319,7 @@
     <None Remove="Resources\**" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="bin\Debug\Ares\Resources\clienticon.ico" />
+    <Content Include="clienticon.ico" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DiscordRichPresence" Version="1.1.3.18" />
@@ -340,14 +340,12 @@
    <ProjectReference Include="..\ClientGUI\ClientGUI.csproj" />
    <ProjectReference Include="..\DTAConfig\DTAConfig.csproj" />
    <ProjectReference Include="..\Localization\Localization.csproj" />
+   <ProjectReference Include="..\MonoGame.Extended2\Sources\MonoGame.Extended.VideoPlayback\MonoGame.Extended.VideoPlayback.csproj" />
+   <ProjectReference Include="..\MonoGame.Extended2\Sources\MonoGame.Extended2\MonoGame.Extended2.csproj" />
+   <ProjectReference Include="..\ReunionServer\ReunionShareModel\ReunionShareModel.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="MonoGame.Extended.VideoPlayback">
-      <HintPath>..\..\..\..\Downloads\Compressed\MonoGame.Extended2-master\Sources\MonoGame.Extended.VideoPlayback\bin\Debug\net6.0\MonoGame.Extended.VideoPlayback.dll</HintPath>
-    </Reference>
-    <Reference Include="MonoGame.Extended2">
-      <HintPath>..\..\..\..\Downloads\Compressed\MonoGame.Extended2-master\Sources\MonoGame.Extended.VideoPlayback\bin\Debug\net6.0\MonoGame.Extended2.dll</HintPath>
-    </Reference>
+    <Folder Include="bin\Debug\Ares\Resources\" />
   </ItemGroup>
 
   <Import Project="$(MSBuildThisFileDirectory)..\build\WinForms.props" />
