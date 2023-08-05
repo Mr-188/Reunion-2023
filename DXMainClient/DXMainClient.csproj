@@ -17,7 +17,6 @@
     <ApplicationHighDpiMode Condition="'$(Engine)' != 'UniversalGL'">PerMonitorV2</ApplicationHighDpiMode>
     <AssemblyName Condition="'$(Engine)' == 'WindowsDX'">clientdx</AssemblyName>
     <AssemblyName Condition="'$(Engine)' == 'UniversalGL' Or '$(Engine)' == 'WindowsGL'">clientogl</AssemblyName>
-    <AssemblyName Condition="'$(Engine)' == 'WindowsXNA'">clientxna</AssemblyName>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <UseAppHost>false</UseAppHost>
@@ -34,9 +33,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AresWindowsGLDebug|AnyCPU'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AresWindowsXNADebug|AnyCPU'">
-    <DebugType>portable</DebugType>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AresWindowsDXRelease|AnyCPU'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
@@ -44,9 +40,6 @@
     <DebugType>portable</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AresWindowsGLRelease|AnyCPU'">
-    <DebugType>portable</DebugType>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AresWindowsXNARelease|AnyCPU'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TSWindowsDXDebug|AnyCPU'">
@@ -58,9 +51,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TSWindowsGLDebug|AnyCPU'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TSWindowsXNADebug|AnyCPU'">
-    <DebugType>portable</DebugType>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TSWindowsDXRelease|AnyCPU'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
@@ -68,9 +58,6 @@
     <DebugType>portable</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TSWindowsGLRelease|AnyCPU'">
-    <DebugType>portable</DebugType>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TSWindowsXNARelease|AnyCPU'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='YRWindowsDXDebug|AnyCPU'">
@@ -82,9 +69,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='YRWindowsGLDebug|AnyCPU'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='YRWindowsXNADebug|AnyCPU'">
-    <DebugType>portable</DebugType>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='YRWindowsDXRelease|AnyCPU'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
@@ -92,9 +76,6 @@
     <DebugType>portable</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='YRWindowsGLRelease|AnyCPU'">
-    <DebugType>portable</DebugType>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='YRWindowsXNARelease|AnyCPU'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AresWindowsDXDebug|x64'">
@@ -106,9 +87,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AresWindowsGLDebug|x64'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AresWindowsXNADebug|x64'">
-    <DebugType>portable</DebugType>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AresWindowsDXRelease|x64'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
@@ -116,9 +94,6 @@
     <DebugType>portable</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AresWindowsGLRelease|x64'">
-    <DebugType>portable</DebugType>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AresWindowsXNARelease|x64'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TSWindowsDXDebug|x64'">
@@ -130,9 +105,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TSWindowsGLDebug|x64'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TSWindowsXNADebug|x64'">
-    <DebugType>portable</DebugType>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TSWindowsDXRelease|x64'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
@@ -140,9 +112,6 @@
     <DebugType>portable</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TSWindowsGLRelease|x64'">
-    <DebugType>portable</DebugType>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TSWindowsXNARelease|x64'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='YRWindowsDXDebug|x64'">
@@ -154,9 +123,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='YRWindowsGLDebug|x64'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='YRWindowsXNADebug|x64'">
-    <DebugType>portable</DebugType>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='YRWindowsDXRelease|x64'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
@@ -164,9 +130,6 @@
     <DebugType>portable</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='YRWindowsGLRelease|x64'">
-    <DebugType>portable</DebugType>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='YRWindowsXNARelease|x64'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AresWindowsDXDebug|ARM64'">
@@ -178,9 +141,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AresWindowsGLDebug|ARM64'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AresWindowsXNADebug|ARM64'">
-    <DebugType>portable</DebugType>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AresWindowsDXRelease|ARM64'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
@@ -188,9 +148,6 @@
     <DebugType>portable</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AresWindowsGLRelease|ARM64'">
-    <DebugType>portable</DebugType>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AresWindowsXNARelease|ARM64'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TSWindowsDXDebug|ARM64'">
@@ -202,9 +159,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TSWindowsGLDebug|ARM64'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TSWindowsXNADebug|ARM64'">
-    <DebugType>portable</DebugType>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TSWindowsDXRelease|ARM64'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
@@ -212,9 +166,6 @@
     <DebugType>portable</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TSWindowsGLRelease|ARM64'">
-    <DebugType>portable</DebugType>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TSWindowsXNARelease|ARM64'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='YRWindowsDXDebug|ARM64'">
@@ -226,9 +177,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='YRWindowsGLDebug|ARM64'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='YRWindowsXNADebug|ARM64'">
-    <DebugType>portable</DebugType>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='YRWindowsDXRelease|ARM64'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
@@ -236,9 +184,6 @@
     <DebugType>portable</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='YRWindowsGLRelease|ARM64'">
-    <DebugType>portable</DebugType>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='YRWindowsXNARelease|ARM64'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AresWindowsDXDebug|x86'">
@@ -250,9 +195,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AresWindowsGLDebug|x86'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AresWindowsXNADebug|x86'">
-    <DebugType>portable</DebugType>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AresWindowsDXRelease|x86'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
@@ -260,9 +202,6 @@
     <DebugType>portable</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AresWindowsGLRelease|x86'">
-    <DebugType>portable</DebugType>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AresWindowsXNARelease|x86'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TSWindowsDXDebug|x86'">
@@ -274,9 +213,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TSWindowsGLDebug|x86'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TSWindowsXNADebug|x86'">
-    <DebugType>portable</DebugType>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TSWindowsDXRelease|x86'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
@@ -284,9 +220,6 @@
     <DebugType>portable</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TSWindowsGLRelease|x86'">
-    <DebugType>portable</DebugType>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TSWindowsXNARelease|x86'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='YRWindowsDXDebug|x86'">
@@ -298,9 +231,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='YRWindowsGLDebug|x86'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='YRWindowsXNADebug|x86'">
-    <DebugType>portable</DebugType>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='YRWindowsDXRelease|x86'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
@@ -308,9 +238,6 @@
     <DebugType>portable</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='YRWindowsGLRelease|x86'">
-    <DebugType>portable</DebugType>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='YRWindowsXNARelease|x86'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
   <ItemGroup>

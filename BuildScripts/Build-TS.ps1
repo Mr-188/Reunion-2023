@@ -7,7 +7,7 @@ param($Configuration = "Release")
 
 Build-Project $Configuration TS UniversalGL net7.0
 if ($IsWindows) {
-  @('WindowsDX', 'WindowsGL', 'WindowsXNA') | ForEach-Object {
+  @('WindowsDX', 'WindowsGL') | ForEach-Object {
     Build-Project $Configuration TS $_ net7.0-windows
   }
 }
