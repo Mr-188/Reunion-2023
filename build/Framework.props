@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <Engines>WindowsDX;WindowsGL;UniversalGL;WindowsXNA</Engines>
+    <Engines>WindowsDX;WindowsGL;UniversalGL</Engines>
     <Games>Ares;TS;YR</Games>
     <OutputPath>$(BaseOutputPath)bin\$(Configuration)\$(Game)\$(Engine)\</OutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)obj\$(Configuration)\$(Game)\$(Engine)\</IntermediateOutputPath>
@@ -14,7 +14,6 @@
     <DefineConstants Condition="'$(Engine)' == 'WindowsGL'">$(DefineConstants);GL;WINFORMS;ISWINDOWS</DefineConstants>
     <DefineConstants Condition="'$(Engine)' == 'UniversalGL'">$(DefineConstants);GL</DefineConstants>
     <DefineConstants Condition="'$(Engine)' == 'UniversalGL' And $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">$(DefineConstants);ISWINDOWS</DefineConstants>
-    <DefineConstants Condition="'$(Engine)' == 'WindowsXNA'">$(DefineConstants);XNA;WINFORMS;ISWINDOWS</DefineConstants>
 
     <!-- Games-->
     <DefineConstants Condition="'$(Game)' == 'Ares'">$(DefineConstants);ARES</DefineConstants>
