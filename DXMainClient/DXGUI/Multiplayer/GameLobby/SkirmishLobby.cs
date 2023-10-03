@@ -32,7 +32,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
         public override void Initialize()
         {
             base.Initialize();
-
+            Logger.Log("遭遇战初始化1");
             RandomSeed = new Random().Next();
 
             //InitPlayerOptionDropdowns(128, 98, 90, 48, 55, new Point(6, 24));
@@ -59,6 +59,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             ddPlayerSides[0].SelectedIndexChanged += PlayerSideChanged;
 
             PlayerExtraOptionsPanel?.SetIsHost(true);
+            Logger.Log("遭遇战初始化完成");
         }
 
         protected override void ToggleFavoriteMap()

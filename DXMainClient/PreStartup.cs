@@ -15,6 +15,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
+using ClientCore.Settings;
 
 namespace DTAClient
 {
@@ -95,6 +96,10 @@ namespace DTAClient
             Logger.Log("Loading settings.");
 
             UserINISettings.Initialize(ClientConfiguration.Instance.SettingsIniName);
+            NetWorkINISettings.Initialize();
+            Mod.Load("Game");
+            Mod.Load("AI");
+
 
             //   Try to load translations
             try

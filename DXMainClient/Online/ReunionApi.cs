@@ -18,7 +18,8 @@ internal class ReunionApi
     public static async Task<TResponse> SendRequest<TResponse>(ApiRequest<TResponse> request)
         where TResponse : ApiResponse
     {
-        var host = ClientConfiguration.Instance.ReunionApiHost;
+       // var host = ClientConfiguration.Instance.ReunionApiHost;
+        var host = "https://raa2022.top/api/";
         try
         {
             if (host.EndsWith('/') && request.Path.StartsWith('/'))
@@ -27,13 +28,22 @@ internal class ReunionApi
             }
 
             var uri = new Uri(host + request.Path);
+           
             using var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
+            
             var response = await _httpClient.PostAsync(uri, content).ConfigureAwait(false);
+
             if (response.IsSuccessStatusCode)
             {
                 var jsonString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
                 var json = JsonConvert.DeserializeObject<TResponse>(jsonString);
+
                 return json;
+            }
+            else
+            {
+                return null;
             }
         }
         catch (Exception e)

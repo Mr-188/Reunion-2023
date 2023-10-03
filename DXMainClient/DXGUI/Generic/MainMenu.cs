@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ClientCore;
+using ClientCore.Settings;
 using ClientGUI;
 using ClientUpdater;
 using DTAClient.Domain;
@@ -26,6 +27,7 @@ using Newtonsoft.Json.Linq;
 using Rampastring.Tools;
 using Rampastring.XNAUI;
 using Rampastring.XNAUI.XNAControls;
+using SendGrid.Helpers.Mail;
 //using System.Windows.Forms;
 //using Accord.Statistics.Kernels;
 
@@ -38,7 +40,7 @@ namespace DTAClient.DXGUI.Generic
         {
             //WindowManager windowManager
         }
-
+        
         private XNALabel firstLabel; //引导语句
 
         public override void Initialize()
@@ -187,7 +189,7 @@ namespace DTAClient.DXGUI.Generic
         /// </summary>
         public override void Initialize()
         {
-
+            Logger.Log("主菜单初始化");
             topBar.SetSecondarySwitch(cncnetLobby);
             GameProcessLogic.GameProcessExited += SharedUILogic_GameProcessExited;
 
@@ -303,13 +305,16 @@ namespace DTAClient.DXGUI.Generic
             lblannouncement.Name = nameof(lblannouncement);
             lblannouncement.ClientRectangle = new Rectangle(880,135,155,120);
             lblannouncement.TextColor = Color.White;
-            UpdateAnnouncementTextAsync();
-           // lblannouncement.Text = "111111111";
 
             lblUpdateStatus = new XNALinkLabel(WindowManager);
             lblUpdateStatus.Name = nameof(lblUpdateStatus);
             lblUpdateStatus.LeftClick += LblUpdateStatus_LeftClick;
             lblUpdateStatus.ClientRectangle = new Rectangle(0, 0, UIDesignConstants.BUTTON_WIDTH_160, 20);
+
+            //lblannouncement.Text = "无法获取公告内容。";
+
+            NetWorkINISettings.DownloadCompleted += UseDownloadedData;
+
 
 
             AddChild(lblannouncement);
@@ -389,40 +394,41 @@ namespace DTAClient.DXGUI.Generic
             Updater.Restart += Updater_Restart;
 
             SetButtonHotkeys(true);
-
-
+            Logger.Log("主菜单初始化完毕");
         }
-
-        private async Task UpdateAnnouncementTextAsync()
+      
+        public void UseDownloadedData(object sender, EventArgs e)
         {
-            try
-            {
-                // 设置要请求的 URL
-                string url = "https://raa2022.top/announcement.txt";
-
-                // 忽略 SSL 证书验证
-                HttpClientHandler httpClientHandler = new HttpClientHandler();
-                httpClientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
-
-                // 使用 HttpClient 发起 GET 请求获取文本内容
-                using (HttpClient httpClient = new HttpClient(httpClientHandler))
-                {
-                    HttpResponseMessage response = await httpClient.GetAsync(url);
-                    response.EnsureSuccessStatusCode();
-                    string content = await response.Content.ReadAsStringAsync();
-
-                    // 将获取的文本内容设置给 lblannouncement 控件的 Text 属性
-                    lblannouncement.Text = content;
-                }
-            }
-            catch (HttpRequestException ex)
-            {
-                // 请求失败时的异常处理
-                Console.WriteLine("Error: " + ex.Message);
-                lblannouncement.Text = "无法获取公告内容。";
-            }
+            Console.WriteLine("触发下载完成");
+            lblannouncement.Text = GetContent(NetWorkINISettings.Instance.Announcement);
         }
 
+        private string GetContent(string content)
+        {
+            string s1;
+            string description = string.Empty;
+
+            foreach (string s in content.Split('@'))
+            {
+                s1 = s + Environment.NewLine;
+                if (s1.Length > 11)
+                {
+
+                    s1 = InsertFormat(s1, 11, Environment.NewLine);
+                }
+
+                description += s1;
+            }
+
+            return description;
+        }
+
+        private string InsertFormat(string input, int interval, string value)
+        {
+            for (int i = interval; i < input.Length; i += interval + 1)
+                input = input.Insert(i, value);
+            return input;
+        }
         private void Keyboard_OnKeyPressed(object sender, Rampastring.XNAUI.Input.KeyPressEventArgs e)
         {
             var keyPressed = e.PressedKey;
@@ -555,7 +561,8 @@ namespace DTAClient.DXGUI.Generic
                 "海豚是盟军训练的，而乌贼是苏军“心灵控制”的",
                 "在某些需要工程师占领的任务中，也可以使用间谍进入来完成任务",
                 "在游戏中躲在高架桥下可以躲避核弹轰炸。",
-                "海豚也可以解除蜘蛛。"
+                "海豚也可以解除蜘蛛。",
+                "飞机有可能扔出两发子弹"
             };
 
             XNAMessageBox.Show(WindowManager, "你知道吗", strings[new Random().Next(strings.Count)]);
@@ -1010,6 +1017,7 @@ namespace DTAClient.DXGUI.Generic
         /// </summary>
         public void PostInit()
         {
+            
             DarkeningPanel.AddAndInitializeWithControl(WindowManager, skirmishLobby);
             DarkeningPanel.AddAndInitializeWithControl(WindowManager, cnCNetGameLoadingLobby);
             DarkeningPanel.AddAndInitializeWithControl(WindowManager, cnCNetGameLobby);
@@ -1022,7 +1030,6 @@ namespace DTAClient.DXGUI.Generic
             topBar.SetTertiarySwitch(privateMessagingWindow);
             topBar.SetOptionsWindow(optionsWindow);
             WindowManager.AddAndInitializeControl(gameInProgressWindow);
-
             skirmishLobby.Disable();
             cncnetLobby.Disable();
             cnCNetGameLobby.Disable();
@@ -1039,14 +1046,14 @@ namespace DTAClient.DXGUI.Generic
             themeSong = AssetLoader.LoadSong(ClientConfiguration.Instance.MainMenuMusicName);
 
             PlayMusic();
-
             if (!ClientConfiguration.Instance.ModMode)
             {
-                if (Updater.UpdateMirrors.Count < 1)
+                if (NetWorkINISettings.Instance==null|| Updater.UpdateMirrors ==null || Updater.UpdateMirrors.Count < 1)
                 {
                     lblUpdateStatus.Text = "No update download mirrors available.".L10N("UI:Main:NoUpdateMirrorsAvailable");
                     lblUpdateStatus.DrawUnderline = false;
                 }
+               
                 else if (UserINISettings.Instance.CheckForUpdates)
                 {
                     CheckForUpdates();
@@ -1169,7 +1176,7 @@ namespace DTAClient.DXGUI.Generic
         /// </summary>
         private void CheckForUpdates()
         {
-            if (Updater.UpdateMirrors.Count < 1)
+            if (Updater.UpdateMirrors==null||Updater.UpdateMirrors.Count < 1)
                 return;
             innerPanel.UpdateQueryWindow.GetUpdateContentsAsync(Updater.VersionState.ToString(), VersionState.UPTODATE.ToString());
             Updater.CheckForUpdates();

@@ -610,7 +610,8 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             {
                 HideMapList();
                 BtnSaveLoadGameOptions?.Disable();
-
+                ddPeople.Visible = false;
+                lblscreen.Visible = false;
                 btnLockGame.Enabled = false;
                 btnLockGame.Visible = false;
                 ReadINIForControl(chkAutoReady);

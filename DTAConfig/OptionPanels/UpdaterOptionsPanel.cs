@@ -1,5 +1,6 @@
 ﻿using System;
 using ClientCore;
+using ClientCore.Settings;
 using ClientGUI;
 using ClientUpdater;
 using Localization;
@@ -134,16 +135,21 @@ namespace DTAConfig.OptionPanels
         {
             base.Load();
 
+            
             lbUpdateServerList.Clear();
 
-            foreach (var updaterMirror in Updater.UpdateMirrors)
+            if (NetWorkINISettings.Instance != null)
             {
-                lbUpdateServerList.AddItem(updaterMirror.Name +
-                    (!string.IsNullOrEmpty(updaterMirror.Location) ?
-                    $" ({updaterMirror.Location})" : string.Empty));
-            }
 
-            chkAutoCheck.Checked = IniSettings.CheckForUpdates;
+                foreach (var updaterMirror in Updater.UpdateMirrors)
+                {
+                    lbUpdateServerList.AddItem(updaterMirror.Name +
+                        (!string.IsNullOrEmpty(updaterMirror.Location) ?
+                        $" ({updaterMirror.Location})" : string.Empty));
+                }
+
+                chkAutoCheck.Checked = IniSettings.CheckForUpdates;
+            }
         }
 
         public override bool Save()
@@ -155,13 +161,14 @@ namespace DTAConfig.OptionPanels
             IniSettings.SettingsIni.EraseSectionKeys("DownloadMirrors");
 
             int id = 0;
-
-            foreach (UpdateMirror um in Updater.UpdateMirrors)
+            if (NetWorkINISettings.Instance != null)
             {
-                IniSettings.SettingsIni.SetStringValue("DownloadMirrors", id.ToString(), um.Name);
-                id++;
+                foreach (UpdateMirror um in Updater.UpdateMirrors)
+                {
+                    IniSettings.SettingsIni.SetStringValue("DownloadMirrors", id.ToString(), um.Name);
+                    id++;
+                }
             }
-
             return restartRequired;
         }
 

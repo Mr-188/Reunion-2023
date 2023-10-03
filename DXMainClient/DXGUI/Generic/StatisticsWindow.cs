@@ -111,6 +111,7 @@ namespace DTAClient.DXGUI.Generic
 
         public override void Initialize()
         {
+            Logger.Log("战绩初始化");
             sm = StatisticsManager.Instance;
 
             string strLblEconomy = "ECONOMY".L10N("UI:Main:StatisticEconomy");
@@ -646,6 +647,8 @@ namespace DTAClient.DXGUI.Generic
             //冰天雪地里有多少棵树我都知道
 
             Keyboard.OnKeyPressed += Keyboard_OnKeyPressed;
+
+            Logger.Log("战绩加载完毕");
         }
 
         private void Keyboard_OnKeyPressed(object sender, Rampastring.XNAUI.Input.KeyPressEventArgs e)

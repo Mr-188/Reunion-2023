@@ -55,6 +55,7 @@
     <PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\cncnet-client-updater\ClientUpdater\ClientUpdater.csproj" />
     <ProjectReference Include="..\Localization\Localization.csproj" />
   </ItemGroup>
 </Project>

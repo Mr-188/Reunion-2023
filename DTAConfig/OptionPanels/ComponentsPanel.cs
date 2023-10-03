@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using ClientCore;
+using ClientCore.Settings;
 using ClientGUI;
 using ClientUpdater;
 using HtmlAgilityPack;
@@ -38,11 +39,10 @@ namespace DTAConfig.OptionPanels
 
         bool downloadCancelled = false;
 
-        //  private string baseUrl = "http://127.0.0.1:8080/Components/";
-         //private string baseUrl = "http://ra2wx.online/RU/Components/";
-        private string baseUrl = "http://raa2022.top/Components/";
 
-        string componentNamePath = Path.Combine(ProgramConstants.GamePath, "Resources", "Components.ini");
+        private string baseUrl;
+
+        string componentNamePath = Path.Combine(ProgramConstants.GamePath, "Resources", "Components");
 
         FileIniDataParser iniParser;
         IniData iniData;
@@ -57,8 +57,6 @@ namespace DTAConfig.OptionPanels
         {
             base.Initialize();
 
-            //Logger.Log(tools.GetDirectUrl("https://mr-liu.lanzoum.com/iqHTj0prhdoh"));
-
             Name = "ComponentsPanel";
 
             CompList = new XNAMultiColumnListBox(WindowManager);
@@ -72,24 +70,34 @@ namespace DTAConfig.OptionPanels
             CompList.AddColumn("组件", CompList.Width - 100);
             CompList.AddColumn("状态", CompList.Width - 50);
 
-           
             AddChild(CompList);
 
             iniParser = new FileIniDataParser();
 
-            iniData = iniParser.ReadFile(componentNamePath);
+            if (NetWorkINISettings.Instance != null)
+            {
 
-            mainbutton = new XNAClientButton(WindowManager);
-            mainbutton.Name = nameof(mainbutton);
-            mainbutton.ClientRectangle = new Rectangle(Width/2 -60,Height - 40 , UIDesignConstants.BUTTON_WIDTH_133, UIDesignConstants.BUTTON_HEIGHT);
-            mainbutton.LeftClick += Btn_LeftClick;
-            AddChild(mainbutton);
+                try
+                {
+                    iniData = iniParser.ReadFile(componentNamePath);
+                    baseUrl = NetWorkINISettings.Instance.ComponentsMirrors;
 
-            GetComponentsDataAsync();
-            
-            if(CompList.ItemCount > 0)
-                CompList.SelectedIndex = 1;
+                    mainbutton = new XNAClientButton(WindowManager);
+                    mainbutton.Name = nameof(mainbutton);
+                    mainbutton.ClientRectangle = new Rectangle(Width / 2 - 60, Height - 40, UIDesignConstants.BUTTON_WIDTH_133, UIDesignConstants.BUTTON_HEIGHT);
+                    mainbutton.LeftClick += Btn_LeftClick;
+                    AddChild(mainbutton);
 
+                    GetComponentsDataAsync();
+
+                    if (CompList.ItemCount > 0)
+                        CompList.SelectedIndex = 1;
+                }
+                catch (Exception ex) 
+                {
+                    Logger.Log("组件初始化出错：" + ex);
+                }
+            }
         }
 
         public static bool AreKeyDataCollectionsEqual(KeyDataCollection collection1, KeyDataCollection collection2)
@@ -109,6 +117,8 @@ namespace DTAConfig.OptionPanels
             try
             {
                 var content = await client.GetStringAsync(baseUrl + "Components");
+
+               // Logger.Log(content);
 
                 Encoding fileEncoding = Encoding.GetEncoding("UTF-8");
                 // 将内容写入临时文件
@@ -205,7 +215,9 @@ namespace DTAConfig.OptionPanels
 
         private void CompList_SelectedChanged(object sender, EventArgs e)
         {
-         
+            if (CompList.SelectedIndex < 0 || CompList.SelectedIndex > CompList.ItemCount)
+                return;
+
             XNAListBoxItem s = CompList.GetItem(1, CompList.SelectedIndex);
             if (progressBar != null)
             {
@@ -492,7 +504,7 @@ namespace DTAConfig.OptionPanels
             iniData.Sections.RemoveSection(button.SectionName);
 
             mainbutton.Text = "安装";
-                CompList.GetItem(1, buttons.FindIndex(s => s ==button)).Text = "未安装";
+            CompList.GetItem(1, buttons.FindIndex(s => s == button)).Text = "未安装";
 
             }
             catch

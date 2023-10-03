@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Net;
+using Rampastring.Tools;
 #if WINFORMS
 using System.Runtime.InteropServices;
 #endif
@@ -67,6 +68,8 @@ namespace DTAClient.DXGUI.Generic
 
         public override void Initialize()
         {
+
+            Logger.Log("Update加载");
             Name = "UpdateWindow";
             ClientRectangle = new Rectangle(0, 0, 446, 270);
             BackgroundTexture = AssetLoader.LoadTexture("updaterbg.png");
@@ -150,6 +153,7 @@ namespace DTAClient.DXGUI.Generic
 
             tbp = new TaskbarProgress();
 #endif
+            Logger.Log("Updater加载完毕");
         }
 
       

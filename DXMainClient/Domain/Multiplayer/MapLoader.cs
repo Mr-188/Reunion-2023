@@ -52,12 +52,12 @@ namespace DTAClient.Domain.Multiplayer
         /// <summary>
         /// Loads multiplayer map info asynchonously.
         /// </summary>
-        public async Task LoadMapsAsync()
-        {
-            Task.Run(LoadMaps);
-            if(UserINISettings.Instance.video_wallpaper)
-                await Task.Delay(5000);
-        }
+        public Task LoadMapsAsync() => Task.Run(LoadMaps);
+        //{
+        //    Task.Run(LoadMaps);
+        //    //if(UserINISettings.Instance.video_wallpaper)
+        //    //    await Task.Delay(5000);
+        //}
 
         /// <summary>
         /// Load maps based on INI info as well as those in the custom maps directory.

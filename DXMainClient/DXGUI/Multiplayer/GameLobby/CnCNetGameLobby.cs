@@ -176,7 +176,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             btnClosePass.Text = "解除密码";
             btnClosePass.ClientRectangle = new Rectangle(btnChangeTunnel.X - 150, btnChangeTunnel.Y, btnChangeTunnel.Width, btnChangeTunnel.Height);
             btnClosePass.LeftClick += BtnClosePass_LeftClick;
-
+            btnClosePass.Visible = false;
 
             gameBroadcastTimer = new XNATimerControl(WindowManager);
             gameBroadcastTimer.AutoReset = true;
@@ -210,7 +210,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
         private void BtnClosePass_LeftClick(object sender, EventArgs e)
         {
             isCustomPassword = false;
-
+            Console.WriteLine(password);
             connectionManager.FindChannel(channel.ChannelName).Password = password;
             btnClosePass.Visible = false;
             AddNotice("房主已解除房间密码");
@@ -230,7 +230,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
         private void GameBroadcastTimer_TimeElapsed(object sender, EventArgs e) => BroadcastGame();
 
         public void SetUp(Channel channel, bool isHost, int playerLimit,
-            CnCNetTunnel tunnel, string hostName, bool isCustomPassword, string password)
+            CnCNetTunnel tunnel, string hostName, bool isCustomPassword)
         {
             this.channel = channel;
             channel.MessageAdded += Channel_MessageAdded;
@@ -245,7 +245,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             this.hostName = hostName;
             this.playerLimit = playerLimit;
             this.isCustomPassword = isCustomPassword;
-            this.password = password;
+          //  this.password = password;
 
             if (isHost)
             {

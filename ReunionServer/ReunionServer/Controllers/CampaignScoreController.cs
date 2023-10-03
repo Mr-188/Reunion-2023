@@ -42,6 +42,7 @@ public class CampaignScoreController : ApiControllerBase
     [HttpPost(RequestPaths.SetCampaignScore)]
     public async Task SetCampaignScore(SetCampaignScoreRequest request)
     {
+        Console.WriteLine("触发");
         var score = await _dataContext.CampaignSelectorMarks.FirstOrDefaultAsync(m => m.Usname == request.Name);
         if (score == null)
         {
@@ -60,7 +61,7 @@ public class CampaignScoreController : ApiControllerBase
         {
             score.Bad++;
         }
-
+        Console.WriteLine("初始");
         await _dataContext.SaveChangesAsync();
     }
 }

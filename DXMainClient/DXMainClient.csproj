@@ -338,6 +338,7 @@
   <ItemGroup>
    <ProjectReference Include="..\ClientCore\ClientCore.csproj" />
    <ProjectReference Include="..\ClientGUI\ClientGUI.csproj" />
+   <ProjectReference Include="..\cncnet-client-updater\ClientUpdater\ClientUpdater.csproj" />
    <ProjectReference Include="..\DTAConfig\DTAConfig.csproj" />
    <ProjectReference Include="..\Localization\Localization.csproj" />
    <ProjectReference Include="..\MonoGame.Extended2\Sources\MonoGame.Extended.VideoPlayback\MonoGame.Extended.VideoPlayback.csproj" />

@@ -190,6 +190,7 @@ namespace DTAClient.DXGUI
             ls.ClientRectangle = new Rectangle((wm.RenderResolutionX - ls.Width) / 2,
                (wm.RenderResolutionY - ls.Height) / 2, ls.Width, ls.Height);
 
+            Logger.Log("gameclass初始化完毕");
         }
 
 

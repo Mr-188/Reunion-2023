@@ -358,7 +358,7 @@ namespace DTAClient.DXGUI.Generic
             
             string missionName = Missions[lbCampaignList.SelectedIndex].sectionName;
 
-            IniFile ini = new IniFile(ProgramConstants.GamePath+"Client/Campaign.ini");
+            IniFile ini = new IniFile(ProgramConstants.GamePath + "Client/Campaign.ini");
             if (!ini.SectionExists(missionName))
                 ini.AddSection(missionName);
             
@@ -367,10 +367,15 @@ namespace DTAClient.DXGUI.Generic
                 XNAMessageBox.Show(WindowManager, "信息", "这个战役你已经打了很多分啦！");
             else
             {
-                await ReunionApi.SendRequest(new SetCampaignScoreRequest(missionName, good)).ConfigureAwait(false);
-                ini.SetIntValue(missionName, "Mark", mark+1);
-                ini.WriteIniFile();
-                updateMark(missionName);
+
+                if (await ReunionApi.SendRequest(new SetCampaignScoreRequest(missionName, good)).ConfigureAwait(false) != null)
+                {
+                   // await ReunionApi.SendRequest(new SetCampaignScoreRequest(missionName, good)).ConfigureAwait(false);
+                    updateMark(missionName);
+                    ini.SetIntValue(missionName, "Mark", mark + 1);
+                    ini.WriteIniFile();
+                }
+              
             }
         }
 
@@ -395,14 +400,7 @@ namespace DTAClient.DXGUI.Generic
         }
         private void DelConf_YesClicked(XNAMessageBox messageBox)
         {
-            ////表层删除
-            //_ = lbCampaignList.Items.Remove(lbCampaignList.SelectedItem);
-
-            //Console.WriteLine(lbCampaignList.SelectedItem.Tag);
-            //lbCampaignList.Items.RemoveAll(i => (string)i.Tag == Missions[lbCampaignList.SelectedIndex].Attached);
-
-            //底层删除
-            //  Console.WriteLine(lbCampaignList.SelectedItem.Tag);
+       
             string path = @"INI/";
 
             var files = Directory.GetFiles(path, "Battle*.ini");
@@ -413,9 +411,15 @@ namespace DTAClient.DXGUI.Generic
                 if (iniFile.KeyExists("Battles", (string)lbCampaignList.SelectedItem.Tag))
                 {
                     int index = file.IndexOf("Battle", StringComparison.OrdinalIgnoreCase);
-                    Console.WriteLine(index);
+                   // Console.WriteLine(index);
                     File.Delete(file);
-                    Directory.Delete($"{ProgramConstants.GamePath}INI\\GameOptions\\Game\\{file.Substring(index)}");
+                    try
+                    {
+                        Directory.Delete($"{ProgramConstants.GamePath}INI\\GameOptions\\Game\\{file.Substring(index)}");
+                    }
+                    catch {
+                        return;
+                    }
                 }
                 // iniFile.WriteIniFile();
             }
@@ -468,22 +472,6 @@ namespace DTAClient.DXGUI.Generic
 
             Mission mission = Missions[lbCampaignList.SelectedIndex];
 
-            if (!mission.other)
-            {
-                await updateMark(mission.sectionName).ConfigureAwait(false);
-                btnCampaignBad.Visible = true;
-                btnCampaignGood.Visible = true;
-                lbCampaignBad.Visible = true;
-                lbCampaignGood.Visible = true;
-            }
-            else
-            {
-                btnCampaignBad.Visible = false;
-                btnCampaignGood.Visible = false;
-                lbCampaignBad.Visible = false;
-                lbCampaignGood.Visible = false;
-
-            }
 
             ddGameMod.Items.Clear();
 
@@ -534,6 +522,24 @@ namespace DTAClient.DXGUI.Generic
             }
 
             btnLaunch.AllowClick = true;
+
+
+            if (!mission.other)
+            {
+                await updateMark(mission.sectionName).ConfigureAwait(false);
+                btnCampaignBad.Visible = true;
+                btnCampaignGood.Visible = true;
+                lbCampaignBad.Visible = true;
+                lbCampaignGood.Visible = true;
+            }
+            else
+            {
+                btnCampaignBad.Visible = false;
+                btnCampaignGood.Visible = false;
+                lbCampaignBad.Visible = false;
+                lbCampaignGood.Visible = false;
+
+            }
 
         }
 
@@ -672,7 +678,7 @@ namespace DTAClient.DXGUI.Generic
                     {
                         try
                         {
-                            Console.WriteLine("44444");
+                            
                             DelFile(GetDeleteFile("INI/GameOptions/Game/" + oldMain));
                         }
                         catch (Exception e)

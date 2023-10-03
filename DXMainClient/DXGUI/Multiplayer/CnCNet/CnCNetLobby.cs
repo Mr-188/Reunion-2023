@@ -897,7 +897,7 @@ namespace DTAClient.DXGUI.Multiplayer.CnCNet
             }
             else
             {
-                gameLobby.SetUp(gameChannel, false, hg.MaxPlayers, hg.TunnelServer, hg.HostName, hg.Passworded, string.Empty);
+                gameLobby.SetUp(gameChannel, false, hg.MaxPlayers, hg.TunnelServer, hg.HostName, hg.Passworded);
                 gameChannel.UserAdded += GameChannel_UserAdded;
                 gameChannel.InvalidPasswordEntered += GameChannel_InvalidPasswordEntered_NewGame;
                 gameChannel.InviteOnlyErrorOnJoin += GameChannel_InviteOnlyErrorOnJoin;
@@ -1008,13 +1008,11 @@ namespace DTAClient.DXGUI.Multiplayer.CnCNet
                 isCustomPassword = false;
             }
             //isCustomPassword = false;
-            Channel gameChannel = connectionManager.CreateChannel(e.GameRoomName, channelName, false, true, Rampastring.Tools.Utilities.CalculateSHA1ForString(
-                       channelName + e.GameRoomName).Substring(0, 10));
+            Channel gameChannel = connectionManager.CreateChannel(e.GameRoomName, channelName, false, true, password);
 
             connectionManager.AddChannel(gameChannel);
 
-            gameLobby.SetUp(gameChannel, true, e.MaxPlayers, e.Tunnel, ProgramConstants.PLAYERNAME, isCustomPassword, Rampastring.Tools.Utilities.CalculateSHA1ForString(
-                    channelName + e.GameRoomName).Substring(0, 10));
+            gameLobby.SetUp(gameChannel, true, e.MaxPlayers, e.Tunnel, ProgramConstants.PLAYERNAME, isCustomPassword);
             gameChannel.UserAdded += GameChannel_UserAdded;
             //gameChannel.MessageAdded += GameChannel_MessageAdded;
             connectionManager.SendCustomMessage(new QueuedMessage("JOIN " + channelName + " " + password,

@@ -205,7 +205,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
         public override void Initialize()
         {
 
-
+         
             Name = _iniSectionName;
             //if (WindowManager.RenderResolutionY < 800)
             //    ClientRectangle = new Rectangle(0, 0, WindowManager.RenderResolutionX, WindowManager.RenderResolutionY);
@@ -226,10 +226,10 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             MPColors = MultiplayerColor.LoadColors();
 
             GameOptionsIni = new IniFile(SafePath.CombineFilePath(ProgramConstants.GetBaseResourcePath(), "GameOptions.ini"));
-
-            loadMod_AI("Game");
-            loadMod_AI("AI");
-
+            
+            Mod.WriteMod_AI("Game");
+            Mod.WriteMod_AI("AI");
+           
             base.Initialize();
 
             PlayerOptionsPanel = FindChild<XNAPanel>(nameof(PlayerOptionsPanel));
@@ -244,7 +244,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
 
             MapPreviewBoxPosition = MapPreviewBox.ClientRectangle;
 
-
+            
 
             MapPreviewBox.SetFields(Players, AIPlayers, MPColors, GameOptionsIni.GetStringValue("General", "Sides", String.Empty).Split(','), GameOptionsIni);
             // MapPreviewBox.UpdateMap();
@@ -268,10 +268,12 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             lbGameModeMapList.LineHeight = 25; //行间距扩大
             lbGameModeMapList.FontIndex = 1;
 
-
+       
             cmbGame = FindChild<GameLobbyDropDown>(nameof(cmbGame));
+          
             cmbAI = FindChild<GameLobbyDropDown>(nameof(cmbAI));
-
+            Logger.Log(GameModeMaps.GameModes.Count.ToString());
+            
 
 
             mapContextMenu = new XNAContextMenu(WindowManager);
@@ -285,12 +287,12 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             };
             mapContextMenu.AddItem(toggleFavoriteItem);
             AddChild(mapContextMenu);
-
+            
             XNAPanel rankHeader = new XNAPanel(WindowManager);
             rankHeader.BackgroundTexture = AssetLoader.LoadTexture("rank.png");
             rankHeader.ClientRectangle = new Rectangle(0, 0, rankHeader.BackgroundTexture.Width,
                 19);
-
+           
             XNAListBox rankListBox = new XNAListBox(WindowManager);
             rankListBox.TextBorderDistance = 2;
 
@@ -301,12 +303,13 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             ddGameModeMapFilter.SelectedIndexChanged += DdGameModeMapFilter_SelectedIndexChanged;
 
             ddGameModeMapFilter.AddItem(CreateGameFilterItem(FavoriteMapsLabel, new GameModeMapFilter(GetFavoriteGameModeMaps)));
+          
             foreach (GameMode gm in GameModeMaps.GameModes)
                 ddGameModeMapFilter.AddItem(CreateGameFilterItem(gm.UIName.L10N("UI:GameMode:" + gm.Name), new GameModeMapFilter(GetGameModeMaps(gm))));
 
             lblGameModeSelect = FindChild<XNALabel>(nameof(lblGameModeSelect));
             // lblModeText = FindChild<XNALabel>(nameof(lblModeText));
-
+          
             InitBtnMapSort();
 
             tbMapSearch = FindChild<XNASuggestionTextBox>(nameof(tbMapSearch));
@@ -356,7 +359,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             randomMap.Disable();
             randomMap.EnabledChanged += randomMap_EnabledChanged;
 
-
+          
             btnRandomMap = new XNAClientButton(WindowManager);
             //  btnRandomMap = FindChild<XNAClientButton>(nameof(btnRandomMap));
             btnRandomMap.IdleTexture = AssetLoader.LoadTexture("133pxtab.png");
@@ -373,43 +376,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
 
             AddChild(MapPreviewBox);
             InitializeGameOptionPresetUI();
-
-        }
-
-        private void loadMod_AI(string name)
-        {
-            string[] Mod_files = Directory.GetDirectories($"{ProgramConstants.GamePath}/INI/GameOptions/{name}");
-
-            string[] Mod_AI = Directory.GetFiles(ClientConfiguration.Instance.Mod_AiIniPath, "Mod&AI*.ini");
-
-            var Mod_Ai_INI = new IniFile(Path.Combine(ClientConfiguration.Instance.Mod_AiIniPath, "Mod&AI.ini"));
-
-
-            foreach (string file in Mod_files)
-            {
-                var cunzai = false;
-                foreach (string Mod_AI_file in Mod_AI)
-                {
-                    var Mod_Ai = new IniFile(Mod_AI_file);
-                    var keys = Mod_Ai.GetSection(name).Keys;
-                    foreach (KeyValuePair<string, string> keyname in keys)
-                    {
-                        if (keyname.Value == Path.GetFileName(file))
-                        {
-                            cunzai = true;
-                            break;
-                        }
-                    }
-                    if (cunzai)
-                        break;
-                }
-                if (!cunzai)
-                {
-                    Mod_Ai_INI.SetStringValue(name, Path.GetFileName(file), Path.GetFileName(file));
-                }
-                Mod_Ai_INI.WriteIniFile();
-            }
-
+          
         }
 
         private void MapPreviewBox_LeftClick(object sender, EventArgs e)
@@ -1441,10 +1408,14 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             {
 
                 if (dropDown.SetSides() != null)
+                {
                     sides = dropDown.SetSides();
+                
+                }
 
             }
 
+            
 
 
             if (sides != null)
@@ -1452,13 +1423,17 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
 
                 foreach (var dropDown in DropDowns)
                 {
-                    if (dropDown.SetRandomSelectors() != null)
+                    if(dropDown.Name == "cmbGame")
                         Randomside = dropDown.SetRandomSelectors();
+                    
                 }
                 if (Randomside != null)
                 {
-                    count = Randomside.GetLength(1);
-                    MapPreviewBox.RandomSelectorCount = Randomside.GetLength(1);
+                    
+                    count = Randomside.GetLength(0);
+                   
+                    MapPreviewBox.RandomSelectorCount = count;
+                    
                 }
                 RandomSelectorCount = count + 1;
                 SideCount = sides.Length;
@@ -1636,8 +1611,6 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
 
             string oldAi = spawnReader.GetStringValue("Settings", "AI", string.Empty);
             string newAi = ((string[])cmbAI.SelectedItem.Tag)[1];
-
-
 
             spawnerSettingsFile.Delete();
 

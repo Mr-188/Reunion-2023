@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
+using Rampastring.Tools;
 using Rampastring.XNAUI;
 using Rampastring.XNAUI.XNAControls;
 
@@ -102,6 +103,7 @@ namespace ClientGUI
 
         public static void AddAndInitializeWithControl(WindowManager wm, XNAControl control)
         {
+            
             var dp = new DarkeningPanel(wm);
             wm.AddAndInitializeControl(dp);
             dp.AddChild(control);

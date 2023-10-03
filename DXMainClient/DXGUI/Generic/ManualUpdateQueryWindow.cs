@@ -3,6 +3,7 @@ using ClientCore;
 using ClientGUI;
 using Localization;
 using Microsoft.Xna.Framework;
+using Rampastring.Tools;
 using Rampastring.XNAUI;
 using Rampastring.XNAUI.XNAControls;
 
@@ -25,6 +26,7 @@ namespace DTAClient.DXGUI.Generic
 
         public override void Initialize()
         {
+            Logger.Log("ManualUpdateQuery开始加载");
             Name = "ManualUpdateQueryWindow";
             ClientRectangle = new Rectangle(0, 0, 251, 140);
             BackgroundTexture = AssetLoader.LoadTexture("updatequerybg.png");
@@ -56,6 +58,7 @@ namespace DTAClient.DXGUI.Generic
             descriptionText = lblDescription.Text.Replace("@", Environment.NewLine);
 
             CenterOnParent();
+            Logger.Log("ManualUpdateQuery加载完毕");
         }
 
         private void BtnDownload_LeftClick(object sender, EventArgs e)

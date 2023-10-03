@@ -30,7 +30,7 @@ namespace DTAClient
         /// <summary>
         /// The main method for startup and initialization.
         /// </summary>
-        public void Execute()
+        public async void Execute()
         {
             string themePath = UserINISettings.Instance.ClientTheme;
 
@@ -57,7 +57,9 @@ namespace DTAClient
 
             SafePath.DeleteFileIfExists(ProgramConstants.GamePath, "version_u");
 
-            Updater.Initialize(ProgramConstants.GamePath, ProgramConstants.GetBaseResourcePath(), ClientConfiguration.Instance.SettingsIniName, ClientConfiguration.Instance.LocalGame, SafePath.GetFile(ProgramConstants.StartupExecutable).Name);
+
+            //if (NetWorkINISettings.Instance != null) 
+            //    NetWorkINISettings.DownloadCompleted += DownloadCompleted;
 
             Logger.Log("OSDescription: " + RuntimeInformation.OSDescription);
             Logger.Log("OSArchitecture: " + RuntimeInformation.OSArchitecture);
@@ -149,6 +151,7 @@ namespace DTAClient
 
             gameClass.Run();
         }
+
 
 #if ARES
         /// <summary>

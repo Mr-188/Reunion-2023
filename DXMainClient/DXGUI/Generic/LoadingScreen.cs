@@ -76,10 +76,11 @@ namespace DTAClient.DXGUI.Generic
         //SetDllDirectory("C:\\Path\\To\\Your\\DLLs");
         public override void Initialize()
         {
+            Logger.Log("载入图初始化");
             ClientRectangle = new Rectangle(0, 0, 1280, 768);
             Name = "LoadingScreen";
 
-
+            
             if (!UserINISettings.Instance.video_wallpaper || RuntimeInformation.ProcessArchitecture.ToString() == "X64")
             {
                 string path = $"Resources/{UserINISettings.Instance.ClientTheme}Wallpaper";
@@ -90,7 +91,7 @@ namespace DTAClient.DXGUI.Generic
                 {
                     Directory.CreateDirectory(path);
                 }
-
+               
                 string[] Wallpaper = Directory.GetFiles(path);
 
                 if (UserINISettings.Instance.Random_wallpaper)
@@ -101,6 +102,7 @@ namespace DTAClient.DXGUI.Generic
                     BackgroundTexture = AssetLoader.LoadTexture(Wallpaper[i]);
 
                 }
+               
                 else if (Wallpaper.Length > 0)
                 {
                     BackgroundTexture = AssetLoader.LoadTexture(Wallpaper[0]);
@@ -119,7 +121,7 @@ namespace DTAClient.DXGUI.Generic
             CenterOnParent();
 
             bool initUpdater = !ClientConfiguration.Instance.ModMode;
-
+           
             if (initUpdater)
             {
                 updaterInitTask = new Task(InitUpdater);
@@ -127,12 +129,13 @@ namespace DTAClient.DXGUI.Generic
             }
 
             mapLoadTask = mapLoader.LoadMapsAsync();
-
+          
             if (Cursor.Visible)
             {
                 Cursor.Visible = false;
                 visibleSpriteCursor = true;
             }
+            Logger.Log("载入图初始化完毕");
         }
         protected override void LoadContent()
         {
@@ -202,21 +205,22 @@ namespace DTAClient.DXGUI.Generic
 
         private void Finish()
         {
-
+           
             ProgramConstants.GAME_VERSION = ClientConfiguration.Instance.ModMode ?
                 "N/A" : Updater.GameVersion;
-
+         
             MainMenu mainMenu = serviceProvider.GetService<MainMenu>();
-
+            
             WindowManager.AddAndInitializeControl(mainMenu);
+         
             mainMenu.PostInit();
-
+           
             if (UserINISettings.Instance.AutomaticCnCNetLogin &&
                 NameValidator.IsNameValid(ProgramConstants.PLAYERNAME) == null)
             {
                 cncnetManager.Connect();
             }
-
+            
             if (!UserINISettings.Instance.PrivacyPolicyAccepted)
             {
                 WindowManager.AddAndInitializeControl(new PrivacyNotification(WindowManager));
@@ -224,7 +228,7 @@ namespace DTAClient.DXGUI.Generic
             if (UserINISettings.Instance.video_wallpaper)
                 UnloadContent();
 
-
+            
 
             WindowManager.RemoveControl(this);
             Cursor.Visible = visibleSpriteCursor;

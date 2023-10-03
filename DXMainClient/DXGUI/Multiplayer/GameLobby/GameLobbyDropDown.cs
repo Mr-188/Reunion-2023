@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using ClientCore;
 using ClientGUI;
+using DTAClient.Domain;
 using DTAClient.Domain.Multiplayer;
 using Localization;
 using Rampastring.Tools;
@@ -31,21 +32,12 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
 
         private int defaultIndex;
 
-        public List<string> Sidesnew = new List<string>();
-
         string[] RandomSides;
         public List<string> RandomSelectors = new List<string>();
         public List<List<string>> RandomSidesIndex = new List<List<string>>();
 
         public List<string> Sides;
 
-        public List<string> modini;
-
-        public List<string> modname;
-
-        public List<string> Mod;
-
-        public List<string> Main;
 
         public string[] DisallowedSideIndiex;
         public string[] DisallowedSide;
@@ -114,79 +106,31 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
 
                 case "Mod":
 
-                    RandomSelectors = new List<string>();
-                    RandomSidesIndex = new List<List<string>>();
-
-                    Sides = new List<string>();
-
-                    modini = new List<string>();
-
-                    modname = new List<string>();
-
-                    Mod = new List<string>();
-
-                    Main = new List<string>();
-
-                    string[] files = Directory.GetFiles(ClientConfiguration.Instance.Mod_AiIniPath, "Mod&AI*.ini");
-
-                    foreach (string file in files)
+                    List<Mod> mods = new List<Mod>();
+                    if (Name == "cmbGame")
                     {
-
-                        var Mod_Ai = new IniFile(file);
-
-
-
-                        var sessionname = "";
-
-                        if (Name == "cmbGame")
-                        {
-
-                            sessionname = "Game";
-                        }
-                        if (Name == "cmbAI")
-                        {
-                            sessionname = "AI";
-                        }
-                        if (Mod_Ai.GetSection(sessionname) == null)
-                            continue;
-                        var keys = Mod_Ai.GetSection(sessionname).Keys;
-                        foreach (KeyValuePair<string, string> name in keys)
-                        {
-                            if (!Mod_Ai.GetBooleanValue(name.Value, "Visible", true))
-                                continue;
-
-                            if (string.IsNullOrEmpty(Mod_Ai.GetStringValue(name.Value, "File", string.Empty)))
-                                Mod.Add($"INI/GameOptions/{sessionname}/{name.Value}");
-                            else
-                                Mod.Add(Mod_Ai.GetStringValue(name.Value, "File", string.Empty));
-                            modname.Add(Mod_Ai.GetStringValue(name.Value, "Text", name.Value));
-
-                            modini.Add(Mod_Ai.GetStringValue(name.Value, "INI", string.Empty));
-                            Main.Add(Mod_Ai.GetStringValue(name.Value, "Main", string.Empty));
-
-                            if (Name == "cmbGame")
-                            {
-
-
-                                Sides.Add(Mod_Ai.GetStringValue(name.Value, "Sides", string.Empty));
-
-                                RandomSelectors.Add(Mod_Ai.GetStringValue(name.Value, "RandomSides", string.Empty));
-                                var l = new List<string>();
-                                for (int i = 1; i <= Mod_Ai.GetStringValue(name.Value, "RandomSides", string.Empty).Split(',').Length; i++)
-                                {
-                                    l.Add(Mod_Ai.GetStringValue(name.Value, "RandomSidesIndex" + i.ToString(), string.Empty));
-                                }
-
-                                RandomSidesIndex.Add(l);
-                            }
-                        }
-
-                        //console.WriteLine(RandomSidesIndex.Count);
-
+                        
+                        mods = Mod.mods.Where(mod => mod.Visible).ToList(); 
+                        Sides = mods.Select(mod => mod.Countries).ToList();
+                        RandomSelectors = mods.Select(mod => mod.RandomSides).ToList();
+                        RandomSidesIndex = mods.Select(mod => mod.RandomSidesIndexs).ToList();
+                        
+                        
+                    }
+                    else
+                    {
+                        mods = Mod.ais.Where(mod => mod.Visible).ToList();
                     }
 
-                    items = modini.ToArray();
-                    itemlabels = modname.ToArray();
+
+                    foreach (Mod mod in Mod.mods)
+                    {
+                        if (!mod.Visible)
+                            continue;
+                    }
+                   
+                    items = mods.Select(mod => mod.INI).ToArray();
+                    itemlabels = mods.Select(mod => mod.Name).ToArray();
 
                     for (int i = 0; i < items.Length; i++)
                     {
@@ -195,10 +139,10 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
                         {
                             item.Text = itemlabels[i].L10N("UI:GameOption:" + itemlabels[i]);
 
-                            if (items.Length == Mod.Count)
+                            if (items.Length == mods.Count())
                             {
-
-                                item.Tag = new string[3] { items[i], Mod[i], Main[i] };
+                                
+                                item.Tag = new string[3] { items[i], mods.Select(mod => mod.ModPath).ToArray()[i], mods.Select(mod => mod.md == "md" ? "YR_Main" : "RA2_Main").ToArray()[i] };
                             }
                             else
                                 item.Tag = new string[3] { items[i], string.Empty, string.Empty };
@@ -327,7 +271,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
 
             if (Sides != null && Sides.Count > SelectedIndex && !string.IsNullOrEmpty(Sides[SelectedIndex]))
             {
-
+              
                 return Sides[SelectedIndex].Split(',');
             }
             else
@@ -338,31 +282,34 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
 
         public string[,] SetRandomSelectors()
         {
+
             if (RandomSelectors.Count != 0 && RandomSelectors.Count > SelectedIndex)
             {
-
                 RandomSides = RandomSelectors[SelectedIndex].Split(',');
+                
 
             }
+            
             if (RandomSides != null && RandomSelectors.Count > SelectedIndex)
             {
-
+               
                 string[,] list = new string[RandomSides.Length, 2];
                 for (int i = 0; i < RandomSides.Length; i++)
                 {
                     list[i, 0] = RandomSides[i];
-
+                    
                     if (RandomSidesIndex != null && RandomSidesIndex.Count > SelectedIndex)
                     {
                         //Console.WriteLine(SelectedIndex);
                         //Console.WriteLine(i);
-                        //Console.WriteLine(RandomSidesIndex[SelectedIndex][i]);
+                       
                         list[i, 1] = RandomSidesIndex[SelectedIndex][i];
                     }
                     else
                         list[i, 1] = string.Empty;
 
                 }
+                
                 return list;
             }
             else return null;

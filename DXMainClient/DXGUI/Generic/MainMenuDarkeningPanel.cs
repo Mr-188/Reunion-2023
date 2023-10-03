@@ -32,6 +32,8 @@ namespace DTAClient.DXGUI.Generic
 
         public override void Initialize()
         {
+
+
             base.Initialize();
 
             Name = "DarkeningPanel";

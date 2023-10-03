@@ -98,6 +98,8 @@ namespace DTAClient.DXGUI.Generic
             lblThankList.AddItem("冷场AI：韩方序");
             lblThankList.AddItem("liyupengAI：liyupeng");
             lblThankList.AddItem("马王神AI：MammamiaMadman");
+            lblThankList.AddItem("尤里版新共辉：达达利亚");
+            lblThankList.AddItem("尤里共和国：核武将军");
 
             lblThankList.AddItem("日语语音：高级复读兽响子");
             lblThankList.AddItem("简体中文游戏：手柄");

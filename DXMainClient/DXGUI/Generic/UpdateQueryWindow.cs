@@ -5,10 +5,12 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using ClientCore;
+using ClientCore.Settings;
 using ClientGUI;
 using ClientUpdater;
 using Localization;
 using Microsoft.Xna.Framework;
+using Rampastring.Tools;
 using Rampastring.XNAUI;
 using Rampastring.XNAUI.XNAControls;
 
@@ -24,7 +26,7 @@ namespace DTAClient.DXGUI.Generic
 
         public delegate void UpdateDeclinedEventHandler(object sender, EventArgs e);
         public event UpdateDeclinedEventHandler UpdateDeclined;
-
+        
         public UpdateQueryWindow(WindowManager windowManager) : base(windowManager) { }
 
         private XNALabel lblDescription;
@@ -34,6 +36,7 @@ namespace DTAClient.DXGUI.Generic
 
         public override void Initialize()
         {
+            Logger.Log("更新窗口初始化");
             changelogUrl = ClientConfiguration.Instance.ChangelogURL;
 
             Name = "UpdateQueryWindow";
@@ -83,51 +86,52 @@ namespace DTAClient.DXGUI.Generic
             base.Initialize();
 
             CenterOnParent();
+            Logger.Log("更新窗口加载完毕");
         }
 
         public async Task GetUpdateContentsAsync(string currentVersion, string latestVersion)
         {
-            Dictionary<string, string> updateContents = new Dictionary<string, string>();
-             
-            // 读取INI文件
-            string iniFilePath = "updater.ini"; // 替换为你的INI文件路径
+            updaterlog.Clear();
 
-            // 下载INI文件
-            string iniFileUrl = "http://8.130.134.157/Updater/updater.ini";
-            string iniContent;
-            using (WebClient client = new WebClient())
+            if (NetWorkINISettings.Instance != null)
             {
-                try
+                // 下载INI文件
+                string iniFileUrl = NetWorkINISettings.Instance.Updaterlog;
+                string iniContent;
+                using (WebClient client = new WebClient())
                 {
-                    iniContent = await client.DownloadStringTaskAsync(iniFileUrl);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"无法下载INI文件: {ex.Message}");
-                    return;
-                }
-            }
-
-            // 解析INI文件内容
-            using (StringReader reader = new StringReader(iniContent))
-            {
-                string line;
-                string currentSection = string.Empty;
-                List<string> currentContent = new List<string>();
-
-                while ((line = reader.ReadLine()) != null)
-                {
-                    line = line.Trim();
-                    if (line.StartsWith("[") && line.EndsWith("]"))
+                    try
                     {
-                        if (line.LastIndexOf(currentVersion) == -1)
-                            continue;
-                        else
-                            break;
+                        iniContent = await client.DownloadStringTaskAsync(iniFileUrl);
                     }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"无法下载INI文件: {ex.Message}");
+                        return;
+                    }
+                }
 
-                    currentSection = line;
-                    updaterlog.AddItem(currentSection);
+                // 解析INI文件内容
+                using (StringReader reader = new StringReader(iniContent))
+                {
+                    string line;
+                    string currentSection = string.Empty;
+                    List<string> currentContent = new List<string>();
+
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        line = line.Trim();
+                        if (line.StartsWith("[") && line.EndsWith("]"))
+                        {
+                            if (line.LastIndexOf(currentVersion) == -1)
+                                continue;
+                            else
+                                break;
+                        }
+
+                        currentSection = line;
+                        updaterlog.AddItem(currentSection);
+                    }
                 }
             }
         }
